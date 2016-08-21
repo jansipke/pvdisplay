@@ -1,6 +1,7 @@
 package nl.jansipke.pvdisplay;
 
 import android.graphics.Color;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
@@ -29,9 +31,9 @@ public class LiveGraphActivity extends AppCompatActivity {
     private final static String TAG = "LiveGraphActivity";
 
     private final Date now = new Date();
-    private final SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyyMMdd"); // TODO Change to yyyy-MM-dd
-    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd HH:mm");
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    private final SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.US);
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
 
     private int ago = 0;
 
@@ -124,7 +126,7 @@ public class LiveGraphActivity extends AppCompatActivity {
 
     private void updateTable(String date) {
         TextView textView = (TextView) findViewById(R.id.text);
-        textView.setText("Ago: " + ago + "\n" + date);
+        textView.setText("Ago: " + ago + "\n" + date); // TODO Implement table
     }
 
     public void switchClick(View view) {
@@ -137,7 +139,14 @@ public class LiveGraphActivity extends AppCompatActivity {
         calendar.add(Calendar.DATE, -ago);
         String date = yearMonthDayFormat.format(calendar.getTime());
 
-        getSupportActionBar().setTitle("Live - " + date);
+        String year = date.substring(0, 4);
+        String month = date.substring(4, 6);
+        String day = date.substring(6, 8);
+
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle("Live " + year + "-" + month + "-" + day);
+        }
 
         updateGraph(date);
         updateTable(date);
