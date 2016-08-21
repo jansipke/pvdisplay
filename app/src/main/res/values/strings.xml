@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">PvDisplay</string>
+
+    <string name="button_live">Live</string>
+    <string name="button_daily">Daily</string>
+    <string name="button_weekly">Weekly</string>
+    <string name="button_monthly">Monthly</string>
+    <string name="button_yearly">Yearly</string>
+    <string name="button_statistics">Statistics</string>
+    <string name="button_fetch">Fetch</string>
+
+    <string name="button_previous">Previous</string>
+    <string name="button_next">Next</string>
+    <string name="button_now">Now</string>
+    <string name="button_switch">G/T</string>
+</resources>

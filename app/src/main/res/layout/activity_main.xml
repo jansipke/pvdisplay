@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="nl.jansipke.pvdisplay.MainActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_marginBottom="25dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/roof_landscape"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_live"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/button_live"
+            android:drawableLeft="@drawable/ic_show_chart_black_48dp"
+            android:onClick="showLiveGraph" />
+
+        <Button
+            android:id="@+id/button_statistics"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="@string/button_statistics"
+            android:drawableLeft="@drawable/ic_card_membership_black_48dp"
+            android:onClick="showStatistics" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_daily"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:layout_weight="1"
+            android:text="@string/button_daily"
+            android:drawableLeft="@drawable/ic_date_range_black_48dp"
+            android:onClick="showDailyGraph" />
+
+        <Button
+            android:id="@+id/button_weekly"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="@string/button_weekly"
+            android:drawableLeft="@drawable/ic_date_range_black_48dp"
+            android:onClick="showWeeklyGraph" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_monthly"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="@string/button_monthly"
+            android:drawableLeft="@drawable/ic_date_range_black_48dp"
+            android:onClick="showMonthlyGraph" />
+
+        <Button
+            android:id="@+id/button_yearly"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:text="@string/button_yearly"
+            android:drawableLeft="@drawable/ic_date_range_black_48dp"
+            android:onClick="showYearlyGraph" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_fetch"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:text="@string/button_fetch"
+        android:drawableLeft="@drawable/ic_refresh_black_48dp"
+        android:onClick="fetch" />
+
+</LinearLayout>

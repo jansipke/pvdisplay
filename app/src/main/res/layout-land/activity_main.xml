@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="nl.jansipke.pvdisplay.MainActivity">
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:src="@drawable/roof_portrait"
+            android:contentDescription="@string/app_name" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button_live"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_live"
+                android:drawableLeft="@drawable/ic_show_chart_black_48dp"
+                android:onClick="showLiveGraph" />
+
+            <Button
+                android:id="@+id/button_daily"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_daily"
+                android:drawableLeft="@drawable/ic_date_range_black_48dp"
+                android:onClick="showDailyGraph" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button_weekly"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_weekly"
+                android:drawableLeft="@drawable/ic_date_range_black_48dp"
+                android:onClick="showWeeklyGraph" />
+
+            <Button
+                android:id="@+id/button_monthly"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_monthly"
+                android:drawableLeft="@drawable/ic_date_range_black_48dp"
+                android:onClick="showMonthlyGraph" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button_yearly"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_yearly"
+                android:drawableLeft="@drawable/ic_date_range_black_48dp"
+                android:onClick="showYearlyGraph" />
+
+            <Button
+                android:id="@+id/button_statistics"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_weight="1"
+                android:text="@string/button_statistics"
+                android:drawableLeft="@drawable/ic_card_membership_black_48dp"
+                android:onClick="showStatistics" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
