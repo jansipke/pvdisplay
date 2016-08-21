@@ -14,6 +14,9 @@
     <string name="button_now">Now</string>
     <string name="button_switch">G/T</string>
 
+    <string name="graph_legend_power">Power (W)</string>
+    <string name="graph_legend_energy">Energy (kWh)</string>
+
     <string name="table_column_time">Time</string>
     <string name="table_column_power">Power (W)</string>
     <string name="table_column_energy">Energy (kWh)</string>

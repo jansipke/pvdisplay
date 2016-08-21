@@ -31,6 +31,6 @@ public class LivePvDatum {
     }
 
     public String toString() {
-        return date + " " + time + " " + energyGeneration + "Wh " + powerGeneration + " W";
+        return date + " " + time + " "  + powerGeneration + "W " + energyGeneration + "Wh";
     }
 }
