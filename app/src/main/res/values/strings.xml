@@ -13,4 +13,8 @@
     <string name="button_next">Next</string>
     <string name="button_now">Now</string>
     <string name="button_switch">G/T</string>
+
+    <string name="table_column_time">Time</string>
+    <string name="table_column_power">Power (W)</string>
+    <string name="table_column_energy">Energy (kWh)</string>
 </resources>

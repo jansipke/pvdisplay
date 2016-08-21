@@ -5,7 +5,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -15,6 +17,8 @@ import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,17 +30,18 @@ import java.util.Locale;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 
-public class LiveGraphActivity extends AppCompatActivity {
+public class LiveActivity extends AppCompatActivity {
 
-    private final static String TAG = "LiveGraphActivity";
+    private final static String TAG = "LiveActivity";
 
     private final Date now = new Date();
     private final SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyyMMdd", Locale.US);
     private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.US);
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
+    private final NumberFormat powerFormat = new DecimalFormat("#0");
+    private final NumberFormat energyFormat = new DecimalFormat("#0.000");
 
     private int ago = 0;
-
     private LineGraphSeries<DataPoint> powerSeries;
     private LineGraphSeries<DataPoint> energySeries;
 
@@ -97,26 +102,37 @@ public class LiveGraphActivity extends AppCompatActivity {
         graph.getSecondScale().addSeries(energySeries);
     }
 
-    private void updateGraph(String date) {
-        PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
-        List<LivePvDatum> livePvData = pvDataOperations.loadLive(date);
+    private DataPoint createDataPoint(String date, String time, double value) {
+        try {
+            Date dateTime = dateTimeFormat.parse(date + " " + time);
+            return new DataPoint(dateTime, value);
+        } catch (ParseException e) {
+            Log.e(TAG, "Error parsing date time", e);
+            return null;
+        }
+    }
+
+    private void updateGraph(String date, List<LivePvDatum> livePvData) {
+        DataPoint[] powerDataPoints;
+        DataPoint[] energyDataPoints;
 
         if (livePvData.size() == 0) {
-            livePvData.add(new LivePvDatum(date, "00:00", 0.0, 0.0));
-            livePvData.add(new LivePvDatum(date, "23:59", 0.0, 0.0));
-        }
-        DataPoint[] powerDataPoints = new DataPoint[livePvData.size()];
-        DataPoint[] energyDataPoints = new DataPoint[livePvData.size()];
-        for (int i = 0; i < livePvData.size(); i++) {
-            LivePvDatum livePvDatum = livePvData.get(i);
-            try {
-                Date dateTime = dateTimeFormat.parse(livePvDatum.getDate() + " " + livePvDatum.getTime());
-                powerDataPoints[i] = new DataPoint(dateTime, livePvDatum.getPowerGeneration());
-                energyDataPoints[i] = new DataPoint(dateTime, livePvDatum.getEnergyGeneration());
-            } catch (ParseException e) {
-                Log.e(TAG, "Error parsing date time", e);
+            powerDataPoints = new DataPoint[2];
+            powerDataPoints[0] = createDataPoint(date, "00:00", 0.0);
+            powerDataPoints[1] = createDataPoint(date, "23:59", 0.0);
+            energyDataPoints = new DataPoint[2];
+            energyDataPoints[0] = createDataPoint(date, "00:00", 0.0);
+            energyDataPoints[1] = createDataPoint(date, "23:59", 0.0);
+        } else {
+            powerDataPoints = new DataPoint[livePvData.size()];
+            energyDataPoints = new DataPoint[livePvData.size()];
+            for (int i = 0; i < livePvData.size(); i++) {
+                LivePvDatum livePvDatum = livePvData.get(i);
+                powerDataPoints[i] = createDataPoint(livePvDatum.getDate(), livePvDatum.getTime(), livePvDatum.getPowerGeneration());
+                energyDataPoints[i] = createDataPoint(livePvDatum.getDate(), livePvDatum.getTime(), livePvDatum.getEnergyGeneration());
             }
         }
+
         powerSeries.resetData(powerDataPoints);
         energySeries.resetData(energyDataPoints);
     }
@@ -124,9 +140,16 @@ public class LiveGraphActivity extends AppCompatActivity {
     private void initTable() {
     }
 
-    private void updateTable(String date) {
-        TextView textView = (TextView) findViewById(R.id.text);
-        textView.setText("Ago: " + ago + "\n" + date); // TODO Implement table
+    private void updateTable(String date, List<LivePvDatum> livePvData) {
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.table);
+        linearLayout.removeAllViews();
+        for (LivePvDatum livePvDatum : livePvData) {
+            View row = getLayoutInflater().inflate(R.layout.table_row, null);
+            ((TextView) row.findViewById(R.id.content1)).setText(livePvDatum.getTime());
+            ((TextView) row.findViewById(R.id.content2)).setText(powerFormat.format(livePvDatum.getPowerGeneration()));
+            ((TextView) row.findViewById(R.id.content3)).setText(energyFormat.format(livePvDatum.getEnergyGeneration() / 1000));
+            linearLayout.addView(row);
+        }
     }
 
     public void switchClick(View view) {
@@ -145,10 +168,12 @@ public class LiveGraphActivity extends AppCompatActivity {
 
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
-            supportActionBar.setTitle("Live " + year + "-" + month + "-" + day);
+            supportActionBar.setTitle("Live   " + year + "-" + month + "-" + day);
         }
 
-        updateGraph(date);
-        updateTable(date);
+        PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
+        List<LivePvDatum> livePvData = pvDataOperations.loadLive(date);
+        updateGraph(date, livePvData);
+        updateTable(date, livePvData);
     }
 }
