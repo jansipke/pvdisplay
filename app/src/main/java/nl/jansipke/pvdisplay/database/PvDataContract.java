@@ -1,4 +1,4 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.database;
 
 import android.provider.BaseColumns;
 

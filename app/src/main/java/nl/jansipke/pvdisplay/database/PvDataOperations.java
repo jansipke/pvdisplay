@@ -1,4 +1,4 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
+import nl.jansipke.pvdisplay.data.LivePvDatum;
 
 public class PvDataOperations {
 

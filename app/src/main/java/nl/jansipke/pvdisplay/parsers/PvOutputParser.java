@@ -1,9 +1,13 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.parsers;
 
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
+import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 
 public class PvOutputParser {
 
