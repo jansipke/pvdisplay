@@ -1,25 +1,23 @@
 package nl.jansipke.pvdisplay.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class LivePvDatum {
 
-    private final String date;
-    private final String time;
-    private final double energyGeneration;
-    private final double powerGeneration;
+    private final long timestamp;          // Seconds since epoch
+    private final double energyGeneration; // In Watt (W)
+    private final double powerGeneration;  // In Watt Hour (Wh)
 
-    public LivePvDatum(String date, String time, double energyGeneration, double powerGeneration) {
-        this.date = date;
-        this.time = time;
+    public LivePvDatum(long timestamp, double energyGeneration, double powerGeneration) {
+        this.timestamp = timestamp;
         this.energyGeneration = energyGeneration;
         this.powerGeneration = powerGeneration;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public double getEnergyGeneration() {
@@ -31,6 +29,8 @@ public class LivePvDatum {
     }
 
     public String toString() {
-        return date + " " + time + " "  + powerGeneration + "W " + energyGeneration + "Wh";
+        Date date = new Date(timestamp * 1000);
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+        return "LivePvDatum[" + dateTimeFormat.format(date) + " power=" + powerGeneration + " W, energy=" + energyGeneration + " Wh]";
     }
 }

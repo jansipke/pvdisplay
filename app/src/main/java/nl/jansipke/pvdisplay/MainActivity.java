@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
                 return httpGet(URL, headers);
             } catch (IOException e) {
+                Toast.makeText(MainActivity.this, "Error fetching data from pvoutput.org", Toast.LENGTH_LONG).show();
                 return "ERROR: Unable to retrieve URL " + URL;
             }
         }
@@ -75,10 +77,15 @@ public class MainActivity extends AppCompatActivity {
             PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
             PvOutputParser pvOutputParser = new PvOutputParser();
 
-            List<LivePvDatum> livePvData = pvOutputParser.parseLive(result);
-            for (LivePvDatum livePvDatum : livePvData) {
-                pvDataOperations.saveLive(livePvDatum);
+            try {
+                List<LivePvDatum> livePvData = pvOutputParser.parseLive(result);
+                for (LivePvDatum livePvDatum : livePvData) {
+                    pvDataOperations.saveLive(livePvDatum);
+                }
+            } catch (ParseException e) {
+                Toast.makeText(MainActivity.this, "Error parsing data from pvoutput.org", Toast.LENGTH_LONG).show();
             }
+
 
 //            LivePvDatum livePvDatum = pvDataOperations.loadLive("20160724").get(50);
 //            textView.setText(livePvDatum.toString());

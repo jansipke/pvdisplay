@@ -2,16 +2,16 @@ package nl.jansipke.pvdisplay.data;
 
 public class HistoricalPvDatum {
 
-    private final String date;
+    private final YearMonthDay yearMonthDay;
     private final double energyGenerated;
 
-    public HistoricalPvDatum(String date, double energyGenerated) {
-        this.date = date;
+    public HistoricalPvDatum(YearMonthDay yearMonthDay, double energyGenerated) {
+        this.yearMonthDay = yearMonthDay;
         this.energyGenerated = energyGenerated;
     }
 
-    public String getDate() {
-        return date;
+    public YearMonthDay getYearMonthDay() {
+        return yearMonthDay;
     }
 
     public double getEnergyGenerated() {
@@ -19,6 +19,6 @@ public class HistoricalPvDatum {
     }
 
     public String toString() {
-        return date + " " + energyGenerated + "Wh";
+        return "HistoricalPvDatum[yearMonthDay=" + yearMonthDay + ", energyGenerated=" + energyGenerated + "]";
     }
 }
