@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import java.util.Locale;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
+import nl.jansipke.pvdisplay.utils.LoggingUtils;
 
 public class LiveActivity extends AppCompatActivity {
 
@@ -124,6 +126,7 @@ public class LiveActivity extends AppCompatActivity {
         }
         powerSeries.resetData(powerDataPoints);
         energySeries.resetData(energyDataPoints);
+        Log.i(TAG, "DataPoints:\n" + LoggingUtils.formatDataPoints(powerDataPoints));
     }
 
     private void initTable() {
