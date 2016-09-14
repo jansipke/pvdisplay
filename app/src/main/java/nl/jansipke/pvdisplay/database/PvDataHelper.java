@@ -16,9 +16,20 @@ public class PvDataHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + PvDataContract.LivePvData.TABLE_NAME + " (" +
                 PvDataContract.LivePvData._ID + " INTEGER PRIMARY KEY," +
-                PvDataContract.LivePvData.COLUMN_NAME_TIMESTAMP + " INTEGER UNIQUE," +
+                PvDataContract.LivePvData.COLUMN_NAME_YEAR + " INTEGER," +
+                PvDataContract.LivePvData.COLUMN_NAME_MONTH + " INTEGER," +
+                PvDataContract.LivePvData.COLUMN_NAME_DAY + " INTEGER," +
+                PvDataContract.LivePvData.COLUMN_NAME_HOUR + " INTEGER," +
+                PvDataContract.LivePvData.COLUMN_NAME_MINUTE + " INTEGER," +
                 PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION + " REAL," +
-                PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION + " REAL)");
+                PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION + " REAL," +
+                " UNIQUE(" +
+                PvDataContract.LivePvData.COLUMN_NAME_YEAR + "," +
+                PvDataContract.LivePvData.COLUMN_NAME_MONTH + "," +
+                PvDataContract.LivePvData.COLUMN_NAME_DAY + "," +
+                PvDataContract.LivePvData.COLUMN_NAME_HOUR + "," +
+                PvDataContract.LivePvData.COLUMN_NAME_MINUTE + "))");
+
         db.execSQL("CREATE TABLE " + PvDataContract.HistoricalPvData.TABLE_NAME + " (" +
                 PvDataContract.HistoricalPvData._ID + " INTEGER PRIMARY KEY," +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + " INTEGER," +

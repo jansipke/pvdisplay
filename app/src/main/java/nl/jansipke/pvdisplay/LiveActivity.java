@@ -25,19 +25,18 @@ import java.util.List;
 import java.util.Locale;
 
 import nl.jansipke.pvdisplay.data.LivePvDatum;
-import nl.jansipke.pvdisplay.data.YearMonthDay;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class LiveActivity extends AppCompatActivity {
 
     private final static String TAG = "LiveActivity";
-    private final static SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
     private final static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
     private final static NumberFormat powerFormat = new DecimalFormat("#0");
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
     private final Date now = new Date();
-    private int ago = 30;
+    private int ago = 50;
 
     private LineGraphSeries<DataPoint> powerSeries;
     private LineGraphSeries<DataPoint> energySeries;
@@ -101,22 +100,26 @@ public class LiveActivity extends AppCompatActivity {
         graph.getSecondScale().addSeries(energySeries);
     }
 
-    private void updateGraph(YearMonthDay yearMonthDay, List<LivePvDatum> livePvData) {
-        long firstTimestamp = yearMonthDay.getFirstTimestamp(); // 00:00
+    private void updateGraph(int year, int month, int day, List<LivePvDatum> livePvData) {
+        int dataPointsIndex = 0;
         int livePvDataIndex = 0;
         double energyValue = 0.0;
-        for (int i = 0; i < powerDataPoints.length; i++) {
-            long timestamp = firstTimestamp + i * 5 * 60;
-            Date date = new Date(timestamp * 1000);
-            if (livePvDataIndex < livePvData.size() && livePvData.get(livePvDataIndex).getTimestamp() == timestamp) {
-                LivePvDatum livePvDatum = livePvData.get(livePvDataIndex);
-                powerDataPoints[i] = new DataPoint(date, livePvDatum.getPowerGeneration());
-                energyValue = livePvDatum.getEnergyGeneration() / 1000.0;
-                energyDataPoints[i] = new DataPoint(date, energyValue);
-                livePvDataIndex++;
-            } else {
-                powerDataPoints[i] = new DataPoint(date, 0.0);
-                energyDataPoints[i] = new DataPoint(date, energyValue);
+        for (int hour = 0; hour < 24; hour++) {
+            for (int minute = 0; minute < 60; minute += 5) {
+                Date date = DateTimeUtils.getDate(year, month, day, hour, minute);
+                if (livePvDataIndex < livePvData.size() &&
+                        livePvData.get(livePvDataIndex).getHour() == hour &&
+                        livePvData.get(livePvDataIndex).getMinute() == minute) {
+                    LivePvDatum livePvDatum = livePvData.get(livePvDataIndex);
+                    powerDataPoints[dataPointsIndex] = new DataPoint(date, livePvDatum.getPowerGeneration());
+                    energyValue = livePvDatum.getEnergyGeneration() / 1000.0;
+                    energyDataPoints[dataPointsIndex] = new DataPoint(date, energyValue);
+                    livePvDataIndex++;
+                } else {
+                    powerDataPoints[dataPointsIndex] = new DataPoint(date, 0.0);
+                    energyDataPoints[dataPointsIndex] = new DataPoint(date, energyValue);
+                }
+                dataPointsIndex++;
             }
         }
         powerSeries.resetData(powerDataPoints);
@@ -131,7 +134,7 @@ public class LiveActivity extends AppCompatActivity {
         linearLayout.removeAllViews();
         for (LivePvDatum livePvDatum : livePvData) {
             View row = getLayoutInflater().inflate(R.layout.table_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(timeFormat.format(livePvDatum.getDate()));
+            ((TextView) row.findViewById(R.id.content1)).setText(DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute()));
             ((TextView) row.findViewById(R.id.content2)).setText(powerFormat.format(livePvDatum.getPowerGeneration()));
             ((TextView) row.findViewById(R.id.content3)).setText(energyFormat.format(livePvDatum.getEnergyGeneration() / 1000.0));
             linearLayout.addView(row);
@@ -149,17 +152,16 @@ public class LiveActivity extends AppCompatActivity {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
-        YearMonthDay yearMonthDay = new YearMonthDay(year, month, day);
 
-        String title = "Live   " + yearMonthDayFormat.format(calendar.getTime());
+        String title = "Live   " + DateTimeUtils.formatDate(year, month, day);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
 
         PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
-        List<LivePvDatum> livePvData = pvDataOperations.loadLive(yearMonthDay);
-        updateGraph(yearMonthDay, livePvData);
+        List<LivePvDatum> livePvData = pvDataOperations.loadLive(year, month, day);
+        updateGraph(year, month, day, livePvData);
         updateTable(livePvData);
     }
 }

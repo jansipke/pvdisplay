@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String API_KEY = "4054f46dd2c8e71855122e964c8e099cb9394d69";
     private final static String SYSTEM_ID = "23329";
-    private final static String URL = "http://pvoutput.org/service/r2/getstatus.jsp?d=20160724&h=1&limit=288&asc=1";
+    private final static String URL = "http://pvoutput.org/service/r2/getstatus.jsp?d=20160725&h=1&limit=288&asc=1";
 //    private final static String URL = "http://pvoutput.org/service/r2/getoutput.jsp?df=20160101&dt=20160801&limit=50";
 //    private final static String URL = "http://pvoutput.org/service/r2/getstatistic.jsp";
 

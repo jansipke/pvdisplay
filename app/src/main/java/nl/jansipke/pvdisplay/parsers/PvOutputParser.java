@@ -1,21 +1,17 @@
 package nl.jansipke.pvdisplay.parsers;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
-import nl.jansipke.pvdisplay.data.YearMonthDay;
 
 public class PvOutputParser {
 
     private final static String LINE_SEPARATOR = ";";
     private final static String ITEM_SEPARATOR = ",";
-    private final static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd HH:mm", Locale.US);
 
     public PvOutputParser() {
     }
@@ -31,7 +27,7 @@ public class PvOutputParser {
                 int month = Integer.parseInt(date.substring(4, 6));
                 int day = Integer.parseInt(date.substring(6, 8));
                 double energyGenerated = Double.parseDouble(items[1]);
-                historicalPvData.add(new HistoricalPvDatum(new YearMonthDay(year, month, day), energyGenerated));
+                historicalPvData.add(new HistoricalPvDatum(year, month, day, energyGenerated));
             }
             return historicalPvData;
         } catch (Exception e) {
@@ -45,12 +41,16 @@ public class PvOutputParser {
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
-                String date = items[0];
-                String time = items[1];
-                long timestamp = dateTimeFormat.parse(date + " " + time).getTime() / 1000;
+                String date = items[0]; // yyyyMMdd
+                int year = Integer.parseInt(date.substring(0, 4));
+                int month = Integer.parseInt(date.substring(4, 6));
+                int day = Integer.parseInt(date.substring(6, 8));
+                String time = items[1]; // HH:mm
+                int hour = Integer.parseInt(time.substring(0, 2));
+                int minute = Integer.parseInt(time.substring(3, 5));
                 double energyGeneration = Double.parseDouble(items[2]);
                 double powerGeneration = Double.parseDouble(items[4]);
-                livePvData.add(new LivePvDatum(timestamp, energyGeneration, powerGeneration));
+                livePvData.add(new LivePvDatum(year, month, day, hour, minute, energyGeneration, powerGeneration));
             }
             return livePvData;
         } catch (Exception e) {
