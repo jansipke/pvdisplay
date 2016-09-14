@@ -47,7 +47,7 @@ public class LiveActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_live_graph);
+        setContentView(R.layout.activity_live);
 
         initGraph();
         initTable();
@@ -131,7 +131,7 @@ public class LiveActivity extends AppCompatActivity {
         linearLayout.removeAllViews();
         for (LivePvDatum livePvDatum : livePvData) {
             View row = getLayoutInflater().inflate(R.layout.table_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(timeFormat.format(new Date(livePvDatum.getTimestamp() * 1000)));
+            ((TextView) row.findViewById(R.id.content1)).setText(timeFormat.format(livePvDatum.getDate()));
             ((TextView) row.findViewById(R.id.content2)).setText(powerFormat.format(livePvDatum.getPowerGeneration()));
             ((TextView) row.findViewById(R.id.content3)).setText(energyFormat.format(livePvDatum.getEnergyGeneration() / 1000.0));
             linearLayout.addView(row);
