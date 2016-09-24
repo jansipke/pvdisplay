@@ -19,6 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".LiveActivity"></activity>
+
+        <service
+            android:name="PvDataService"
+            android:label="@string/service_name">
+        </service>
     </application>
 
 </manifest>

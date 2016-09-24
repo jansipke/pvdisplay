@@ -1,5 +1,6 @@
 package nl.jansipke.pvdisplay;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -38,7 +39,7 @@ public class LiveActivity extends AppCompatActivity {
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
     private final Date now = new Date();
-    private int ago = 50;
+    private int ago = 0;
 
     private LineGraphSeries<DataPoint> powerSeries;
     private LineGraphSeries<DataPoint> energySeries;
@@ -126,7 +127,7 @@ public class LiveActivity extends AppCompatActivity {
         }
         powerSeries.resetData(powerDataPoints);
         energySeries.resetData(energyDataPoints);
-        Log.i(TAG, "DataPoints:\n" + LoggingUtils.formatDataPoints(powerDataPoints));
+//        Log.i(TAG, "DataPoints:\n" + LoggingUtils.formatDataPoints(powerDataPoints));
     }
 
     private void initTable() {
@@ -150,6 +151,7 @@ public class LiveActivity extends AppCompatActivity {
     }
 
     public void updateScreen() {
+        Log.i(TAG, "Updating screen");
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.DATE, -ago);
         int year = calendar.get(Calendar.YEAR);
@@ -164,6 +166,17 @@ public class LiveActivity extends AppCompatActivity {
 
         PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(year, month, day);
+
+        if (livePvData.size() == 0) {
+            Log.i(TAG, "No live PV data for year=" + year + ", month=" + month + ", day=" + day);
+            Intent intent = new Intent(getApplicationContext(), PvDataService.class);
+            intent.putExtra("type", "live");
+            intent.putExtra("year", year);
+            intent.putExtra("month", month);
+            intent.putExtra("day", day);
+            startService(intent);
+
+        }
         updateGraph(year, month, day, livePvData);
         updateTable(livePvData);
     }

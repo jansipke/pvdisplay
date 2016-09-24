@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,8 @@ import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 
 public class PvDataOperations {
+
+    private final static String TAG = "PvDataOperations";
 
     private PvDataHelper pvDataHelper;
 
@@ -56,6 +59,7 @@ public class PvDataOperations {
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
+        Log.i(TAG, "Loading live PV data for year=" + year + ", month=" + month + ", day=" + day);
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -110,7 +114,7 @@ public class PvDataOperations {
         values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_DAY, historicalPvDatum.getDay());
         values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED, historicalPvDatum.getEnergyGenerated());
 
-        db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR, values); // TODO Check if second parameter is correct
+        db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, null, values); // TODO Check if second parameter is correct
         db.close();
     }
 
@@ -126,7 +130,8 @@ public class PvDataOperations {
         values.put(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION, livePvDatum.getEnergyGeneration());
         values.put(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION, livePvDatum.getPowerGeneration());
 
-        db.replace(PvDataContract.LivePvData.TABLE_NAME, PvDataContract.LivePvData.COLUMN_NAME_YEAR, values); // TODO Check if second parameter is correct
+        long row = db.replace(PvDataContract.LivePvData.TABLE_NAME, null, values); // TODO Check if second parameter is correct
+        Log.i(TAG, "Inserted row=" + row);
         db.close();
     }
 }
