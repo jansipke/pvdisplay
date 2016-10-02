@@ -136,7 +136,8 @@ public class LiveActivity extends AppCompatActivity {
         Line powerLine = new Line(powerPointValues)
                 .setColor(ChartUtils.COLORS[0])
                 .setHasPoints(false)
-                .setCubic(true);
+                .setCubic(true)
+                .setFilled(true);
         lines.add(powerLine);
         Line maxLine = new Line(maxPointValues)
                 .setColor(Color.LTGRAY)

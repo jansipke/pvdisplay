@@ -102,7 +102,7 @@ public class PvDataOperations {
             }
         }
         db.close();
-        Log.i(TAG, "Fetched " + livePvData.size() + " rows");
+        Log.i(TAG, "Loaded " + livePvData.size() + " rows");
 
         return livePvData;
     }
@@ -139,6 +139,6 @@ public class PvDataOperations {
             rowsInserted += 1;
         }
         db.close();
-        Log.i(TAG, "Inserted " + rowsInserted + " rows");
+        Log.i(TAG, "Saved " + rowsInserted + " rows");
     }
 }
