@@ -1,29 +1,29 @@
 package nl.jansipke.pvdisplay;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
@@ -40,12 +40,30 @@ import static nl.jansipke.pvdisplay.R.id.graph;
 
 public class LiveActivity extends AppCompatActivity {
 
-    private final static String TAG = "LiveActivity";
+    public static class DatePickerFragment
+            extends DialogFragment
+            implements DatePickerDialog.OnDateSetListener {
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            DateTimeUtils.YearMonthDay yearMonthDay = DateTimeUtils.getYearMonthDay(daysAgo);
+            int year = yearMonthDay.year;
+            int month = yearMonthDay.month;
+            int day = yearMonthDay.day;
+            return new DatePickerDialog(getActivity(), this, year, month - 1, day);
+        }
+
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            Log.i(TAG, "Date picked: " + DateTimeUtils.formatDate(year, month, day, true));
+        }
+    }
+
+    private final static String TAG = LiveActivity.class.getSimpleName();
     private final static NumberFormat powerFormat = new DecimalFormat("#0");
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
-    private final Date now = new Date();
-    private int ago = 0;
+    private static int daysAgo = 0;
 
     private PvDataOperations pvDataOperations;
 
@@ -55,26 +73,44 @@ public class LiveActivity extends AppCompatActivity {
         setContentView(R.layout.activity_live);
 
         pvDataOperations = new PvDataOperations(getApplicationContext());
-        updateScreen();
+        updateScreen(false);
+    }
+
+    public void oldestClick(View view) {
+        // TODO Implement
     }
 
     public void previousClick(View view) {
-        ago++;
-        updateScreen();
+        daysAgo++;
+        updateScreen(false);
     }
 
     public void nextClick(View view) {
-        if (ago > 0) {
-            ago--;
-            updateScreen();
+        if (daysAgo > 0) {
+            daysAgo--;
+            updateScreen(false);
         }
     }
 
-    public void nowClick(View view) {
-        if (ago > 0) {
-            ago = 0;
-            updateScreen();
+    public void newestClick(View view) {
+        if (daysAgo > 0) {
+            daysAgo = 0;
+            updateScreen(false);
         }
+    }
+
+    public void dateClick(View view) {
+        DialogFragment dialogFragment = new DatePickerFragment();
+        dialogFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    public void refreshClick(View view) {
+        updateScreen(true);
+    }
+
+    public void switchClick(View view) {
+        ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
+        viewFlipper.showNext();
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
@@ -133,18 +169,12 @@ public class LiveActivity extends AppCompatActivity {
         }
     }
 
-    public void switchClick(View view) {
-        ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-        viewFlipper.showNext();
-    }
-
-    public void updateScreen() {
+    public void updateScreen(boolean refreshData) {
         Log.i(TAG, "Updating screen");
-        Calendar calendar = new GregorianCalendar();
-        calendar.add(Calendar.DATE, -ago);
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        DateTimeUtils.YearMonthDay yearMonthDay = DateTimeUtils.getYearMonthDay(daysAgo);
+        int year = yearMonthDay.year;
+        int month = yearMonthDay.month;
+        int day = yearMonthDay.day;
 
         String title = "Live   " + DateTimeUtils.formatDate(year, month, day, true);
         ActionBar supportActionBar = getSupportActionBar();
@@ -154,23 +184,23 @@ public class LiveActivity extends AppCompatActivity {
 
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(year, month, day);
 
-        if (livePvData.size() == 0) {
-            Log.i(TAG, "No live PV data for year=" + year + ", month=" + month + ", day=" + day);
-            Intent intent = new Intent(getApplicationContext(), PvDataService.class);
-            intent.putExtra("type", "live");
-            intent.putExtra("year", year);
-            intent.putExtra("month", month);
-            intent.putExtra("day", day);
-            startService(intent);
+        if (refreshData || livePvData.size() == 0) {
+            if (refreshData) {
+                Log.i(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+            } else {
+                Log.i(TAG, "No live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+            }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    updateScreen();
+                    updateScreen(false);
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
             LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastReceiver, intentFilter);
+
+            PvDataService.call(getApplicationContext(), year, month, day);
         }
         updateGraph(livePvData);
         updateTable(livePvData);

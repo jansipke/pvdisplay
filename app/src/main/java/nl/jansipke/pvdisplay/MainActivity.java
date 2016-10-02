@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static String TAG = "MainActivity";
+    private final static String TAG = MainActivity.class.getSimpleName();
 
     private TextView textView;
 

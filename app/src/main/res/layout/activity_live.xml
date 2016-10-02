@@ -11,36 +11,60 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
-        <Button
+        <ImageButton
+            android:id="@+id/button_oldest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_chevron_double_left_black_48dp"
+            android:onClick="oldestClick" />
+
+        <ImageButton
             android:id="@+id/button_previous"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/button_previous"
+            android:src="@drawable/ic_chevron_left_black_48dp"
             android:onClick="previousClick" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/button_next"
+            android:src="@drawable/ic_chevron_right_black_48dp"
             android:onClick="nextClick" />
 
-        <Button
-            android:id="@+id/button_now"
+        <ImageButton
+            android:id="@+id/button_newest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/button_now"
-            android:onClick="nowClick" />
+            android:src="@drawable/ic_chevron_double_right_black_48dp"
+            android:onClick="newestClick" />
 
-        <Button
+        <ImageButton
+            android:id="@+id/button_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_date_range_black_48dp"
+            android:onClick="dateClick" />
+
+        <ImageButton
+            android:id="@+id/button_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_refresh_black_48dp"
+            android:onClick="refreshClick" />
+
+        <ImageButton
             android:id="@+id/button_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/button_switch"
+            android:src="@drawable/ic_eye_black_48dp"
             android:onClick="switchClick" />
 
     </LinearLayout>

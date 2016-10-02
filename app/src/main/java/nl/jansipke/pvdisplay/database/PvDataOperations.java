@@ -11,10 +11,11 @@ import java.util.List;
 
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class PvDataOperations {
 
-    private final static String TAG = "PvDataOperations";
+    private final static String TAG = PvDataOperations.class.getSimpleName();
 
     private PvDataHelper pvDataHelper;
 
@@ -59,7 +60,7 @@ public class PvDataOperations {
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
-        Log.i(TAG, "Loading live PV data for year=" + year + ", month=" + month + ", day=" + day);
+        Log.i(TAG, "Loading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 

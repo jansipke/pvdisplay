@@ -1,6 +1,7 @@
 package nl.jansipke.pvdisplay;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -21,8 +22,7 @@ import nl.jansipke.pvdisplay.utils.NetworkUtils;
 
 public class PvDataService extends Service {
 
-    private final static String TAG = "PvDataService";
-
+    private final static String TAG = PvDataService.class.getSimpleName();
     private final static String API_KEY = "4054f46dd2c8e71855122e964c8e099cb9394d69";
     private final static String SYSTEM_ID = "23329";
     private final static String URL_BASE = "http://pvoutput.org/service/r2/";
@@ -30,8 +30,17 @@ public class PvDataService extends Service {
 //    private final static String URL = "http://pvoutput.org/service/r2/getstatistic.jsp";
 
 
+    public static void call(Context context, int year, int month, int day) {
+        Intent intent = new Intent(context, PvDataService.class);
+        intent.putExtra("type", "live");
+        intent.putExtra("year", year);
+        intent.putExtra("month", month);
+        intent.putExtra("day", day);
+        context.startService(intent);
+    }
+
     private void downloadLivePvData(final int year, final int month, final int day) {
-        Log.i(TAG, "Downloading PV data for year=" + year + ", month=" + month + ", day=" + day);
+        Log.i(TAG, "Downloading PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         new Thread(new Runnable() {
             @Override
             public void run() {
