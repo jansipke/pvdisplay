@@ -101,6 +101,7 @@ public class PvDataOperations {
             }
         }
         db.close();
+        Log.i(TAG, "Fetched " + livePvData.size() + " rows");
 
         return livePvData;
     }
@@ -114,24 +115,29 @@ public class PvDataOperations {
         values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_DAY, historicalPvDatum.getDay());
         values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED, historicalPvDatum.getEnergyGenerated());
 
-        db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, null, values); // TODO Check if second parameter is correct
+        db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, null, values);
         db.close();
     }
 
-    public void saveLive(LivePvDatum livePvDatum) {
+    public void saveLive(List<LivePvDatum> livePvData) {
+        Log.i(TAG, "Saving live PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_YEAR, livePvDatum.getYear());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_MONTH, livePvDatum.getMonth());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_DAY, livePvDatum.getDay());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_HOUR, livePvDatum.getHour());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_MINUTE, livePvDatum.getMinute());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION, livePvDatum.getEnergyGeneration());
-        values.put(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION, livePvDatum.getPowerGeneration());
+        int rowsInserted = 0;
+        for (LivePvDatum livePvDatum : livePvData) {
+            ContentValues values = new ContentValues();
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_YEAR, livePvDatum.getYear());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_MONTH, livePvDatum.getMonth());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_DAY, livePvDatum.getDay());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_HOUR, livePvDatum.getHour());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_MINUTE, livePvDatum.getMinute());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION, livePvDatum.getEnergyGeneration());
+            values.put(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION, livePvDatum.getPowerGeneration());
 
-        long row = db.replace(PvDataContract.LivePvData.TABLE_NAME, null, values); // TODO Check if second parameter is correct
-        Log.i(TAG, "Inserted row=" + row);
+            db.replace(PvDataContract.LivePvData.TABLE_NAME, null, values);
+            rowsInserted += 1;
+        }
         db.close();
+        Log.i(TAG, "Inserted " + rowsInserted + " rows");
     }
 }

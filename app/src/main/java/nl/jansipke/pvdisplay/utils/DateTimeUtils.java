@@ -5,15 +5,19 @@ import java.util.Date;
 
 public class DateTimeUtils {
 
-    public static String formatDate(int year, int month, int day) {
+    public static String formatDate(int year, int month, int day, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         sb.append(year);
-        sb.append("-");
+        if (dashes) {
+            sb.append("-");
+        }
         if (month < 10) {
             sb.append("0");
         }
         sb.append(month);
-        sb.append("-");
+        if (dashes) {
+            sb.append("-");
+        }
         if (day < 10) {
             sb.append("0");
         }
@@ -23,7 +27,7 @@ public class DateTimeUtils {
 
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
         StringBuilder sb = new StringBuilder();
-        sb.append(formatDate(year, month, day));
+        sb.append(formatDate(year, month, day, true));
         sb.append(" ");
         sb.append(formatTime(hour, minute));
         return sb.toString();

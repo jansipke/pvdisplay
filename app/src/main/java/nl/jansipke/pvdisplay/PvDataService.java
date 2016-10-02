@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.Map;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.parsers.PvOutputParser;
+import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.NetworkUtils;
 
 public class PvDataService extends Service {
@@ -34,21 +36,25 @@ public class PvDataService extends Service {
             @Override
             public void run() {
                 try {
+                    // Download data
                     Map<String, String> headers = new HashMap<>();
                     headers.put("X-Pvoutput-Apikey", API_KEY);
                     headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
-                    StringBuffer date = new StringBuffer(year).append(month).append(day);
-                    String url = URL_BASE + "getstatus.jsp?d=" + date.toString() + "&h=1&limit=288&asc=1";
+                    String date = DateTimeUtils.formatDate(year, month, day, false);
+                    String url = URL_BASE + "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
                     String result = NetworkUtils.httpGet(url, headers);
 
-                    PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
-                    PvOutputParser pvOutputParser = new PvOutputParser();
-
-                    List<LivePvDatum> livePvData = pvOutputParser.parseLive(result);
+                    // Parse data
+                    List<LivePvDatum> livePvData = new PvOutputParser().parseLive(result);
                     Log.i(TAG, "Downloaded " + livePvData.size() + " data points");
-                    for (LivePvDatum livePvDatum : livePvData) {
-                        pvDataOperations.saveLive(livePvDatum);
-                    }
+
+                    // Save data
+                    new PvDataOperations(getApplicationContext()).saveLive(livePvData);
+
+                    // Notify that data has been saved
+                    Intent intent = new Intent(PvDataService.class.getName());
+                    intent.putExtra("date", date);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 } catch (IOException e) {
                     Log.w(TAG, "Could not download PV data");
                 } catch (ParseException e) {
@@ -60,7 +66,6 @@ public class PvDataService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Got intent");
         if (intent.getStringExtra("type").equals("live")) {
             int year = intent.getIntExtra("year", 0);
             int month = intent.getIntExtra("month", 0);

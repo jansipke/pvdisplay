@@ -1,8 +1,12 @@
 package nl.jansipke.pvdisplay;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,7 +33,6 @@ import java.util.Locale;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
-import nl.jansipke.pvdisplay.utils.LoggingUtils;
 
 public class LiveActivity extends AppCompatActivity {
 
@@ -41,6 +44,7 @@ public class LiveActivity extends AppCompatActivity {
     private final Date now = new Date();
     private int ago = 0;
 
+    private PvDataOperations pvDataOperations;
     private LineGraphSeries<DataPoint> powerSeries;
     private LineGraphSeries<DataPoint> energySeries;
     private DataPoint[] powerDataPoints = new DataPoint[24 * 12];
@@ -51,6 +55,7 @@ public class LiveActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
 
+        pvDataOperations = new PvDataOperations(getApplicationContext());
         initGraph();
         initTable();
         updateScreen();
@@ -127,7 +132,6 @@ public class LiveActivity extends AppCompatActivity {
         }
         powerSeries.resetData(powerDataPoints);
         energySeries.resetData(energyDataPoints);
-//        Log.i(TAG, "DataPoints:\n" + LoggingUtils.formatDataPoints(powerDataPoints));
     }
 
     private void initTable() {
@@ -158,13 +162,12 @@ public class LiveActivity extends AppCompatActivity {
         int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        String title = "Live   " + DateTimeUtils.formatDate(year, month, day);
+        String title = "Live   " + DateTimeUtils.formatDate(year, month, day, true);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
 
-        PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(year, month, day);
 
         if (livePvData.size() == 0) {
@@ -176,6 +179,14 @@ public class LiveActivity extends AppCompatActivity {
             intent.putExtra("day", day);
             startService(intent);
 
+            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    updateScreen();
+                }
+            };
+            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
+            LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastReceiver, intentFilter);
         }
         updateGraph(year, month, day, livePvData);
         updateTable(livePvData);

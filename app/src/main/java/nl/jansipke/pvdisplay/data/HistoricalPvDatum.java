@@ -33,6 +33,6 @@ public class HistoricalPvDatum {
     }
 
     public String toString() {
-        return "HistoricalPvDatum[" + DateTimeUtils.formatDate(year, month, day) + ", energyGenerated=" + energyGenerated + "]";
+        return "HistoricalPvDatum[" + DateTimeUtils.formatDate(year, month, day, true) + ", energyGenerated=" + energyGenerated + "]";
     }
 }
