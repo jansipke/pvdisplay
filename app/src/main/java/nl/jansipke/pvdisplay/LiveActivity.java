@@ -15,29 +15,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.LegendRenderer;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.LineChartView;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
+import static nl.jansipke.pvdisplay.R.id.graph;
+
 public class LiveActivity extends AppCompatActivity {
 
     private final static String TAG = "LiveActivity";
-    private final static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.US);
     private final static NumberFormat powerFormat = new DecimalFormat("#0");
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
@@ -45,10 +48,6 @@ public class LiveActivity extends AppCompatActivity {
     private int ago = 0;
 
     private PvDataOperations pvDataOperations;
-    private LineGraphSeries<DataPoint> powerSeries;
-    private LineGraphSeries<DataPoint> energySeries;
-    private DataPoint[] powerDataPoints = new DataPoint[24 * 12];
-    private DataPoint[] energyDataPoints = new DataPoint[24 * 12];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +55,6 @@ public class LiveActivity extends AppCompatActivity {
         setContentView(R.layout.activity_live);
 
         pvDataOperations = new PvDataOperations(getApplicationContext());
-        initGraph();
-        initTable();
         updateScreen();
     }
 
@@ -80,61 +77,48 @@ public class LiveActivity extends AppCompatActivity {
         }
     }
 
-    private void initGraph() {
-        GraphView graph = (GraphView) findViewById(R.id.graph);
+    private void updateGraph(List<LivePvDatum> livePvData) {
+        LineChartView lineChartView = (LineChartView) findViewById(graph);
 
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getApplicationContext(), timeFormat));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-        graph.getGridLabelRenderer().setNumVerticalLabels(4);
-        graph.getGridLabelRenderer().setHumanRounding(false);
+        List<PointValue> powerPointValues = new ArrayList<>();
+        List<PointValue> maxPointValues = new ArrayList<>();
+        List<AxisValue> xAxisValues = new ArrayList<>();
+        for (int i = 0; i < livePvData.size(); i++) {
+            LivePvDatum livePvDatum = livePvData.get(i);
 
-        graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(0);
-        graph.getViewport().setMaxY(1500); // TODO Replace with historical maximum
-        graph.getSecondScale().setMinY(0);
-        graph.getSecondScale().setMaxY(12); // TODO Replace with historical maximum
+            float x = (float) i;
+            float y = (float) livePvDatum.getPowerGeneration();
+            powerPointValues.add(new PointValue(x, y));
+            maxPointValues.add(new PointValue(x, 1450));
 
-        graph.getLegendRenderer().setVisible(true);
-        graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.TOP);
-
-        powerSeries = new LineGraphSeries<>();
-        powerSeries.setColor(Color.BLUE);
-        powerSeries.setTitle(getResources().getString(R.string.graph_legend_power));
-        graph.addSeries(powerSeries);
-
-        energySeries = new LineGraphSeries<>();
-        energySeries.setColor(Color.RED);
-        energySeries.setTitle(getResources().getString(R.string.graph_legend_energy));
-        graph.getSecondScale().addSeries(energySeries);
-    }
-
-    private void updateGraph(int year, int month, int day, List<LivePvDatum> livePvData) {
-        int dataPointsIndex = 0;
-        int livePvDataIndex = 0;
-        double energyValue = 0.0;
-        for (int hour = 0; hour < 24; hour++) {
-            for (int minute = 0; minute < 60; minute += 5) {
-                Date date = DateTimeUtils.getDate(year, month, day, hour, minute);
-                if (livePvDataIndex < livePvData.size() &&
-                        livePvData.get(livePvDataIndex).getHour() == hour &&
-                        livePvData.get(livePvDataIndex).getMinute() == minute) {
-                    LivePvDatum livePvDatum = livePvData.get(livePvDataIndex);
-                    powerDataPoints[dataPointsIndex] = new DataPoint(date, livePvDatum.getPowerGeneration());
-                    energyValue = livePvDatum.getEnergyGeneration() / 1000.0;
-                    energyDataPoints[dataPointsIndex] = new DataPoint(date, energyValue);
-                    livePvDataIndex++;
-                } else {
-                    powerDataPoints[dataPointsIndex] = new DataPoint(date, 0.0);
-                    energyDataPoints[dataPointsIndex] = new DataPoint(date, energyValue);
-                }
-                dataPointsIndex++;
-            }
+            String xLabel = DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute());
+            AxisValue axisValue = new AxisValue(x);
+            axisValue.setLabel(xLabel);
+            xAxisValues.add(axisValue);
         }
-        powerSeries.resetData(powerDataPoints);
-        energySeries.resetData(energyDataPoints);
-    }
+        List<Line> lines = new ArrayList<>();
+        Line powerLine = new Line(powerPointValues)
+                .setColor(ChartUtils.COLORS[0])
+                .setHasPoints(false)
+                .setCubic(true);
+        lines.add(powerLine);
+        Line maxLine = new Line(maxPointValues)
+                .setColor(Color.LTGRAY)
+                .setHasPoints(false);
+        lines.add(maxLine);
+        LineChartData lineChartData = new LineChartData();
+        lineChartData.setLines(lines);
 
-    private void initTable() {
+        Axis xAxis = new Axis()
+                .setValues(xAxisValues)
+                .setMaxLabelChars(8);
+        lineChartData.setAxisXBottom(xAxis);
+
+        Axis yAxis = Axis
+                .generateAxisFromRange(0, 1400, 200)
+                .setMaxLabelChars(5);
+        lineChartData.setAxisYLeft(yAxis);
+        lineChartView.setLineChartData(lineChartData);
     }
 
     private void updateTable(List<LivePvDatum> livePvData) {
@@ -188,7 +172,7 @@ public class LiveActivity extends AppCompatActivity {
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
             LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastReceiver, intentFilter);
         }
-        updateGraph(year, month, day, livePvData);
+        updateGraph(livePvData);
         updateTable(livePvData);
     }
 }
