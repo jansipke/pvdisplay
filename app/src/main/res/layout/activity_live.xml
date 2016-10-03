@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_chevron_double_left_black_48dp"
-            android:onClick="oldestClick" />
+            android:onClick="clickedOnOldest" />
 
         <ImageButton
             android:id="@+id/button_previous"
@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_chevron_left_black_48dp"
-            android:onClick="previousClick" />
+            android:onClick="clickedOnPrevious" />
 
         <ImageButton
             android:id="@+id/button_next"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_chevron_right_black_48dp"
-            android:onClick="nextClick" />
+            android:onClick="clickedOnNext" />
 
         <ImageButton
             android:id="@+id/button_newest"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_chevron_double_right_black_48dp"
-            android:onClick="newestClick" />
+            android:onClick="clickedOnNewest" />
 
         <ImageButton
             android:id="@+id/button_date"
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_date_range_black_48dp"
-            android:onClick="dateClick" />
+            android:onClick="clickedOnDate" />
 
         <ImageButton
             android:id="@+id/button_refresh"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_refresh_black_48dp"
-            android:onClick="refreshClick" />
+            android:onClick="clickedOnRefresh" />
 
         <ImageButton
             android:id="@+id/button_switch"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/ic_eye_black_48dp"
-            android:onClick="switchClick" />
+            android:onClick="clickedOnSwitch" />
 
     </LinearLayout>
 

@@ -11,6 +11,17 @@ public class DateTimeUtils {
         public int day;
     }
 
+    public static YearMonthDay addDays(YearMonthDay picked, int daysToAdd) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(picked.year, picked.month - 1, picked.day);
+        calendar.add(Calendar.DATE, daysToAdd);
+        YearMonthDay yearMonthDay = new YearMonthDay();
+        yearMonthDay.year = calendar.get(Calendar.YEAR);
+        yearMonthDay.month = calendar.get(Calendar.MONTH) + 1;
+        yearMonthDay.day = calendar.get(Calendar.DAY_OF_MONTH);
+        return yearMonthDay;
+    }
+
     public static String formatDate(int year, int month, int day, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         sb.append(year);
@@ -49,9 +60,8 @@ public class DateTimeUtils {
         return sb.toString();
     }
 
-    public static YearMonthDay getYearMonthDay(int daysAgo) {
+    public static YearMonthDay getToday() {
         Calendar calendar = new GregorianCalendar();
-        calendar.add(Calendar.DATE, -daysAgo);
         YearMonthDay yearMonthDay = new YearMonthDay();
         yearMonthDay.year = calendar.get(Calendar.YEAR);
         yearMonthDay.month = calendar.get(Calendar.MONTH) + 1;

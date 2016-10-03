@@ -38,24 +38,15 @@ import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-public class LiveActivity extends AppCompatActivity {
+public class LiveActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    public static class DatePickerFragment
-            extends DialogFragment
-            implements DatePickerDialog.OnDateSetListener {
+    public static class DatePickerFragment extends DialogFragment {
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            DateTimeUtils.YearMonthDay yearMonthDay = DateTimeUtils.getYearMonthDay(daysAgo);
-            int year = yearMonthDay.year;
-            int month = yearMonthDay.month;
-            int day = yearMonthDay.day;
-            return new DatePickerDialog(getActivity(), this, year, month - 1, day);
-        }
-
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            Log.i(TAG, "Date picked: " + DateTimeUtils.formatDate(year, month, day, true));
+            return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener)
+                    getActivity(), picked.year, picked.month - 1, picked.day);
         }
     }
 
@@ -63,54 +54,60 @@ public class LiveActivity extends AppCompatActivity {
     private final static NumberFormat powerFormat = new DecimalFormat("#0");
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
-    private static int daysAgo = 0;
+    private static DateTimeUtils.YearMonthDay picked;
 
     private PvDataOperations pvDataOperations;
+
+    public void clickedOnOldest(View view) {
+        // TODO Implement
+    }
+
+    public void clickedOnPrevious(View view) {
+        picked = DateTimeUtils.addDays(picked, -1);
+        updateScreen(false);
+    }
+
+    public void clickedOnNext(View view) {
+        picked = DateTimeUtils.addDays(picked, 1);
+        updateScreen(false);
+    }
+
+    public void clickedOnNewest(View view) {
+        picked = DateTimeUtils.getToday();
+        updateScreen(false);
+    }
+
+    public void clickedOnDate(View view) {
+        DialogFragment dialogFragment = new DatePickerFragment();
+        dialogFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    public void clickedOnRefresh(View view) {
+        updateScreen(true);
+    }
+
+    public void clickedOnSwitch(View view) {
+        ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
+        viewFlipper.showNext();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
 
+        picked = DateTimeUtils.getToday();
         pvDataOperations = new PvDataOperations(getApplicationContext());
+
         updateScreen(false);
     }
 
-    public void oldestClick(View view) {
-        // TODO Implement
-    }
-
-    public void previousClick(View view) {
-        daysAgo++;
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int day) {
+        picked.year = year;
+        picked.month = month + 1;
+        picked.day = day;
         updateScreen(false);
-    }
-
-    public void nextClick(View view) {
-        if (daysAgo > 0) {
-            daysAgo--;
-            updateScreen(false);
-        }
-    }
-
-    public void newestClick(View view) {
-        if (daysAgo > 0) {
-            daysAgo = 0;
-            updateScreen(false);
-        }
-    }
-
-    public void dateClick(View view) {
-        DialogFragment dialogFragment = new DatePickerFragment();
-        dialogFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    public void refreshClick(View view) {
-        updateScreen(true);
-    }
-
-    public void switchClick(View view) {
-        ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.flipper);
-        viewFlipper.showNext();
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
@@ -127,7 +124,8 @@ public class LiveActivity extends AppCompatActivity {
             powerPointValues.add(new PointValue(x, y));
             maxPointValues.add(new PointValue(x, 1450));
 
-            String xLabel = DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute());
+            String xLabel = DateTimeUtils.formatTime(
+                    livePvDatum.getHour(), livePvDatum.getMinute());
             AxisValue axisValue = new AxisValue(x);
             axisValue.setLabel(xLabel);
             xAxisValues.add(axisValue);
@@ -163,33 +161,36 @@ public class LiveActivity extends AppCompatActivity {
         linearLayout.removeAllViews();
         for (LivePvDatum livePvDatum : livePvData) {
             View row = getLayoutInflater().inflate(R.layout.table_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute()));
-            ((TextView) row.findViewById(R.id.content2)).setText(powerFormat.format(livePvDatum.getPowerGeneration()));
-            ((TextView) row.findViewById(R.id.content3)).setText(energyFormat.format(livePvDatum.getEnergyGeneration() / 1000.0));
+            ((TextView) row.findViewById(R.id.content1)).setText(
+                    DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute()));
+            ((TextView) row.findViewById(R.id.content2)).setText(
+                    powerFormat.format(livePvDatum.getPowerGeneration()));
+            ((TextView) row.findViewById(R.id.content3)).setText(
+                    energyFormat.format(livePvDatum.getEnergyGeneration() / 1000.0));
             linearLayout.addView(row);
         }
     }
 
     public void updateScreen(boolean refreshData) {
         Log.i(TAG, "Updating screen");
-        DateTimeUtils.YearMonthDay yearMonthDay = DateTimeUtils.getYearMonthDay(daysAgo);
-        int year = yearMonthDay.year;
-        int month = yearMonthDay.month;
-        int day = yearMonthDay.day;
 
-        String title = "Live   " + DateTimeUtils.formatDate(year, month, day, true);
+        String title = "Live   " + DateTimeUtils.formatDate(
+                picked.year, picked.month, picked.day, true);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setTitle(title);
         }
 
-        List<LivePvDatum> livePvData = pvDataOperations.loadLive(year, month, day);
+        List<LivePvDatum> livePvData = pvDataOperations.loadLive(
+                picked.year, picked.month, picked.day);
 
         if (refreshData || livePvData.size() == 0) {
             if (refreshData) {
-                Log.i(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+                Log.i(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(
+                        picked.year, picked.month, picked.day, true));
             } else {
-                Log.i(TAG, "No live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+                Log.i(TAG, "No live PV data for " + DateTimeUtils.formatDate(
+                        picked.year, picked.month, picked.day, true));
             }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -199,9 +200,10 @@ public class LiveActivity extends AppCompatActivity {
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(broadcastReceiver, intentFilter);
+            LocalBroadcastManager.getInstance(getApplicationContext())
+                    .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.call(getApplicationContext(), year, month, day);
+            PvDataService.call(getApplicationContext(), picked.year, picked.month, picked.day);
         }
         updateGraph(livePvData);
         updateTable(livePvData);
