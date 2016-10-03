@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -124,21 +125,32 @@ public class PvDataOperations {
         Log.i(TAG, "Saving live PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
-        int rowsInserted = 0;
+        db.beginTransaction();
+        String sql = "REPLACE INTO " + PvDataContract.LivePvData.TABLE_NAME +
+                "(" + PvDataContract.LivePvData.COLUMN_NAME_YEAR +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_MONTH +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_DAY +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_HOUR +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_MINUTE +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION +
+                "," + PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION +
+                ") VALUES (?,?,?,?,?,?,?);";
+        SQLiteStatement statement = db.compileStatement(sql);
         for (LivePvDatum livePvDatum : livePvData) {
-            ContentValues values = new ContentValues();
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_YEAR, livePvDatum.getYear());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_MONTH, livePvDatum.getMonth());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_DAY, livePvDatum.getDay());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_HOUR, livePvDatum.getHour());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_MINUTE, livePvDatum.getMinute());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION, livePvDatum.getEnergyGeneration());
-            values.put(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION, livePvDatum.getPowerGeneration());
-
-            db.replace(PvDataContract.LivePvData.TABLE_NAME, null, values);
-            rowsInserted += 1;
+            statement.clearBindings();
+            statement.bindLong(1, livePvDatum.getYear());
+            statement.bindLong(2, livePvDatum.getMonth());
+            statement.bindLong(3, livePvDatum.getDay());
+            statement.bindLong(4, livePvDatum.getHour());
+            statement.bindLong(5, livePvDatum.getMinute());
+            statement.bindDouble(6, livePvDatum.getEnergyGeneration());
+            statement.bindDouble(7, livePvDatum.getPowerGeneration());
+            statement.execute();
         }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
         db.close();
-        Log.i(TAG, "Saved " + rowsInserted + " rows");
+        Log.i(TAG, "Saved " + livePvData.size() + " rows");
     }
 }
