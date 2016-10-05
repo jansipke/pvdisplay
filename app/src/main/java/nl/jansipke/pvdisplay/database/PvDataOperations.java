@@ -12,6 +12,7 @@ import java.util.List;
 
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class PvDataOperations {
@@ -108,6 +109,58 @@ public class PvDataOperations {
         return livePvData;
     }
 
+    public StatisticPvDatum loadStatistic() {
+        Log.i(TAG, "Loading statistic PV data");
+        StatisticPvDatum statisticPvDatum = null;
+        SQLiteDatabase db = pvDataHelper.getReadableDatabase();
+
+        String[] projection = {
+                PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED,
+                PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION,
+                PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION,
+                PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION,
+                PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH,
+                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY,
+                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR,
+                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH,
+                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY
+        };
+
+        Cursor cursor = db.query(PvDataContract.StatisticPvData.TABLE_NAME, projection, null, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                statisticPvDatum = new StatisticPvDatum(
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED)),
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION)),
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION)),
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY)));
+            }
+        }
+        db.close();
+        if (statisticPvDatum != null) {
+            Log.i(TAG, "Loaded statistic PV data");
+        } else {
+            Log.i(TAG, "No statistic PV data present");
+        }
+
+        return statisticPvDatum;
+    }
+
     public void saveHistorical(HistoricalPvDatum historicalPvDatum) {
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
@@ -152,5 +205,29 @@ public class PvDataOperations {
 
         db.close();
         Log.i(TAG, "Saved " + livePvData.size() + " rows");
+    }
+
+    public void saveStatistic(StatisticPvDatum statisticPvDatum) {
+        Log.i(TAG, "Saving statistic PV data");
+        SQLiteDatabase db = pvDataHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED, statisticPvDatum.getEnergyGenerated());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION, statisticPvDatum.getAverageGeneration());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION, statisticPvDatum.getMinimumGeneration());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION, statisticPvDatum.getMaximumGeneration());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS, statisticPvDatum.getOutputs());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR, statisticPvDatum.getActualDateFromYear());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH, statisticPvDatum.getActualDateFromMonth());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY, statisticPvDatum.getActualDateFromDay());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR, statisticPvDatum.getActualDateToYear());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH, statisticPvDatum.getActualDateToMonth());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY, statisticPvDatum.getActualDateToDay());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR, statisticPvDatum.getRecordDateYear());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH, statisticPvDatum.getRecordDateMonth());
+        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY, statisticPvDatum.getRecordDateDay());
+
+        db.replace(PvDataContract.StatisticPvData.TABLE_NAME, null, values);
+        db.close();
     }
 }

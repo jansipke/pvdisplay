@@ -203,7 +203,7 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
             LocalBroadcastManager.getInstance(getApplicationContext())
                     .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.call(getApplicationContext(), picked.year, picked.month, picked.day);
+            PvDataService.callLive(getApplicationContext(), picked.year, picked.month, picked.day);
         }
         updateGraph(livePvData);
         updateTable(livePvData);

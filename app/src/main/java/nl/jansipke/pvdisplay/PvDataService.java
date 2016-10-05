@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.parsers.PvOutputParser;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -27,10 +28,9 @@ public class PvDataService extends Service {
     private final static String SYSTEM_ID = "23329";
     private final static String URL_BASE = "http://pvoutput.org/service/r2/";
 //    private final static String URL = "http://pvoutput.org/service/r2/getoutput.jsp?df=20160101&dt=20160801&limit=50";
-//    private final static String URL = "http://pvoutput.org/service/r2/getstatistic.jsp";
 
 
-    public static void call(Context context, int year, int month, int day) {
+    public static void callLive(Context context, int year, int month, int day) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "live");
         intent.putExtra("year", year);
@@ -39,8 +39,14 @@ public class PvDataService extends Service {
         context.startService(intent);
     }
 
-    private void downloadLivePvData(final int year, final int month, final int day) {
-        Log.i(TAG, "Downloading PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+    public static void callStatistic(Context context) {
+        Intent intent = new Intent(context, PvDataService.class);
+        intent.putExtra("type", "statistic");
+        context.startService(intent);
+    }
+
+    private void downloadLive(final int year, final int month, final int day) {
+        Log.i(TAG, "Downloading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -62,12 +68,46 @@ public class PvDataService extends Service {
 
                     // Notify that data has been saved
                     Intent intent = new Intent(PvDataService.class.getName());
+                    intent.putExtra("type", "live");
                     intent.putExtra("date", date);
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 } catch (IOException e) {
-                    Log.w(TAG, "Could not download PV data");
+                    Log.w(TAG, "Could not download live PV data");
                 } catch (ParseException e) {
-                    Log.w(TAG, "Could not parse PV data");
+                    Log.w(TAG, "Could not parse live PV data");
+                }
+            }
+        }).start();
+    }
+
+    private void downloadStatistic() {
+        Log.i(TAG, "Downloading statistic PV data");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Download data
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("X-Pvoutput-Apikey", API_KEY);
+                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
+                    String url = URL_BASE + "getstatistic.jsp";
+                    String result = NetworkUtils.httpGet(url, headers);
+
+                    // Parse data
+                    StatisticPvDatum statisticPvDatum = new PvOutputParser().parseStatistic(result);
+                    Log.i(TAG, "Downloaded statistic PV data");
+
+                    // Save data
+                    new PvDataOperations(getApplicationContext()).saveStatistic(statisticPvDatum);
+
+                    // Notify that data has been saved
+                    Intent intent = new Intent(PvDataService.class.getName());
+                    intent.putExtra("type", "statistic");
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                } catch (IOException e) {
+                    Log.w(TAG, "Could not download statistic PV data");
+                } catch (ParseException e) {
+                    Log.w(TAG, "Could not parse statistic PV data");
                 }
             }
         }).start();
@@ -75,13 +115,17 @@ public class PvDataService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getStringExtra("type").equals("live")) {
-            int year = intent.getIntExtra("year", 0);
-            int month = intent.getIntExtra("month", 0);
-            int day = intent.getIntExtra("day", 0);
-            if (NetworkUtils.networkConnected(getApplicationContext())) {
-                downloadLivePvData(year, month, day);
+        if (NetworkUtils.networkConnected(getApplicationContext())) {
+            if (intent.getStringExtra("type").equals("live")) {
+                int year = intent.getIntExtra("year", 0);
+                int month = intent.getIntExtra("month", 0);
+                int day = intent.getIntExtra("day", 0);
+                downloadLive(year, month, day);
+            } else if (intent.getStringExtra("type").equals("statistic")) {
+                downloadStatistic();
             }
+        } else {
+            Log.w(TAG, "Can not download PV data because network is not available");
         }
         return Service.START_STICKY;
     }

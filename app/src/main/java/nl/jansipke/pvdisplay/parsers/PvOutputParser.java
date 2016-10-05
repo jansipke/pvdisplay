@@ -67,9 +67,23 @@ public class PvOutputParser {
             double maximumGeneration = Double.parseDouble(items[4]);
             int outputs = Integer.parseInt(items[6]);
             String actualDateFrom = items[7];
+            int actualDateFromYear = Integer.parseInt(actualDateFrom.substring(0, 4));
+            int actualDateFromMonth = Integer.parseInt(actualDateFrom.substring(4, 6));
+            int actualDateFromDay = Integer.parseInt(actualDateFrom.substring(6, 8));
             String actualDateTo = items[8];
+            int actualDateToYear = Integer.parseInt(actualDateTo.substring(0, 4));
+            int actualDateToMonth = Integer.parseInt(actualDateTo.substring(4, 6));
+            int actualDateToDay = Integer.parseInt(actualDateTo.substring(6, 8));
             String recordDate = items[10];
-            return new StatisticPvDatum(energyGenerated, averageGeneration, minimumGeneration, maximumGeneration, outputs, actualDateFrom, actualDateTo, recordDate);
+            int recordDateYear = Integer.parseInt(recordDate.substring(0, 4));
+            int recordDateMonth = Integer.parseInt(recordDate.substring(4, 6));
+            int recordDateDay = Integer.parseInt(recordDate.substring(6, 8));
+            return new StatisticPvDatum(
+                    energyGenerated, averageGeneration,
+                    minimumGeneration, maximumGeneration, outputs,
+                    actualDateFromYear, actualDateFromMonth, actualDateFromDay,
+                    actualDateToYear, actualDateToMonth, actualDateToDay,
+                    recordDateYear, recordDateMonth, recordDateDay);
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), 0);
         }

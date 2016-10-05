@@ -7,7 +7,7 @@
     <string name="button_weekly">Weekly</string>
     <string name="button_monthly">Monthly</string>
     <string name="button_yearly">Yearly</string>
-    <string name="button_statistics">Statistics</string>
+    <string name="button_statistic">Statistic</string>
     <string name="button_fetch">Fetch</string>
 
     <string name="button_previous">Previous</string>

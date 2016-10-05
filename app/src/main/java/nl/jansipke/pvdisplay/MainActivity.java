@@ -11,27 +11,26 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    private TextView textView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.i(TAG, "Created main activity");
     }
 
-    public void fetch(View view) {
-        Log.i(TAG, "Starting PvDataService");
-        Intent intent = new Intent(getApplicationContext(), PvDataService.class);
-        intent.putExtra("type", "live");
-        intent.putExtra("year", 2016);
-        intent.putExtra("month", 9);
-        intent.putExtra("day", 24);
-        startService(intent);
+    public void showDailyGraph(View view) {
+        Intent intent = new Intent(MainActivity.this, DailyActivity.class);
+        startActivity(intent);
     }
 
     public void showLiveGraph(View view) {
         Intent intent = new Intent(MainActivity.this, LiveActivity.class);
+        startActivity(intent);
+    }
+
+    public void showStatistic(View view) {
+        Intent intent = new Intent(MainActivity.this, StatisticActivity.class);
         startActivity(intent);
     }
 }
