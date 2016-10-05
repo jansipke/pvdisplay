@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showStatistic(View view) {
-        Intent intent = new Intent(MainActivity.this, StatisticActivity.class);
+        Intent intent = new Intent(MainActivity.this, SystemActivity.class);
         startActivity(intent);
     }
 }

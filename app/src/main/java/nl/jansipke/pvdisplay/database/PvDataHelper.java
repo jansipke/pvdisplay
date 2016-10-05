@@ -57,12 +57,25 @@ public class PvDataHelper extends SQLiteOpenHelper {
                 PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR + " INTEGER," +
                 PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH + " INTEGER," +
                 PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY + " INTEGER)");
+
+        db.execSQL("CREATE TABLE " + PvDataContract.SystemPvData.TABLE_NAME + " (" +
+                PvDataContract.StatisticPvData._ID + " INTEGER PRIMARY KEY," +
+                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME + " TEXT," +
+                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE + " INTEGER," +
+                PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS + " INTEGER," +
+                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER + " INTEGER," +
+                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND + " TEXT," +
+                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER + " INTEGER," +
+                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND + " TEXT," +
+                PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE + " REAL," +
+                PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE + " REAL)");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.HistoricalPvData.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.LivePvData.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.StatisticPvData.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.SystemPvData.TABLE_NAME);
         onCreate(db);
     }
 

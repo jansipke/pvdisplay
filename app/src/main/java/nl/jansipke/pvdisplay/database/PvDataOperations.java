@@ -13,6 +13,7 @@ import java.util.List;
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
+import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class PvDataOperations {
@@ -142,7 +143,7 @@ public class PvDataOperations {
                 PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY
         };
 
-        StatisticPvDatum statisticPvDatum = new StatisticPvDatum(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        StatisticPvDatum statisticPvDatum = null;
         Cursor cursor = db.query(PvDataContract.StatisticPvData.TABLE_NAME, projection, null, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -170,6 +171,47 @@ public class PvDataOperations {
         db.close();
 
         return statisticPvDatum;
+    }
+
+    public SystemPvDatum loadSystem() {
+        Log.i(TAG, "Loading system PV data");
+        SQLiteDatabase db = pvDataHelper.getReadableDatabase();
+
+        String[] projection = {
+                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME,
+                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE,
+                PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS,
+                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER,
+                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND,
+                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER,
+                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND,
+                PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE,
+                PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE
+        };
+
+        SystemPvDatum systemPvDatum = null;
+        Cursor cursor = db.query(PvDataContract.SystemPvData.TABLE_NAME, projection, null, null, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                systemPvDatum = new SystemPvDatum(
+                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER)),
+                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND)),
+                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER)),
+                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND)),
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE)));
+            }
+            cursor.close();
+            Log.i(TAG, "Loaded 1 row");
+        } else {
+            Log.i(TAG, "Loaded 0 rows");
+        }
+        db.close();
+
+        return systemPvDatum;
     }
 
     public void saveHistorical(HistoricalPvDatum historicalPvDatum) {
@@ -242,6 +284,27 @@ public class PvDataOperations {
         values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY, statisticPvDatum.getRecordDateDay());
 
         db.replace(PvDataContract.StatisticPvData.TABLE_NAME, null, values);
+
+        db.close();
+        Log.i(TAG, "Saved 1 row");
+    }
+
+    public void saveSystem(SystemPvDatum systemPvDatum) {
+        Log.i(TAG, "Saving system PV data");
+        SQLiteDatabase db = pvDataHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME, systemPvDatum.getSystemName());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE, systemPvDatum.getSystemSize());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS, systemPvDatum.getNumberOfPanels());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER, systemPvDatum.getPanelPower());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND, systemPvDatum.getPanelBrand());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER, systemPvDatum.getInverterPower());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND, systemPvDatum.getInverterBrand());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE, systemPvDatum.getLatitude());
+        values.put(PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE, systemPvDatum.getLongitude());
+
+        db.replace(PvDataContract.SystemPvData.TABLE_NAME, null, values);
 
         db.close();
         Log.i(TAG, "Saved 1 row");

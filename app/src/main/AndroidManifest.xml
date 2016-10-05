@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".DailyActivity"></activity>
         <activity android:name=".LiveActivity"></activity>
-        <activity android:name=".StatisticActivity"></activity>
+        <activity android:name=".SystemActivity"></activity>
 
         <service
             android:name="PvDataService"

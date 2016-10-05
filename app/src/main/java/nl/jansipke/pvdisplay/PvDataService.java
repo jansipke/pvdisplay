@@ -16,6 +16,7 @@ import java.util.Map;
 
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
+import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.parsers.PvOutputParser;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -42,6 +43,12 @@ public class PvDataService extends Service {
     public static void callStatistic(Context context) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "statistic");
+        context.startService(intent);
+    }
+
+    public static void callSystem(Context context) {
+        Intent intent = new Intent(context, PvDataService.class);
+        intent.putExtra("type", "system");
         context.startService(intent);
     }
 
@@ -113,6 +120,39 @@ public class PvDataService extends Service {
         }).start();
     }
 
+    private void downloadSystem() {
+        Log.i(TAG, "Downloading system PV data");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Download data
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("X-Pvoutput-Apikey", API_KEY);
+                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
+                    String url = URL_BASE + "getsystem.jsp";
+                    String result = NetworkUtils.httpGet(url, headers);
+
+                    // Parse data
+                    SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
+                    Log.i(TAG, "Downloaded system PV data");
+
+                    // Save data
+                    new PvDataOperations(getApplicationContext()).saveSystem(systemPvDatum);
+
+                    // Notify that data has been saved
+                    Intent intent = new Intent(PvDataService.class.getName());
+                    intent.putExtra("type", "system");
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                } catch (IOException e) {
+                    Log.w(TAG, "Could not download system PV data");
+                } catch (ParseException e) {
+                    Log.w(TAG, "Could not parse system PV data");
+                }
+            }
+        }).start();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (NetworkUtils.networkConnected(getApplicationContext())) {
@@ -123,6 +163,8 @@ public class PvDataService extends Service {
                 downloadLive(year, month, day);
             } else if (intent.getStringExtra("type").equals("statistic")) {
                 downloadStatistic();
+            } else if (intent.getStringExtra("type").equals("system")) {
+                downloadSystem();
             }
         } else {
             Log.w(TAG, "Can not download PV data because network is not available");

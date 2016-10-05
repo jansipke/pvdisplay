@@ -41,4 +41,17 @@ public final class PvDataContract {
         public static final String COLUMN_NAME_RECORD_DATE_MONTH = "record_date_month";
         public static final String COLUMN_NAME_RECORD_DATE_DAY = "record_date_day";
     }
+
+    public static abstract class SystemPvData implements BaseColumns {
+        public static final String TABLE_NAME = "system";
+        public static final String COLUMN_NAME_SYSTEM_NAME = "system_name";
+        public static final String COLUMN_NAME_SYSTEM_SIZE = "system_size";
+        public static final String COLUMN_NAME_NUMBER_OF_PANELS = "number_of_panels";
+        public static final String COLUMN_NAME_PANEL_POWER = "panel_power";
+        public static final String COLUMN_NAME_PANEL_BRAND = "panel_brand";
+        public static final String COLUMN_NAME_INVERTER_POWER = "inverter_power";
+        public static final String COLUMN_NAME_INVERTER_BRAND = "inverter_brand";
+        public static final String COLUMN_NAME_LATITUDE = "latitude";
+        public static final String COLUMN_NAME_LONGITUDE = "longitude";
+    }
 }

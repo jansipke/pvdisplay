@@ -93,7 +93,7 @@
                 android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
                 android:layout_weight="1"
-                android:text="@string/button_statistic"
+                android:text="@string/button_system"
                 android:drawableLeft="@drawable/ic_card_membership_black_48dp"
                 android:onClick="showStatistic" />
 

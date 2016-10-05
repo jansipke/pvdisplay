@@ -7,6 +7,7 @@ import java.util.List;
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
+import nl.jansipke.pvdisplay.data.SystemPvDatum;
 
 public class PvOutputParser {
 
@@ -104,6 +105,34 @@ public class PvOutputParser {
                     recordDateYear,
                     recordDateMonth,
                     recordDateDay);
+        } catch (Exception e) {
+            throw new ParseException(e.getMessage(), 0);
+        }
+    }
+
+    public SystemPvDatum parseSystem(String data) throws ParseException {
+        try {
+            String[] items = data.split(ITEM_SEPARATOR);
+
+            String systemName = items[0];
+            int systemSize = Integer.parseInt(items[1]);
+            int numberOfPanels = Integer.parseInt(items[3]);
+            int panelPower = Integer.parseInt(items[4]);
+            String panelBrand = items[5];
+            int inverterPower = Integer.parseInt(items[7]);
+            String inverterBrand = items[8];
+            double latitude = Double.parseDouble(items[13]);
+            double longitude = Double.parseDouble(items[14]);
+            return new SystemPvDatum(
+                    systemName,
+                    systemSize,
+                    numberOfPanels,
+                    panelPower,
+                    panelBrand,
+                    inverterPower,
+                    inverterBrand,
+                    latitude,
+                    longitude);
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), 0);
         }
