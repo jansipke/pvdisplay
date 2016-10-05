@@ -27,7 +27,11 @@ public class PvOutputParser {
                 int month = Integer.parseInt(date.substring(4, 6));
                 int day = Integer.parseInt(date.substring(6, 8));
                 double energyGenerated = Double.parseDouble(items[1]);
-                historicalPvData.add(new HistoricalPvDatum(year, month, day, energyGenerated));
+                historicalPvData.add(new HistoricalPvDatum(
+                        year,
+                        month,
+                        day,
+                        energyGenerated));
             }
             return historicalPvData;
         } catch (Exception e) {
@@ -50,7 +54,14 @@ public class PvOutputParser {
                 int minute = Integer.parseInt(time.substring(3, 5));
                 double energyGeneration = Double.parseDouble(items[2]);
                 double powerGeneration = Double.parseDouble(items[4]);
-                livePvData.add(new LivePvDatum(year, month, day, hour, minute, energyGeneration, powerGeneration));
+                livePvData.add(new LivePvDatum(
+                        year,
+                        month,
+                        day,
+                        hour,
+                        minute,
+                        energyGeneration,
+                        powerGeneration));
             }
             return livePvData;
         } catch (Exception e) {
@@ -79,11 +90,20 @@ public class PvOutputParser {
             int recordDateMonth = Integer.parseInt(recordDate.substring(4, 6));
             int recordDateDay = Integer.parseInt(recordDate.substring(6, 8));
             return new StatisticPvDatum(
-                    energyGenerated, averageGeneration,
-                    minimumGeneration, maximumGeneration, outputs,
-                    actualDateFromYear, actualDateFromMonth, actualDateFromDay,
-                    actualDateToYear, actualDateToMonth, actualDateToDay,
-                    recordDateYear, recordDateMonth, recordDateDay);
+                    energyGenerated,
+                    averageGeneration,
+                    minimumGeneration,
+                    maximumGeneration,
+                    outputs,
+                    actualDateFromYear,
+                    actualDateFromMonth,
+                    actualDateFromDay,
+                    actualDateToYear,
+                    actualDateToMonth,
+                    actualDateToDay,
+                    recordDateYear,
+                    recordDateMonth,
+                    recordDateDay);
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), 0);
         }

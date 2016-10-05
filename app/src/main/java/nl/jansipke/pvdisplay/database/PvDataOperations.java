@@ -26,6 +26,7 @@ public class PvDataOperations {
     }
 
     public HistoricalPvDatum loadHistorical(int year, int month, int day) {
+        Log.i(TAG, "Loading historical PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -52,9 +53,16 @@ public class PvDataOperations {
         Cursor cursor = db.query(PvDataContract.HistoricalPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                double energyGenerated = cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED));
-                historicalPvDatum = new HistoricalPvDatum(year, month, day, energyGenerated);
+                historicalPvDatum = new HistoricalPvDatum(
+                        year,
+                        month,
+                        day,
+                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED)));
             }
+            cursor.close();
+            Log.i(TAG, "Loaded 1 row");
+        } else {
+            Log.i(TAG, "Loaded 0 rows");
         }
         db.close();
 
@@ -95,13 +103,17 @@ public class PvDataOperations {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    int hour = cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_HOUR));
-                    int minute = cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_MINUTE));
-                    double energyGeneration = cursor.getDouble(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION));
-                    double powerGeneration = cursor.getDouble(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION));
-                    livePvData.add(new LivePvDatum(year, month, day, hour, minute, energyGeneration, powerGeneration));
+                    livePvData.add(new LivePvDatum(
+                            year,
+                            month,
+                            day,
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_HOUR)),
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_MINUTE)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION))));
                 } while (cursor.moveToNext());
             }
+            cursor.close();
         }
         db.close();
         Log.i(TAG, "Loaded " + livePvData.size() + " rows");
@@ -111,7 +123,6 @@ public class PvDataOperations {
 
     public StatisticPvDatum loadStatistic() {
         Log.i(TAG, "Loading statistic PV data");
-        StatisticPvDatum statisticPvDatum = null;
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -131,6 +142,7 @@ public class PvDataOperations {
                 PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY
         };
 
+        StatisticPvDatum statisticPvDatum = new StatisticPvDatum(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         Cursor cursor = db.query(PvDataContract.StatisticPvData.TABLE_NAME, projection, null, null, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -150,18 +162,18 @@ public class PvDataOperations {
                         cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH)),
                         cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY)));
             }
+            cursor.close();
+            Log.i(TAG, "Loaded 1 row");
+        } else {
+            Log.i(TAG, "Loaded 0 rows");
         }
         db.close();
-        if (statisticPvDatum != null) {
-            Log.i(TAG, "Loaded statistic PV data");
-        } else {
-            Log.i(TAG, "No statistic PV data present");
-        }
 
         return statisticPvDatum;
     }
 
     public void saveHistorical(HistoricalPvDatum historicalPvDatum) {
+        Log.i(TAG, "Saving historical PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -172,6 +184,8 @@ public class PvDataOperations {
 
         db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, null, values);
         db.close();
+
+        Log.i(TAG, "Saved 1 row");
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
@@ -228,6 +242,8 @@ public class PvDataOperations {
         values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY, statisticPvDatum.getRecordDateDay());
 
         db.replace(PvDataContract.StatisticPvData.TABLE_NAME, null, values);
+
         db.close();
+        Log.i(TAG, "Saved 1 row");
     }
 }
