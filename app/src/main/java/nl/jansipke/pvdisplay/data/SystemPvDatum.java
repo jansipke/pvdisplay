@@ -12,7 +12,9 @@ public class SystemPvDatum {
     private final double latitude;
     private final double longitude;
 
-    public SystemPvDatum(String systemName, int systemSize, int numberOfPanels, int panelPower, String panelBrand, int inverterPower, String inverterBrand, double latitude, double longitude) {
+    public SystemPvDatum(String systemName, int systemSize, int numberOfPanels, int panelPower,
+                         String panelBrand, int inverterPower, String inverterBrand,
+                         double latitude, double longitude) {
         this.systemName = systemName;
         this.systemSize = systemSize;
         this.numberOfPanels = numberOfPanels;

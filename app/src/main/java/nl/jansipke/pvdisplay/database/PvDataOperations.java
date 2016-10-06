@@ -2,14 +2,18 @@ package nl.jansipke.pvdisplay.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
@@ -20,9 +24,11 @@ public class PvDataOperations {
 
     private final static String TAG = PvDataOperations.class.getSimpleName();
 
-    private PvDataHelper pvDataHelper;
+    private final Context context;
+    private final PvDataHelper pvDataHelper;
 
     public PvDataOperations(Context context) {
+        this.context = context;
         this.pvDataHelper = new PvDataHelper(context);
     }
 
@@ -124,97 +130,38 @@ public class PvDataOperations {
 
     public StatisticPvDatum loadStatistic() {
         Log.i(TAG, "Loading statistic PV data");
-        SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
-        String[] projection = {
-                PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED,
-                PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION,
-                PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION,
-                PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION,
-                PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH,
-                PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY,
-                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR,
-                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH,
-                PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY
-        };
-
-        StatisticPvDatum statisticPvDatum = null;
-        Cursor cursor = db.query(PvDataContract.StatisticPvData.TABLE_NAME, projection, null, null, null, null, null);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                statisticPvDatum = new StatisticPvDatum(
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED)),
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION)),
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION)),
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY)));
-            }
-            cursor.close();
-            Log.i(TAG, "Loaded 1 row");
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString(context.getString(R.string.preferences_object_statistic), null);
+        if (json != null) {
+            Log.i(TAG, "Loaded from preferences");
+            return new Gson().fromJson(json, StatisticPvDatum.class);
         } else {
-            Log.i(TAG, "Loaded 0 rows");
+            Log.i(TAG, "No statistic data found in preferences");
+            return null;
         }
-        db.close();
-
-        return statisticPvDatum;
     }
 
     public SystemPvDatum loadSystem() {
         Log.i(TAG, "Loading system PV data");
-        SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
-        String[] projection = {
-                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME,
-                PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE,
-                PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS,
-                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER,
-                PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND,
-                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER,
-                PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND,
-                PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE,
-                PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE
-        };
-
-        SystemPvDatum systemPvDatum = null;
-        Cursor cursor = db.query(PvDataContract.SystemPvData.TABLE_NAME, projection, null, null, null, null, null);
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                systemPvDatum = new SystemPvDatum(
-                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER)),
-                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND)),
-                        cursor.getInt(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER)),
-                        cursor.getString(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND)),
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE)),
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE)));
-            }
-            cursor.close();
-            Log.i(TAG, "Loaded 1 row");
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString(context.getString(R.string.preferences_object_system), null);
+        if (json != null) {
+            Log.i(TAG, "Loaded from preferences");
+            return new Gson().fromJson(json, SystemPvDatum.class);
         } else {
-            Log.i(TAG, "Loaded 0 rows");
+            Log.i(TAG, "No system data found in preferences");
+            return null;
         }
-        db.close();
-
-        return systemPvDatum;
     }
 
     public void saveHistorical(HistoricalPvDatum historicalPvDatum) {
+        // TODO Change to saving of list; use one transaction
         Log.i(TAG, "Saving historical PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
@@ -265,48 +212,29 @@ public class PvDataOperations {
 
     public void saveStatistic(StatisticPvDatum statisticPvDatum) {
         Log.i(TAG, "Saving statistic PV data");
-        SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ENERGY_GENERATED, statisticPvDatum.getEnergyGenerated());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_AVERAGE_GENERATION, statisticPvDatum.getAverageGeneration());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_MINIMUM_GENERATION, statisticPvDatum.getMinimumGeneration());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_MAXIMUM_GENERATION, statisticPvDatum.getMaximumGeneration());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_OUTPUTS, statisticPvDatum.getOutputs());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_YEAR, statisticPvDatum.getActualDateFromYear());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_MONTH, statisticPvDatum.getActualDateFromMonth());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_FROM_DAY, statisticPvDatum.getActualDateFromDay());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_YEAR, statisticPvDatum.getActualDateToYear());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_MONTH, statisticPvDatum.getActualDateToMonth());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_ACTUAL_DATE_TO_DAY, statisticPvDatum.getActualDateToDay());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_YEAR, statisticPvDatum.getRecordDateYear());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_MONTH, statisticPvDatum.getRecordDateMonth());
-        values.put(PvDataContract.StatisticPvData.COLUMN_NAME_RECORD_DATE_DAY, statisticPvDatum.getRecordDateDay());
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = new Gson().toJson(statisticPvDatum);
+        editor.putString(context.getString(R.string.preferences_object_statistic), json);
+        editor.apply();
 
-        db.replace(PvDataContract.StatisticPvData.TABLE_NAME, null, values);
-
-        db.close();
-        Log.i(TAG, "Saved 1 row");
+        Log.i(TAG, "Saved to preferences");
     }
 
     public void saveSystem(SystemPvDatum systemPvDatum) {
         Log.i(TAG, "Saving system PV data");
-        SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_NAME, systemPvDatum.getSystemName());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_SYSTEM_SIZE, systemPvDatum.getSystemSize());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_NUMBER_OF_PANELS, systemPvDatum.getNumberOfPanels());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_POWER, systemPvDatum.getPanelPower());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_PANEL_BRAND, systemPvDatum.getPanelBrand());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_POWER, systemPvDatum.getInverterPower());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_INVERTER_BRAND, systemPvDatum.getInverterBrand());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_LATITUDE, systemPvDatum.getLatitude());
-        values.put(PvDataContract.SystemPvData.COLUMN_NAME_LONGITUDE, systemPvDatum.getLongitude());
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = new Gson().toJson(systemPvDatum);
+        editor.putString(context.getString(R.string.preferences_object_system), json);
+        editor.apply();
 
-        db.replace(PvDataContract.SystemPvData.TABLE_NAME, null, values);
-
-        db.close();
-        Log.i(TAG, "Saved 1 row");
+        Log.i(TAG, "Saved to preferences");
     }
 }
