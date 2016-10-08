@@ -21,8 +21,12 @@
     <string name="table_column_time">Time</string>
     <string name="table_column_power">Power (W)</string>
     <string name="table_column_energy">Energy (kWh)</string>
+    <string name="table_column_item">Item</string>
+    <string name="table_column_value">Value</string>
+    <string name="table_column_day">Day of the month</string>
 
     <string name="preferences_pv_data_file">preferences_pv_data</string>
     <string name="preferences_object_statistic">statistic</string>
     <string name="preferences_object_system">system</string>
+
 </resources>

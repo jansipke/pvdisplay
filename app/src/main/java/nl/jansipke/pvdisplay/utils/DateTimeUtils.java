@@ -5,6 +5,11 @@ import java.util.GregorianCalendar;
 
 public class DateTimeUtils {
 
+    public static class YearMonth {
+        public int year;
+        public int month;
+    }
+
     public static class YearMonthDay {
         public int year;
         public int month;
@@ -22,7 +27,21 @@ public class DateTimeUtils {
         return yearMonthDay;
     }
 
-    public static String formatDate(int year, int month, int day, boolean dashes) {
+    public static YearMonth addMonths(YearMonth picked, int monthsToAdd) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(picked.year, picked.month - 1, 1);
+        calendar.add(Calendar.MONTH, monthsToAdd);
+        YearMonth yearMonth = new YearMonth();
+        yearMonth.year = calendar.get(Calendar.YEAR);
+        yearMonth.month = calendar.get(Calendar.MONTH) + 1;
+        return yearMonth;
+    }
+
+    public static int convertToInt(int year, int month, int day) {
+        return 10000 * year + 100 * month + day;
+    }
+
+    public static String formatDate(int year, int month, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         sb.append(year);
         if (dashes) {
@@ -32,6 +51,12 @@ public class DateTimeUtils {
             sb.append("0");
         }
         sb.append(month);
+        return sb.toString();
+    }
+
+    public static String formatDate(int year, int month, int day, boolean dashes) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(formatDate(year, month, dashes));
         if (dashes) {
             sb.append("-");
         }
@@ -43,16 +68,18 @@ public class DateTimeUtils {
     }
 
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
-        return formatDate(year, month, day, true) + " " + formatTime(hour, minute);
+        return formatDate(year, month, day, true) + " " + formatTime(hour, minute, true);
     }
 
-    public static String formatTime(int hour, int minute) {
+    public static String formatTime(int hour, int minute, boolean colon) {
         StringBuilder sb = new StringBuilder();
         if (hour < 10) {
             sb.append("0");
         }
         sb.append(hour);
-        sb.append(":");
+        if (colon) {
+            sb.append(":");
+        }
         if (minute < 10) {
             sb.append("0");
         }
@@ -60,7 +87,15 @@ public class DateTimeUtils {
         return sb.toString();
     }
 
-    public static YearMonthDay getToday() {
+    public static YearMonth getTodaysYearMonth() {
+        Calendar calendar = new GregorianCalendar();
+        YearMonth yearMonth = new YearMonth();
+        yearMonth.year = calendar.get(Calendar.YEAR);
+        yearMonth.month = calendar.get(Calendar.MONTH) + 1;
+        return yearMonth;
+    }
+
+    public static YearMonthDay getTodaysYearMonthDay() {
         Calendar calendar = new GregorianCalendar();
         YearMonthDay yearMonthDay = new YearMonthDay();
         yearMonthDay.year = calendar.get(Calendar.YEAR);

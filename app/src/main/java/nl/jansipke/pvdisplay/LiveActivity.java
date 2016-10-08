@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -30,6 +29,7 @@ import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
@@ -73,7 +73,7 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
     }
 
     public void clickedOnNewest(View view) {
-        picked = DateTimeUtils.getToday();
+        picked = DateTimeUtils.getTodaysYearMonthDay();
         updateScreen(false);
     }
 
@@ -96,7 +96,7 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live);
 
-        picked = DateTimeUtils.getToday();
+        picked = DateTimeUtils.getTodaysYearMonthDay();
         pvDataOperations = new PvDataOperations(getApplicationContext());
 
         updateScreen(false);
@@ -114,7 +114,6 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
         LineChartView lineChartView = (LineChartView) findViewById(graph);
 
         List<PointValue> powerPointValues = new ArrayList<>();
-        List<PointValue> maxPointValues = new ArrayList<>();
         List<AxisValue> xAxisValues = new ArrayList<>();
         for (int i = 0; i < livePvData.size(); i++) {
             LivePvDatum livePvDatum = livePvData.get(i);
@@ -122,10 +121,11 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
             float x = (float) i;
             float y = (float) livePvDatum.getPowerGeneration();
             powerPointValues.add(new PointValue(x, y));
-            maxPointValues.add(new PointValue(x, 1450));
 
             String xLabel = DateTimeUtils.formatTime(
-                    livePvDatum.getHour(), livePvDatum.getMinute());
+                    livePvDatum.getHour(),
+                    livePvDatum.getMinute(),
+                    true);
             AxisValue axisValue = new AxisValue(x);
             axisValue.setLabel(xLabel);
             xAxisValues.add(axisValue);
@@ -137,10 +137,6 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
                 .setCubic(true)
                 .setFilled(true);
         lines.add(powerLine);
-        Line maxLine = new Line(maxPointValues)
-                .setColor(Color.LTGRAY)
-                .setHasPoints(false);
-        lines.add(maxLine);
         LineChartData lineChartData = new LineChartData();
         lineChartData.setLines(lines);
 
@@ -150,10 +146,15 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
         lineChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
-                .generateAxisFromRange(0, 1400, 200)
+                .generateAxisFromRange(0, 1400, 200) // TODO Use real maximum value
                 .setMaxLabelChars(5);
         lineChartData.setAxisYLeft(yAxis);
         lineChartView.setLineChartData(lineChartData);
+
+        lineChartView.setViewportCalculationEnabled(false);
+        final Viewport viewport = new Viewport(-1, 1450, livePvData.size() + 1, 0); // TODO Use real maximum value
+        lineChartView.setMaximumViewport(viewport);
+        lineChartView.setCurrentViewport(viewport);
     }
 
     private void updateTable(List<LivePvDatum> livePvData) {
@@ -161,8 +162,10 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
         linearLayout.removeAllViews();
         for (LivePvDatum livePvDatum : livePvData) {
             View row = getLayoutInflater().inflate(R.layout.table_3column_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(
-                    DateTimeUtils.formatTime(livePvDatum.getHour(), livePvDatum.getMinute()));
+            ((TextView) row.findViewById(R.id.content1)).setText(DateTimeUtils.formatTime(
+                    livePvDatum.getHour(),
+                    livePvDatum.getMinute(),
+                    true));
             ((TextView) row.findViewById(R.id.content2)).setText(
                     powerFormat.format(livePvDatum.getPowerGeneration()));
             ((TextView) row.findViewById(R.id.content3)).setText(

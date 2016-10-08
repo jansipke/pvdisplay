@@ -10,6 +10,7 @@ public final class PvDataContract {
         public static final String COLUMN_NAME_YEAR = "year";
         public static final String COLUMN_NAME_MONTH = "month";
         public static final String COLUMN_NAME_DAY = "day";
+        public static final String COLUMN_NAME_DATE_NUMBER = "date_number";
         public static final String COLUMN_NAME_ENERGY_GENERATED = "energy_generated";
     }
 

@@ -74,8 +74,8 @@
         android:layout_height="match_parent"
         android:id="@+id/flipper">
 
-        <include layout="@layout/flipper_graph" />
-        <include layout="@layout/flipper_text" />
+        <include layout="@layout/flipper_live_graph" />
+        <include layout="@layout/flipper_live_text" />
 
     </ViewFlipper>
 

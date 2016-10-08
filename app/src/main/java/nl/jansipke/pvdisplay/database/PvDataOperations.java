@@ -1,6 +1,5 @@
 package nl.jansipke.pvdisplay.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -32,8 +31,11 @@ public class PvDataOperations {
         this.pvDataHelper = new PvDataHelper(context);
     }
 
-    public HistoricalPvDatum loadHistorical(int year, int month, int day) {
-        Log.i(TAG, "Loading historical PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+    public List<HistoricalPvDatum> loadHistorical(int fromYear, int fromMonth, int fromDay,
+                                                  int toYear, int toMonth, int toDay) {
+        Log.i(TAG, "Loading historical PV data from " +
+                DateTimeUtils.formatDate(fromYear, fromMonth, fromDay, true) +
+                " to " + DateTimeUtils.formatDate(toYear, toMonth, toDay, true));
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -47,33 +49,31 @@ public class PvDataOperations {
                 PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH + " ASC," +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_DAY + " ASC";
         String selection =
-                PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + "=? AND " +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH + "=? AND " +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_DAY + "=?";
+                PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER + ">=? AND " +
+                PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER + "<=?";
         String[] selectionArgs = {
-                "" + year,
-                "" + month,
-                "" + day
+                "" + DateTimeUtils.convertToInt(fromYear, fromMonth, fromDay),
+                "" + DateTimeUtils.convertToInt(toYear, toMonth, toDay)
         };
 
-        HistoricalPvDatum historicalPvDatum = new HistoricalPvDatum(year, month, day, 0);
+        List<HistoricalPvDatum> historicalPvData = new ArrayList<>();
         Cursor cursor = db.query(PvDataContract.HistoricalPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                historicalPvDatum = new HistoricalPvDatum(
-                        year,
-                        month,
-                        day,
-                        cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED)));
+                do {
+                    historicalPvData.add(new HistoricalPvDatum(
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR)),
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH)),
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_DAY)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED))));
+                } while (cursor.moveToNext());
             }
             cursor.close();
-            Log.i(TAG, "Loaded 1 row");
-        } else {
-            Log.i(TAG, "Loaded 0 rows");
         }
         db.close();
+        Log.i(TAG, "Loaded " + historicalPvData.size() + " rows");
 
-        return historicalPvDatum;
+        return historicalPvData;
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
@@ -160,21 +160,37 @@ public class PvDataOperations {
         }
     }
 
-    public void saveHistorical(HistoricalPvDatum historicalPvDatum) {
-        // TODO Change to saving of list; use one transaction
+    public void saveHistorical(List<HistoricalPvDatum> historicalPvData) {
         Log.i(TAG, "Saving historical PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR, historicalPvDatum.getYear());
-        values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH, historicalPvDatum.getMonth());
-        values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_DAY, historicalPvDatum.getDay());
-        values.put(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED, historicalPvDatum.getEnergyGenerated());
+        db.beginTransaction();
+        String sql = "REPLACE INTO " + PvDataContract.HistoricalPvData.TABLE_NAME +
+                "(" + PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR +
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH +
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_DAY +
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER +
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED +
+                ") VALUES (?,?,?,?,?);";
+        SQLiteStatement statement = db.compileStatement(sql);
+        for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
+            statement.clearBindings();
+            statement.bindLong(1, historicalPvDatum.getYear());
+            statement.bindLong(2, historicalPvDatum.getMonth());
+            statement.bindLong(3, historicalPvDatum.getDay());
+            statement.bindLong(4, DateTimeUtils.convertToInt(
+                    historicalPvDatum.getYear(),
+                    historicalPvDatum.getMonth(),
+                    historicalPvDatum.getDay()
+            ));
+            statement.bindDouble(5, historicalPvDatum.getEnergyGenerated());
+            statement.execute();
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
 
-        db.replace(PvDataContract.HistoricalPvData.TABLE_NAME, null, values);
         db.close();
-
-        Log.i(TAG, "Saved 1 row");
+        Log.i(TAG, "Saved " + historicalPvData.size() + " rows");
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
