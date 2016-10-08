@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -142,17 +143,22 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
 
         Axis xAxis = new Axis()
                 .setValues(xAxisValues)
-                .setMaxLabelChars(8);
+                .setMaxLabelChars(8)
+                .setTextColor(Color.GRAY);
+        xAxis.setName(getResources().getString(R.string.graph_legend_time));
         lineChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
                 .generateAxisFromRange(0, 1400, 200) // TODO Use real maximum value
-                .setMaxLabelChars(5);
+                .setMaxLabelChars(5)
+                .setTextColor(Color.GRAY);
+        yAxis.setName(getResources().getString(R.string.graph_legend_power));
         lineChartData.setAxisYLeft(yAxis);
+
         lineChartView.setLineChartData(lineChartData);
 
         lineChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 1450, livePvData.size() + 1, 0); // TODO Use real maximum value
+        final Viewport viewport = new Viewport(-1, 1450, livePvData.size(), 0); // TODO Use real maximum value
         lineChartView.setMaximumViewport(viewport);
         lineChartView.setCurrentViewport(viewport);
     }

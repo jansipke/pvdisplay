@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
@@ -114,12 +115,16 @@ public class DailyActivity extends AppCompatActivity {
 
         Axis xAxis = new Axis()
                 .setValues(xAxisValues)
-                .setMaxLabelChars(10);
+                .setMaxLabelChars(10)
+                .setTextColor(Color.GRAY);
+        xAxis.setName(getResources().getString(R.string.graph_legend_date));
         columnChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
                 .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
-                .setMaxLabelChars(6);
+                .setMaxLabelChars(6)
+                .setTextColor(Color.GRAY);
+        yAxis.setName(getResources().getString(R.string.graph_legend_energy));
         columnChartData.setAxisYLeft(yAxis);
 
         columnChartView.setColumnChartData(columnChartData);
@@ -133,23 +138,28 @@ public class DailyActivity extends AppCompatActivity {
     private void updateTable(List<HistoricalPvDatum> historicalPvData) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.table);
         linearLayout.removeAllViews();
+
         final int nrRows = 16;
         View[] rows = new View[nrRows];
         for (int i = 0; i < nrRows; i++) {
             rows[i] = getLayoutInflater().inflate(R.layout.table_4column_row, null);
         }
+
         for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
             int day = historicalPvDatum.getDay();
             if (day <= 15 ) {
-                ((TextView) rows[day - 1].findViewById(R.id.content1)).setText("" + day);
-                ((TextView) rows[day - 1].findViewById(R.id.content2)).setText(energyFormat.format(
-                        historicalPvDatum.getEnergyGenerated() / 1000.0));
+                ((TextView) rows[day - 1].findViewById(R.id.content1)).setText(
+                        String.valueOf(day));
+                ((TextView) rows[day - 1].findViewById(R.id.content2)).setText(
+                        energyFormat.format(historicalPvDatum.getEnergyGenerated() / 1000.0));
             } else {
-                ((TextView) rows[day - nrRows].findViewById(R.id.content3)).setText("" + day);
-                ((TextView) rows[day - nrRows].findViewById(R.id.content4)).setText(energyFormat.format(
-                        historicalPvDatum.getEnergyGenerated() / 1000.0));
+                ((TextView) rows[day - nrRows].findViewById(R.id.content3)).setText(
+                        String.valueOf(day));
+                ((TextView) rows[day - nrRows].findViewById(R.id.content4)).setText(
+                        energyFormat.format(historicalPvDatum.getEnergyGenerated() / 1000.0));
             }
         }
+
         for (int i = 0; i < nrRows; i++) {
             linearLayout.addView(rows[i]);
         }
