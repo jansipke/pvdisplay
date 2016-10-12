@@ -233,7 +233,7 @@ public class PvDataService extends Service {
         } else {
             Log.w(TAG, "Can not download PV data because network is not available");
         }
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     @Nullable

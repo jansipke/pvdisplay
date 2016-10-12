@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,8 +29,20 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void showMonthlyGraph(View view) {
+        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+    }
+
     public void showStatistic(View view) {
         Intent intent = new Intent(MainActivity.this, SystemActivity.class);
         startActivity(intent);
+    }
+
+    public void showWeeklyGraph(View view) {
+        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+    }
+
+    public void showYearlyGraph(View view) {
+        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
     }
 }
