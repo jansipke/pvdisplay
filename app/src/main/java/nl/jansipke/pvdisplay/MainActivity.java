@@ -1,15 +1,22 @@
 package nl.jansipke.pvdisplay;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
+
+    private void clickedSettings() {
+        Log.i(TAG, "Clicked settings");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,32 +24,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.i(TAG, "Created main activity");
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager(), MainActivity.this));
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
-    public void showDailyGraph(View view) {
-        Intent intent = new Intent(MainActivity.this, DailyActivity.class);
-        startActivity(intent);
-    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                Log.i(TAG, "Clicked settings");
+                Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+                break;
+        }
 
-    public void showLiveGraph(View view) {
-        Intent intent = new Intent(MainActivity.this, LiveActivity.class);
-        startActivity(intent);
-    }
-
-    public void showMonthlyGraph(View view) {
-        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
-    }
-
-    public void showStatistic(View view) {
-        Intent intent = new Intent(MainActivity.this, SystemActivity.class);
-        startActivity(intent);
-    }
-
-    public void showWeeklyGraph(View view) {
-        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
-    }
-
-    public void showYearlyGraph(View view) {
-        Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
+        return super.onOptionsItemSelected(item);
     }
 }

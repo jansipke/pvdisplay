@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -21,64 +27,74 @@ import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
-public class SystemActivity extends AppCompatActivity {
+public class SystemFragment extends Fragment {
 
-    private final static String TAG = SystemActivity.class.getSimpleName();
+    private final static String TAG = SystemFragment.class.getSimpleName();
     private final static NumberFormat powerFormat = new DecimalFormat("#0");
     private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
     private PvDataOperations pvDataOperations;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_system);
-
-        pvDataOperations = new PvDataOperations(getApplicationContext());
-        showScreen();
+        setHasOptionsMenu(true);
+        pvDataOperations = new PvDataOperations(getContext());
     }
 
-    public void showScreen() {
-        Log.i(TAG, "Showing screen");
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_system, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-        String title = "System";
-        ActionBar supportActionBar = getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(title);
-        }
+    @Nullable
+    @Override
+    public View onCreateView(final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment, container, false);
+
+        LinearLayout graphLinearLayout = (LinearLayout) view.findViewById(R.id.graph);
+        View test = inflater.inflate(R.layout.table_2column_row, null);
+        ((TextView) test.findViewById(R.id.content1)).setText("Bla");
+        graphLinearLayout.addView(test);
+
+        Log.i(TAG, "Showing screen");
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         if (statisticPvDatum == null) {
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    showScreen();
+                    onCreateView(inflater, container, savedInstanceState);
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getApplicationContext())
+            LocalBroadcastManager.getInstance(getContext())
                     .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.callStatistic(getApplicationContext());
+            PvDataService.callStatistic(getContext());
         }
         SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
         if (systemPvDatum == null) {
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    showScreen();
+                    onCreateView(inflater, container, savedInstanceState);
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getApplicationContext())
+            LocalBroadcastManager.getInstance(getContext())
                     .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.callSystem(getApplicationContext());
+            PvDataService.callSystem(getContext());
         }
 
         if (statisticPvDatum != null && systemPvDatum != null) {
-            LinearLayout linearLayout = (LinearLayout) findViewById(R.id.table);
-            linearLayout.removeAllViews();
+            LinearLayout tableLinearLayout = (LinearLayout) view.findViewById(R.id.table);
+            tableLinearLayout.removeAllViews();
             String[] keys = {
                     "System name",
                     "System size",
@@ -125,11 +141,25 @@ public class SystemActivity extends AppCompatActivity {
                             statisticPvDatum.getActualDateToDay(), true)
             };
             for (int i = 0; i < keys.length; i++) {
-                View row = getLayoutInflater().inflate(R.layout.table_2column_row, null);
+                View row = inflater.inflate(R.layout.table_2column_row, null);
                 ((TextView) row.findViewById(R.id.content1)).setText(keys[i]);
                 ((TextView) row.findViewById(R.id.content2)).setText(values[i]);
-                linearLayout.addView(row);
+                tableLinearLayout.addView(row);
             }
         }
+
+        return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                Log.i(TAG, "Clicked refresh");
+                Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
