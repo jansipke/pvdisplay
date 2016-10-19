@@ -14,10 +14,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    private void clickedSettings() {
-        Log.i(TAG, "Clicked settings");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

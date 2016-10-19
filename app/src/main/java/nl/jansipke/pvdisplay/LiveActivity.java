@@ -145,7 +145,7 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
                 .setValues(xAxisValues)
                 .setMaxLabelChars(8)
                 .setTextColor(Color.GRAY);
-        xAxis.setName(getResources().getString(R.string.graph_legend_time));
+//        xAxis.setName(getResources().getString(R.string.graph_legend_time));
         lineChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis

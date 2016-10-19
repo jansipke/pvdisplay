@@ -117,7 +117,7 @@ public class DailyActivity extends AppCompatActivity {
                 .setValues(xAxisValues)
                 .setMaxLabelChars(10)
                 .setTextColor(Color.GRAY);
-        xAxis.setName(getResources().getString(R.string.graph_legend_date));
+//        xAxis.setName(getResources().getString(R.string.graph_legend_date));
         columnChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis

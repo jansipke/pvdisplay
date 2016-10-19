@@ -54,14 +54,7 @@ public class SystemFragment extends Fragment {
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment, container, false);
-
-        LinearLayout graphLinearLayout = (LinearLayout) view.findViewById(R.id.graph);
-        View test = inflater.inflate(R.layout.table_2column_row, null);
-        ((TextView) test.findViewById(R.id.content1)).setText("Bla");
-        graphLinearLayout.addView(test);
-
-        Log.i(TAG, "Showing screen");
+        View view = inflater.inflate(R.layout.fragment_header_table, container, false);
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         if (statisticPvDatum == null) {
