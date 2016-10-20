@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textAlignment="textEnd"
-            android:id="@+id/content1"/>
+            android:id="@+id/time"/>
 
         <LinearLayout
             android:layout_width="10dp"
@@ -34,7 +34,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textAlignment="textEnd"
-            android:id="@+id/content2"/>
+            android:id="@+id/peak"/>
 
         <LinearLayout
             android:layout_width="30dp"
@@ -45,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textAlignment="textEnd"
-            android:id="@+id/content3"/>
+            android:id="@+id/energy"/>
 
         <LinearLayout
             android:layout_width="10dp"

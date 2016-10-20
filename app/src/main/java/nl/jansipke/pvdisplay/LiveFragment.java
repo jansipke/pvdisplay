@@ -1,12 +1,16 @@
 package nl.jansipke.pvdisplay;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,12 +21,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,28 +40,50 @@ import lecho.lib.hellocharts.view.LineChartView;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
+import nl.jansipke.pvdisplay.utils.FormatUtils;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
-import static nl.jansipke.pvdisplay.R.id.pin;
 
-public class LiveFragment extends Fragment {
+public class LiveFragment extends Fragment implements Serializable {
 
     private final static String TAG = LiveFragment.class.getSimpleName();
-    private final static NumberFormat ENERGY_FORMAT = new DecimalFormat("#0.000");
-    private final static NumberFormat POWER_FORMAT = new DecimalFormat("#0");
 
+    private static DatePickerListener datePickerListener;
     private static DateTimeUtils.YearMonthDay picked;
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
+    public static class DatePickerFragment extends DialogFragment {
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new DatePickerDialog(getContext(), datePickerListener,
+                    picked.year, picked.month - 1, picked.day);
+        }
+    }
+
+    private class DatePickerListener implements DatePickerDialog.OnDateSetListener {
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int day) {
+            picked.year = year;
+            picked.month = month + 1;
+            picked.day = day;
+            LiveFragment.this.updateScreen(false);
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        datePickerListener = new DatePickerListener();
         picked = DateTimeUtils.getTodaysYearMonthDay();
+
         pvDataOperations = new PvDataOperations(getContext());
     }
 
@@ -75,7 +100,7 @@ public class LiveFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         layoutInflater = inflater;
-        fragmentView = inflater.inflate(R.layout.fragment_graph_table, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_live, container, false);
         updateScreen(false);
         return fragmentView;
     }
@@ -99,7 +124,13 @@ public class LiveFragment extends Fragment {
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
-                Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                DialogFragment dialogFragment = new DatePickerFragment();
+                dialogFragment.show(getFragmentManager(), "datePicker");
+                break;
+            case R.id.action_today:
+                Log.d(TAG, "Clicked today");
+                picked = DateTimeUtils.getTodaysYearMonthDay();
+                updateScreen(false);
                 break;
         }
 
@@ -165,23 +196,24 @@ public class LiveFragment extends Fragment {
     private void updateTable(List<LivePvDatum> livePvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
+
         for (int i = livePvData.size() - 1; i >= 0; i--) {
             LivePvDatum livePvDatum = livePvData.get(i);
-            View row = layoutInflater.inflate(R.layout.table_3column_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(DateTimeUtils.formatTime(
+            View row = layoutInflater.inflate(R.layout.table_live_row, null);
+            ((TextView) row.findViewById(R.id.time)).setText(DateTimeUtils.formatTime(
                     livePvDatum.getHour(),
                     livePvDatum.getMinute(),
                     true));
-            ((TextView) row.findViewById(R.id.content2)).setText(
-                    POWER_FORMAT.format(livePvDatum.getPowerGeneration()));
-            ((TextView) row.findViewById(R.id.content3)).setText(
-                    ENERGY_FORMAT.format(livePvDatum.getEnergyGeneration() / 1000.0));
+            ((TextView) row.findViewById(R.id.power)).setText(
+                    FormatUtils.POWER_FORMAT.format(livePvDatum.getPowerGeneration()));
+            ((TextView) row.findViewById(R.id.energy)).setText(
+                    FormatUtils.ENERGY_FORMAT.format(livePvDatum.getEnergyGeneration() / 1000.0));
             linearLayout.addView(row);
         }
     }
 
     public void updateScreen(boolean refreshData) {
-        Log.i(TAG, "Updating screen");
+        Log.d(TAG, "Updating screen");
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
                 DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));

@@ -8,12 +8,21 @@ public class HistoricalPvDatum {
     private final int month;
     private final int day;
     private final double energyGenerated;
+    private final double peakPower;
+    private final String condition;
 
-    public HistoricalPvDatum(int year, int month, int day, double energyGenerated) {
+    public HistoricalPvDatum(int year, int month, int day,
+                             double energyGenerated, double peakPower, String condition) {
         this.year = year;
         this.month = month;
         this.day = day;
         this.energyGenerated = energyGenerated;
+        this.peakPower = peakPower;
+        this.condition = condition;
+    }
+
+    public String getCondition() {
+        return condition;
     }
 
     public int getDay() {
@@ -28,11 +37,19 @@ public class HistoricalPvDatum {
         return month;
     }
 
+    public double getPeakPower() {
+        return peakPower;
+    }
+
     public int getYear() {
         return year;
     }
 
     public String toString() {
-        return "HistoricalPvDatum[" + DateTimeUtils.formatDate(year, month, day, true) + ", energyGenerated=" + energyGenerated + "]";
+        return "HistoricalPvDatum[" + DateTimeUtils.formatDate(year, month, day, true) +
+                ", energyGenerated=" + energyGenerated +
+                ", peakPower=" + peakPower +
+                ", condition=" + condition +
+                "]";
     }
 }

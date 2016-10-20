@@ -42,7 +42,9 @@ public class PvDataOperations {
                 PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR,
                 PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH,
                 PvDataContract.HistoricalPvData.COLUMN_NAME_DAY,
-                PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED
+                PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED,
+                PvDataContract.HistoricalPvData.COLUMN_NAME_PEAK_POWER,
+                PvDataContract.HistoricalPvData.COLUMN_NAME_CONDITION
         };
         String sortOrder =
                 PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + " ASC," +
@@ -65,7 +67,9 @@ public class PvDataOperations {
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR)),
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH)),
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_DAY)),
-                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED))));
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_PEAK_POWER)),
+                            cursor.getString(cursor.getColumnIndex(PvDataContract.HistoricalPvData.COLUMN_NAME_CONDITION))));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -171,7 +175,9 @@ public class PvDataOperations {
                 "," + PvDataContract.HistoricalPvData.COLUMN_NAME_DAY +
                 "," + PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER +
                 "," + PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED +
-                ") VALUES (?,?,?,?,?);";
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_PEAK_POWER +
+                "," + PvDataContract.HistoricalPvData.COLUMN_NAME_CONDITION +
+                ") VALUES (?,?,?,?,?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
         for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
             statement.clearBindings();
@@ -184,6 +190,8 @@ public class PvDataOperations {
                     historicalPvDatum.getDay()
             ));
             statement.bindDouble(5, historicalPvDatum.getEnergyGenerated());
+            statement.bindDouble(6, historicalPvDatum.getPeakPower());
+            statement.bindString(7, historicalPvDatum.getCondition());
             statement.execute();
         }
         db.setTransactionSuccessful();

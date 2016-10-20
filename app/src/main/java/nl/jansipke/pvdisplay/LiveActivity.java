@@ -167,14 +167,14 @@ public class LiveActivity extends AppCompatActivity implements DatePickerDialog.
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.table);
         linearLayout.removeAllViews();
         for (LivePvDatum livePvDatum : livePvData) {
-            View row = getLayoutInflater().inflate(R.layout.table_3column_row, null);
-            ((TextView) row.findViewById(R.id.content1)).setText(DateTimeUtils.formatTime(
+            View row = getLayoutInflater().inflate(R.layout.table_live_row, null);
+            ((TextView) row.findViewById(R.id.time)).setText(DateTimeUtils.formatTime(
                     livePvDatum.getHour(),
                     livePvDatum.getMinute(),
                     true));
-            ((TextView) row.findViewById(R.id.content2)).setText(
+            ((TextView) row.findViewById(R.id.peak)).setText(
                     powerFormat.format(livePvDatum.getPowerGeneration()));
-            ((TextView) row.findViewById(R.id.content3)).setText(
+            ((TextView) row.findViewById(R.id.energy)).setText(
                     energyFormat.format(livePvDatum.getEnergyGeneration() / 1000.0));
             linearLayout.addView(row);
         }

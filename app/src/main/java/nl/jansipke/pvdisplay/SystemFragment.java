@@ -135,8 +135,8 @@ public class SystemFragment extends Fragment {
             };
             for (int i = 0; i < keys.length; i++) {
                 View row = inflater.inflate(R.layout.table_2column_row, null);
-                ((TextView) row.findViewById(R.id.content1)).setText(keys[i]);
-                ((TextView) row.findViewById(R.id.content2)).setText(values[i]);
+                ((TextView) row.findViewById(R.id.time)).setText(keys[i]);
+                ((TextView) row.findViewById(R.id.peak)).setText(values[i]);
                 tableLinearLayout.addView(row);
             }
         }

@@ -28,11 +28,15 @@ public class PvOutputParser {
                 int month = Integer.parseInt(date.substring(4, 6));
                 int day = Integer.parseInt(date.substring(6, 8));
                 double energyGenerated = Double.parseDouble(items[1]);
+                double peakPower = Double.parseDouble(items[5]);
+                String condition = items[7];
                 historicalPvData.add(new HistoricalPvDatum(
                         year,
                         month,
                         day,
-                        energyGenerated));
+                        energyGenerated,
+                        peakPower,
+                        condition));
             }
             return historicalPvData;
         } catch (Exception e) {

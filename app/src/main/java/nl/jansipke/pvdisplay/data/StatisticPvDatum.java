@@ -111,6 +111,6 @@ public class StatisticPvDatum {
                 ", recordDateYear=" + recordDateYear +
                 ", recordDateMonth=" + recordDateMonth +
                 ", recordDateDay=" + recordDateDay +
-                ']';
+                "]";
     }
 }

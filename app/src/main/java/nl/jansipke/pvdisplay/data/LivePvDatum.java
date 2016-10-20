@@ -51,6 +51,9 @@ public class LivePvDatum {
     }
 
     public String toString() {
-        return "LivePvDatum[" + DateTimeUtils.formatDateTime(year, month, day, hour, minute) + " power=" + powerGeneration + " W, energy=" + energyGeneration + " Wh]";
+        return "LivePvDatum[" + DateTimeUtils.formatDateTime(year, month, day, hour, minute) +
+                " powerGeneration=" + powerGeneration +
+                ", energyGeneration=" + energyGeneration +
+                "]";
     }
 }

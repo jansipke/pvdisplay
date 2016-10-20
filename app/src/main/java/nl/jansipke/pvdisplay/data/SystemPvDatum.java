@@ -74,6 +74,6 @@ public class SystemPvDatum {
                 ", inverterBrand='" + inverterBrand + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ']';
+                "]";
     }
 }

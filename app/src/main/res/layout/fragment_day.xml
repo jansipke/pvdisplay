@@ -38,7 +38,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="1dp"
+            android:layout_width="35dp"
             android:layout_height="match_parent" />
 
         <TextView
@@ -48,7 +48,16 @@
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/table_column_time" />
+            android:text="@string/table_column_date" />
+
+        <LinearLayout
+            android:layout_width="5dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:padding="5dp" />
 
         <LinearLayout
             android:layout_width="25dp"
@@ -61,7 +70,7 @@
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/table_column_power" />
+            android:text="@string/table_column_peak" />
 
         <LinearLayout
             android:layout_width="25dp"
@@ -77,7 +86,7 @@
             android:text="@string/table_column_energy" />
 
         <LinearLayout
-            android:layout_width="70dp"
+            android:layout_width="50dp"
             android:layout_height="match_parent" />
 
     </LinearLayout>

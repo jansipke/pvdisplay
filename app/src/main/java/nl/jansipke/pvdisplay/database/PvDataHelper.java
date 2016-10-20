@@ -37,6 +37,8 @@ public class PvDataHelper extends SQLiteOpenHelper {
                 PvDataContract.HistoricalPvData.COLUMN_NAME_DAY + " INTEGER," +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER + " INTEGER," +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED + " REAL," +
+                PvDataContract.HistoricalPvData.COLUMN_NAME_PEAK_POWER + " REAL," +
+                PvDataContract.HistoricalPvData.COLUMN_NAME_CONDITION + " TEXT," +
                 " UNIQUE(" +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + "," +
                 PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH + "," +

@@ -12,6 +12,8 @@ public final class PvDataContract {
         public static final String COLUMN_NAME_DAY = "day";
         public static final String COLUMN_NAME_DATE_NUMBER = "date_number";
         public static final String COLUMN_NAME_ENERGY_GENERATED = "energy_generated";
+        public static final String COLUMN_NAME_PEAK_POWER = "peak_power";
+        public static final String COLUMN_NAME_CONDITION = "condition";
     }
 
     public static abstract class LivePvData implements BaseColumns {

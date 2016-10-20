@@ -148,12 +148,12 @@ public class DailyActivity extends AppCompatActivity {
         for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
             int day = historicalPvDatum.getDay();
             if (day <= 15 ) {
-                ((TextView) rows[day - 1].findViewById(R.id.content1)).setText(
+                ((TextView) rows[day - 1].findViewById(R.id.time)).setText(
                         String.valueOf(day));
-                ((TextView) rows[day - 1].findViewById(R.id.content2)).setText(
+                ((TextView) rows[day - 1].findViewById(R.id.peak)).setText(
                         energyFormat.format(historicalPvDatum.getEnergyGenerated() / 1000.0));
             } else {
-                ((TextView) rows[day - nrRows].findViewById(R.id.content3)).setText(
+                ((TextView) rows[day - nrRows].findViewById(R.id.energy)).setText(
                         String.valueOf(day));
                 ((TextView) rows[day - nrRows].findViewById(R.id.content4)).setText(
                         energyFormat.format(historicalPvDatum.getEnergyGenerated() / 1000.0));
