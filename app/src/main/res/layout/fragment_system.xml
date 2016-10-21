@@ -6,14 +6,19 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/header" />
+        android:layout_height="30dp" />
+
+    <TextView
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:id="@+id/header"/>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:orientation="vertical"

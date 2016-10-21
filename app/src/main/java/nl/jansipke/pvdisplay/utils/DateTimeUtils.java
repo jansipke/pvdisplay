@@ -41,7 +41,23 @@ public class DateTimeUtils {
         return 10000 * year + 100 * month + day;
     }
 
-    public static String formatDate(int year, int month, boolean dashes) {
+    public static String formatMonthDay(int month, int day, boolean dashes) {
+        StringBuilder sb = new StringBuilder();
+        if (month < 10) {
+            sb.append("0");
+        }
+        sb.append(month);
+        if (dashes) {
+            sb.append("-");
+        }
+        if (day < 10) {
+            sb.append("0");
+        }
+        sb.append(day);
+        return sb.toString();
+    }
+
+    public static String formatYearMonth(int year, int month, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         sb.append(year);
         if (dashes) {
@@ -56,7 +72,7 @@ public class DateTimeUtils {
 
     public static String formatDate(int year, int month, int day, boolean dashes) {
         StringBuilder sb = new StringBuilder();
-        sb.append(formatDate(year, month, dashes));
+        sb.append(formatYearMonth(year, month, dashes));
         if (dashes) {
             sb.append("-");
         }

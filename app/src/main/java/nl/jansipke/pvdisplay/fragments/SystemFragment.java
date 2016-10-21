@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,10 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
@@ -28,13 +25,14 @@ import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
+import nl.jansipke.pvdisplay.utils.FormatUtils;
 
 public class SystemFragment extends Fragment {
 
     private final static String TAG = SystemFragment.class.getSimpleName();
-    private final static NumberFormat powerFormat = new DecimalFormat("#0");
-    private final static NumberFormat energyFormat = new DecimalFormat("#0.000");
 
+    private View fragmentView;
+    private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
     @Override
@@ -56,14 +54,55 @@ public class SystemFragment extends Fragment {
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_header_table, container, false);
+        layoutInflater = inflater;
+        fragmentView = inflater.inflate(R.layout.fragment_system, container, false);
+        updateScreen(false);
+        return fragmentView;
+    }
+
+    public void onFragmentSelected() {
+        Log.d(TAG, "Fragment selected");
+        setTitle();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                Log.d(TAG, "Clicked refresh");
+                updateScreen(true);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setTitle() {
+        SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
+        String title = "System";
+        if (systemPvDatum != null &&
+                systemPvDatum.getSystemName() != null &&
+                systemPvDatum.getSystemName().length() > 0) {
+            title = systemPvDatum.getSystemName();
+        }
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
+    }
+
+    private void updateScreen(boolean refreshData) {
+        Log.d(TAG, "Updating screen");
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
-        if (statisticPvDatum == null) {
+        SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
+        if (refreshData || statisticPvDatum == null || systemPvDatum == null) {
+            if (refreshData) {
+                Log.i(TAG, "Refreshing statistic and system PV data");
+            } else {
+                Log.i(TAG, "No statistic or system PV data");
+            }
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    onCreateView(inflater, container, savedInstanceState);
+                    updateScreen(false);
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
@@ -71,27 +110,19 @@ public class SystemFragment extends Fragment {
                     .registerReceiver(broadcastReceiver, intentFilter);
 
             PvDataService.callStatistic(getContext());
-        }
-        SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
-        if (systemPvDatum == null) {
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    onCreateView(inflater, container, savedInstanceState);
-                }
-            };
-            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(broadcastReceiver, intentFilter);
-
             PvDataService.callSystem(getContext());
         }
 
         if (statisticPvDatum != null && systemPvDatum != null) {
-            LinearLayout tableLinearLayout = (LinearLayout) view.findViewById(R.id.table);
+            TextView textView = (TextView) fragmentView.findViewById(R.id.header);
+            textView.setText(getResources().getString(
+                    R.string.value_kwh,
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getEnergyGenerated() / 1000)));
+
+            LinearLayout tableLinearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
             tableLinearLayout.removeAllViews();
             String[] keys = {
-                    "System name",
                     "System size",
                     "Number of panels",
                     "Panel power",
@@ -100,7 +131,6 @@ public class SystemFragment extends Fragment {
                     "Inverter brand",
                     "Latitude",
                     "Longitude",
-                    "Energy generated",
                     "Average generation",
                     "Maximum generation",
                     "Outputs",
@@ -109,19 +139,26 @@ public class SystemFragment extends Fragment {
                     "Last date"
             };
             String[] values = {
-                    systemPvDatum.getSystemName(),
-                    systemPvDatum.getSystemSize() + " W",
+                    getResources().getString(R.string.value_w,
+                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getSystemSize())),
                     systemPvDatum.getNumberOfPanels() + "",
-                    systemPvDatum.getPanelPower() + " W",
+                    getResources().getString(R.string.value_w,
+                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getPanelPower())),
                     systemPvDatum.getPanelBrand(),
-                    systemPvDatum.getInverterPower() + " W",
+                    getResources().getString(R.string.value_w,
+                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getInverterPower())),
                     systemPvDatum.getInverterBrand(),
-                    systemPvDatum.getLatitude() + "",
-                    systemPvDatum.getLongitude() + "",
-                    statisticPvDatum.getEnergyGenerated() / 1000 + " kWh",
-                    statisticPvDatum.getAverageGeneration() / 1000 + " kWh",
-                    statisticPvDatum.getMaximumGeneration() / 1000 + " kWh",
-                    statisticPvDatum.getOutputs() + " days",
+                    getResources().getString(R.string.value_degrees,
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude())),
+                    getResources().getString(R.string.value_degrees,
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())),
+                    getResources().getString(R.string.value_kwh,
+                            FormatUtils.ENERGY_FORMAT.format(
+                                    statisticPvDatum.getAverageGeneration() / 1000)),
+                    getResources().getString(R.string.value_kwh,
+                            FormatUtils.ENERGY_FORMAT.format(
+                                    statisticPvDatum.getMaximumGeneration() / 1000)),
+                    getResources().getString(R.string.value_days, statisticPvDatum.getOutputs()),
                     DateTimeUtils.formatDate(
                             statisticPvDatum.getActualDateFromYear(),
                             statisticPvDatum.getActualDateFromMonth(),
@@ -136,29 +173,11 @@ public class SystemFragment extends Fragment {
                             statisticPvDatum.getActualDateToDay(), true)
             };
             for (int i = 0; i < keys.length; i++) {
-                View row = inflater.inflate(R.layout.table_system_row, null);
-                ((TextView) row.findViewById(R.id.time)).setText(keys[i]);
-                ((TextView) row.findViewById(R.id.peak)).setText(values[i]);
+                View row = layoutInflater.inflate(R.layout.table_system_row, null);
+                ((TextView) row.findViewById(R.id.key)).setText(keys[i]);
+                ((TextView) row.findViewById(R.id.value)).setText(values[i]);
                 tableLinearLayout.addView(row);
             }
         }
-
-        return view;
-    }
-
-    public void onFragmentSelected() {
-        Log.d(TAG, "Fragment selected");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                Log.i(TAG, "Clicked refresh");
-                Toast.makeText(getActivity(), "Not implemented yet", Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

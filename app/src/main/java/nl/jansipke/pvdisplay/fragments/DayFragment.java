@@ -110,15 +110,18 @@ public class DayFragment extends Fragment {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addMonths(picked, -1);
+                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
+                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
+                setTitle();
                 updateScreen(true);
                 break;
         }
@@ -128,7 +131,7 @@ public class DayFragment extends Fragment {
 
     private void setTitle() {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                DateTimeUtils.formatDate(picked.year, picked.month, true));
+                DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
     }
 
     private void updateGraph(List<HistoricalPvDatum> historicalPvData) {
@@ -150,8 +153,7 @@ public class DayFragment extends Fragment {
                     ChartUtils.COLORS[0]));
             columns.add(new Column(subcolumnValues));
 
-            String xLabel = DateTimeUtils.formatDate(
-                    historicalPvDatum.getYear(),
+            String xLabel = DateTimeUtils.formatMonthDay(
                     historicalPvDatum.getMonth(),
                     historicalPvDatum.getDay(),
                     true);
@@ -167,7 +169,7 @@ public class DayFragment extends Fragment {
 
         Axis xAxis = new Axis()
                 .setValues(xAxisValues)
-                .setMaxLabelChars(10)
+                .setMaxLabelChars(6)
                 .setTextColor(Color.GRAY);
         columnChartData.setAxisXBottom(xAxis);
 
@@ -193,8 +195,7 @@ public class DayFragment extends Fragment {
         for (int i = historicalPvData.size() - 1; i >= 0; i--) {
             HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
             View row = layoutInflater.inflate(R.layout.table_day_row, null);
-            ((TextView) row.findViewById(R.id.date)).setText(DateTimeUtils.formatDate(
-                    historicalPvDatum.getYear(),
+            ((TextView) row.findViewById(R.id.date)).setText(DateTimeUtils.formatMonthDay(
                     historicalPvDatum.getMonth(),
                     historicalPvDatum.getDay(),
                     true));
@@ -210,8 +211,6 @@ public class DayFragment extends Fragment {
 
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
-
-        setTitle();
 
         List<HistoricalPvDatum> historicalPvData = pvDataOperations.loadHistorical(
                 picked.year, picked.month, 1,

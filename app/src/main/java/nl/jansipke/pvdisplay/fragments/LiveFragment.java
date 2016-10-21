@@ -73,6 +73,7 @@ public class LiveFragment extends Fragment {
             picked.year = year;
             picked.month = month + 1;
             picked.day = day;
+            LiveFragment.this.setTitle();
             LiveFragment.this.updateScreen(false);
         }
     }
@@ -117,15 +118,18 @@ public class LiveFragment extends Fragment {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addDays(picked, -1);
+                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
+                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
+                setTitle();
                 updateScreen(true);
                 break;
             case R.id.action_date:
@@ -136,6 +140,7 @@ public class LiveFragment extends Fragment {
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
+                setTitle();
                 updateScreen(false);
                 break;
         }
@@ -184,12 +189,12 @@ public class LiveFragment extends Fragment {
 
         Axis xAxis = new Axis()
                 .setValues(xAxisValues)
-                .setMaxLabelChars(8)
+                .setMaxLabelChars(6)
                 .setTextColor(Color.GRAY);
         lineChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
-                .generateAxisFromRange(0, 1500, 250) // TODO Use real maximum value
+                .generateAxisFromRange(0, 1250, 250) // TODO Use real maximum value
                 .setMaxLabelChars(6)
                 .setTextColor(Color.GRAY)
                 .setHasLines(true);
@@ -199,7 +204,7 @@ public class LiveFragment extends Fragment {
         lineChartView.setLineChartData(lineChartData);
 
         lineChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 1600, livePvData.size(), 0); // TODO Use real maximum value
+        final Viewport viewport = new Viewport(-1, 1350, livePvData.size(), 0); // TODO Use real maximum value
         lineChartView.setMaximumViewport(viewport);
         lineChartView.setCurrentViewport(viewport);
     }
@@ -226,8 +231,6 @@ public class LiveFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        setTitle();
-
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
 
@@ -252,6 +255,7 @@ public class LiveFragment extends Fragment {
 
             PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
         }
+
         updateGraph(livePvData);
         updateTable(livePvData);
     }
