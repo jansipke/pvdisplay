@@ -222,7 +222,7 @@ public class LiveFragment extends Fragment {
 
         for (int i = livePvData.size() - 1; i >= 0; i--) {
             LivePvDatum livePvDatum = livePvData.get(i);
-            View row = layoutInflater.inflate(R.layout.table_live_row, null);
+            View row = layoutInflater.inflate(R.layout.row_live, null);
             ((TextView) row.findViewById(R.id.time)).setText(DateTimeUtils.formatTime(
                     livePvDatum.getHour(),
                     livePvDatum.getMinute(),

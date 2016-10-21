@@ -201,7 +201,7 @@ public class DayFragment extends Fragment {
 
         for (int i = historicalPvData.size() - 1; i >= 0; i--) {
             HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
-            View row = layoutInflater.inflate(R.layout.table_day_row, null);
+            View row = layoutInflater.inflate(R.layout.row_day, null);
             ((TextView) row.findViewById(R.id.date)).setText(DateTimeUtils.formatMonthDay(
                     historicalPvDatum.getMonth(),
                     historicalPvDatum.getDay(),

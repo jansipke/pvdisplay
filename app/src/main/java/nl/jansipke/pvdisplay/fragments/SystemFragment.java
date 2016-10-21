@@ -79,12 +79,14 @@ public class SystemFragment extends Fragment {
     }
 
     private void setTitle() {
-        SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
         String title = "System";
-        if (systemPvDatum != null &&
-                systemPvDatum.getSystemName() != null &&
-                systemPvDatum.getSystemName().length() > 0) {
-            title = systemPvDatum.getSystemName();
+        if (pvDataOperations != null) {
+            SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
+            if (systemPvDatum != null &&
+                    systemPvDatum.getSystemName() != null &&
+                    systemPvDatum.getSystemName().length() > 0) {
+                title = systemPvDatum.getSystemName();
+            }
         }
         AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
         if (appCompatActivity != null) {
@@ -180,7 +182,7 @@ public class SystemFragment extends Fragment {
                             statisticPvDatum.getActualDateToDay(), true)
             };
             for (int i = 0; i < keys.length; i++) {
-                View row = layoutInflater.inflate(R.layout.table_system_row, null);
+                View row = layoutInflater.inflate(R.layout.row_system, null);
                 ((TextView) row.findViewById(R.id.key)).setText(keys[i]);
                 ((TextView) row.findViewById(R.id.value)).setText(values[i]);
                 tableLinearLayout.addView(row);

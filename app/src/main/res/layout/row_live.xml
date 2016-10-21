@@ -5,32 +5,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/graph" />
-
+        android:layout_height="1dp"
+        android:background="@color/row_divider">
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -48,8 +25,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:text="@string/table_column_time" />
+            android:id="@+id/time" />
 
         <LinearLayout
             android:layout_width="20dp"
@@ -67,8 +43,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:text="@string/table_column_power" />
+            android:id="@+id/power" />
 
         <LinearLayout
             android:layout_width="20dp"
@@ -86,8 +61,7 @@
             android:layout_height="match_parent"
             android:padding="5dp"
             android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:text="@string/table_column_energy" />
+            android:id="@+id/energy" />
 
         <LinearLayout
             android:layout_width="20dp"
@@ -101,18 +75,5 @@
             android:layout_weight="1"/>
 
     </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10">
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/table" />
-
-    </ScrollView>
 
 </LinearLayout>
