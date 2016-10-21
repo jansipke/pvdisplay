@@ -211,7 +211,7 @@ public class LiveFragment extends Fragment {
         lineChartView.setLineChartData(lineChartData);
 
         lineChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 1350, livePvData.size(), 0); // TODO Use real maximum value
+        final Viewport viewport = new Viewport(-1, 1370, livePvData.size(), 0); // TODO Use real maximum value
         lineChartView.setMaximumViewport(viewport);
         lineChartView.setCurrentViewport(viewport);
     }

@@ -202,10 +202,12 @@ public class DayFragment extends Fragment {
         for (int i = historicalPvData.size() - 1; i >= 0; i--) {
             HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_day, null);
-            ((TextView) row.findViewById(R.id.date)).setText(DateTimeUtils.formatMonthDay(
-                    historicalPvDatum.getMonth(),
-                    historicalPvDatum.getDay(),
-                    true));
+            ((TextView) row.findViewById(R.id.date)).setText(
+                    DateTimeUtils.getDayOfWeek(
+                            historicalPvDatum.getYear(),
+                            historicalPvDatum.getMonth(),
+                            historicalPvDatum.getDay()) + " " +
+                    historicalPvDatum.getDay());
             ((ImageView) row.findViewById(R.id.condition)).setImageDrawable(
                     getDrawable(historicalPvDatum.getCondition()));
             ((TextView) row.findViewById(R.id.peak)).setText(

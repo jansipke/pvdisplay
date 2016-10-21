@@ -119,4 +119,12 @@ public class DateTimeUtils {
         yearMonthDay.day = calendar.get(Calendar.DAY_OF_MONTH);
         return yearMonthDay;
     }
+
+    public static String getDayOfWeek(int year, int month, int day) {
+        String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(year, month - 1, day);
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        return weekDays[dayOfWeek - 1];
+    }
 }
