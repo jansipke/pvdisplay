@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -130,8 +131,14 @@ public class DayFragment extends Fragment {
     }
 
     private void setTitle() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
+        if (appCompatActivity != null) {
+            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
+            if (supportActionBar != null) {
+                supportActionBar.setTitle(
+                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+            }
+        }
     }
 
     private void updateGraph(List<HistoricalPvDatum> historicalPvData) {

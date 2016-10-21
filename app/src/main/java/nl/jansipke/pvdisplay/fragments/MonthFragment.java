@@ -1,6 +1,7 @@
 package nl.jansipke.pvdisplay.fragments;
 
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -14,6 +15,12 @@ public class MonthFragment extends Fragment {
     }
 
     private void setTitle() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Month");
+        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
+        if (appCompatActivity != null) {
+            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
+            if (supportActionBar != null) {
+                supportActionBar.setTitle("Month");
+            }
+        }
     }
 }

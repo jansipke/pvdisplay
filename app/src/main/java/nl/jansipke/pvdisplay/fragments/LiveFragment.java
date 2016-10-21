@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -149,8 +150,14 @@ public class LiveFragment extends Fragment {
     }
 
     private void setTitle() {
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));
+        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
+        if (appCompatActivity != null) {
+            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
+            if (supportActionBar != null) {
+                supportActionBar.setTitle(
+                        DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));
+            }
+        }
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
