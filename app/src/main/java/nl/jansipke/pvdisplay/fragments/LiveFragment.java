@@ -1,4 +1,4 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -25,7 +25,6 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +36,8 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
+import nl.jansipke.pvdisplay.PvDataService;
+import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -44,7 +45,7 @@ import nl.jansipke.pvdisplay.utils.FormatUtils;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-public class LiveFragment extends Fragment implements Serializable {
+public class LiveFragment extends Fragment {
 
     private final static String TAG = LiveFragment.class.getSimpleName();
 
@@ -105,6 +106,11 @@ public class LiveFragment extends Fragment implements Serializable {
         return fragmentView;
     }
 
+    public void onFragmentSelected() {
+        Log.d(TAG, "Fragment selected");
+        setTitle();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -135,6 +141,11 @@ public class LiveFragment extends Fragment implements Serializable {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setTitle() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
+                DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
@@ -215,8 +226,7 @@ public class LiveFragment extends Fragment implements Serializable {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));
+        setTitle();
 
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);

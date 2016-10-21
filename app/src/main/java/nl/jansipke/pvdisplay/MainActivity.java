@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "Created main activity");
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager(), MainActivity.this));
+        TabsAdapter tabsAdapter = new TabsAdapter(getSupportFragmentManager(), MainActivity.this);
+        viewPager.setAdapter(tabsAdapter);
+        viewPager.addOnPageChangeListener(tabsAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -35,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                Log.i(TAG, "Clicked settings");
+                Log.d(TAG, "Clicked settings");
                 Toast.makeText(this, "Not implemented yet", Toast.LENGTH_SHORT).show();
                 break;
         }

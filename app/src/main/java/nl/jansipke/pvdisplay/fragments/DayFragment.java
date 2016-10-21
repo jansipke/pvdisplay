@@ -1,4 +1,4 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,6 +34,8 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
+import nl.jansipke.pvdisplay.PvDataService;
+import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -97,6 +99,11 @@ public class DayFragment extends Fragment {
         return fragmentView;
     }
 
+    public void onFragmentSelected() {
+        Log.d(TAG, "Fragment selected");
+        setTitle();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -117,6 +124,11 @@ public class DayFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setTitle() {
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
+                DateTimeUtils.formatDate(picked.year, picked.month, true));
     }
 
     private void updateGraph(List<HistoricalPvDatum> historicalPvData) {
@@ -199,8 +211,7 @@ public class DayFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(
-                DateTimeUtils.formatDate(picked.year, picked.month, true));
+        setTitle();
 
         List<HistoricalPvDatum> historicalPvData = pvDataOperations.loadHistorical(
                 picked.year, picked.month, 1,

@@ -1,4 +1,4 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,6 +22,8 @@ import android.widget.Toast;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import nl.jansipke.pvdisplay.PvDataService;
+import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
@@ -134,7 +136,7 @@ public class SystemFragment extends Fragment {
                             statisticPvDatum.getActualDateToDay(), true)
             };
             for (int i = 0; i < keys.length; i++) {
-                View row = inflater.inflate(R.layout.table_2column_row, null);
+                View row = inflater.inflate(R.layout.table_system_row, null);
                 ((TextView) row.findViewById(R.id.time)).setText(keys[i]);
                 ((TextView) row.findViewById(R.id.peak)).setText(values[i]);
                 tableLinearLayout.addView(row);
@@ -142,6 +144,10 @@ public class SystemFragment extends Fragment {
         }
 
         return view;
+    }
+
+    public void onFragmentSelected() {
+        Log.d(TAG, "Fragment selected");
     }
 
     @Override

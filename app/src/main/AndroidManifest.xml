@@ -18,8 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DailyActivity" />
-        <activity android:name=".LiveActivity" />
 
         <service
             android:name="PvDataService"

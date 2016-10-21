@@ -51,7 +51,7 @@
             android:text="@string/table_column_date" />
 
         <LinearLayout
-            android:layout_width="5dp"
+            android:layout_width="10dp"
             android:layout_height="match_parent" />
 
         <ImageView
@@ -60,7 +60,7 @@
             android:padding="5dp" />
 
         <LinearLayout
-            android:layout_width="25dp"
+            android:layout_width="20dp"
             android:layout_height="match_parent" />
 
         <TextView
