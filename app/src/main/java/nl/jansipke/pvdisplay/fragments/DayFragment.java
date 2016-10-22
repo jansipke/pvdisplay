@@ -181,14 +181,15 @@ public class DayFragment extends Fragment {
         Axis yAxis = Axis
                 .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
                 .setMaxLabelChars(6)
-                .setTextColor(Color.GRAY);
+                .setTextColor(Color.GRAY)
+                .setHasLines(true);
         yAxis.setName(getResources().getString(R.string.graph_legend_energy));
         columnChartData.setAxisYLeft(yAxis);
 
         columnChartView.setColumnChartData(columnChartData);
 
         columnChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 11000, newestDay, 0);
+        final Viewport viewport = new Viewport(-1, 10700, newestDay, 0);  // TODO Use real maximum value
         columnChartView.setMaximumViewport(viewport);
         columnChartView.setCurrentViewport(viewport);
     }
