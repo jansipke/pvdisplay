@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,11 +59,6 @@ public class SystemFragment extends Fragment {
         return fragmentView;
     }
 
-    public void onFragmentSelected() {
-        Log.d(TAG, "Fragment selected");
-        setTitle();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -76,25 +69,6 @@ public class SystemFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setTitle() {
-        String title = "System";
-        if (pvDataOperations != null) {
-            SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
-            if (systemPvDatum != null &&
-                    systemPvDatum.getSystemName() != null &&
-                    systemPvDatum.getSystemName().length() > 0) {
-                title = systemPvDatum.getSystemName();
-            }
-        }
-        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
-        if (appCompatActivity != null) {
-            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
-            if (supportActionBar != null) {
-                supportActionBar.setTitle(title);
-            }
-        }
     }
 
     private void updateScreen(boolean refreshData) {

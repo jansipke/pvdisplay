@@ -13,8 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -74,7 +71,6 @@ public class LiveFragment extends Fragment {
             picked.year = year;
             picked.month = month + 1;
             picked.day = day;
-            LiveFragment.this.setTitle();
             LiveFragment.this.updateScreen(false);
         }
     }
@@ -123,29 +119,21 @@ public class LiveFragment extends Fragment {
         return fragmentView;
     }
 
-    public void onFragmentSelected() {
-        Log.d(TAG, "Fragment selected");
-        setTitle();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addDays(picked, -1);
-                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
-                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                setTitle();
                 updateScreen(true);
                 break;
             case R.id.action_date:
@@ -156,23 +144,11 @@ public class LiveFragment extends Fragment {
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
-                setTitle();
                 updateScreen(false);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setTitle() {
-        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
-        if (appCompatActivity != null) {
-            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
-            if (supportActionBar != null) {
-                supportActionBar.setTitle(
-                        DateTimeUtils.formatDate(picked.year, picked.month, picked.day, true));
-            }
-        }
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
@@ -235,6 +211,11 @@ public class LiveFragment extends Fragment {
         }
     }
 
+    private void updateTitle(int year, int month, int day) {
+        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
+        textView.setText(DateTimeUtils.formatDate(year, month, day, true));
+    }
+
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
@@ -263,6 +244,7 @@ public class LiveFragment extends Fragment {
             PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
         }
 
+        updateTitle(picked.year, picked.month, picked.day);
         updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
         updateTable(livePvData);
     }

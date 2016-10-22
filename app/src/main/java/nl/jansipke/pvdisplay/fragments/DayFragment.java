@@ -11,8 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
@@ -113,45 +110,26 @@ public class DayFragment extends Fragment {
         return fragmentView;
     }
 
-    public void onFragmentSelected() {
-        Log.d(TAG, "Fragment selected");
-        setTitle();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addMonths(picked, -1);
-                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
-                setTitle();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                setTitle();
                 updateScreen(true);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setTitle() {
-        AppCompatActivity appCompatActivity = ((AppCompatActivity) getActivity());
-        if (appCompatActivity != null) {
-            ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
-            if (supportActionBar != null) {
-                supportActionBar.setTitle(
-                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            }
-        }
     }
 
     private void updateGraph(List<HistoricalPvDatum> historicalPvData) {
@@ -217,6 +195,11 @@ public class DayFragment extends Fragment {
         }
     }
 
+    private void updateTitle(int year, int month) {
+        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
+        textView.setText(DateTimeUtils.formatYearMonth(year, month, true));
+    }
+
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
@@ -251,6 +234,7 @@ public class DayFragment extends Fragment {
                     picked.year, picked.month, 1, picked.year, picked.month, 31);
         }
 
+        updateTitle(picked.year, picked.month);
         updateGraph(createFullMonth(picked.year, picked.month, historicalPvData));
         updateTable(historicalPvData);
     }
