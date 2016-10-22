@@ -54,6 +54,19 @@ public class DayFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
+    private List<HistoricalPvDatum> createFullMonth(int year, int month,
+                                            List<HistoricalPvDatum> historicalPvData) {
+        List<HistoricalPvDatum> fullMonth = new ArrayList<>();
+        for (int day = 1; day <= DateTimeUtils.getLastDayOfMonth(year, month); day++) {
+            fullMonth.add(new HistoricalPvDatum(year, month, day, 0, 0, ""));
+        }
+        for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
+            int fullMonthIndex = historicalPvDatum.getDay() - 1;
+            fullMonth.set(fullMonthIndex, historicalPvDatum);
+        }
+        return fullMonth;
+    }
+
     private Drawable getDrawable(String condition) {
         if (condition.equals("Cloudy")) {
             return ContextCompat.getDrawable(getActivity(), R.drawable.ic_cloudy);
@@ -150,7 +163,6 @@ public class DayFragment extends Fragment {
 
         List<Column> columns = new ArrayList<>();
         List<SubcolumnValue> subcolumnValues;
-        List<AxisValue> xAxisValues = new ArrayList<>();
         int newestDay = 0;
         for (int i = 0; i < historicalPvData.size(); i++) {
             HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
@@ -160,25 +172,11 @@ public class DayFragment extends Fragment {
                     ChartUtils.COLORS[0]));
             columns.add(new Column(subcolumnValues));
 
-            String xLabel = DateTimeUtils.formatMonthDay(
-                    historicalPvDatum.getMonth(),
-                    historicalPvDatum.getDay(),
-                    true);
-            AxisValue axisValue = new AxisValue(i);
-            axisValue.setLabel(xLabel);
-            xAxisValues.add(axisValue);
-
             if (historicalPvDatum.getDay() > newestDay) {
                 newestDay = historicalPvDatum.getDay();
             }
         }
         ColumnChartData columnChartData = new ColumnChartData(columns);
-
-        Axis xAxis = new Axis()
-                .setValues(xAxisValues)
-                .setMaxLabelChars(6)
-                .setTextColor(Color.GRAY);
-        columnChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
                 .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
@@ -251,7 +249,8 @@ public class DayFragment extends Fragment {
             PvDataService.callHistorical(getContext(),
                     picked.year, picked.month, 1, picked.year, picked.month, 31);
         }
-        updateGraph(historicalPvData);
+
+        updateGraph(createFullMonth(picked.year, picked.month, historicalPvData));
         updateTable(historicalPvData);
     }
 }

@@ -103,6 +103,12 @@ public class DateTimeUtils {
         return sb.toString();
     }
 
+    public static int getLastDayOfMonth(int year, int month) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(year, month - 1, 1);
+        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
     public static YearMonth getTodaysYearMonth() {
         Calendar calendar = new GregorianCalendar();
         YearMonth yearMonth = new YearMonth();

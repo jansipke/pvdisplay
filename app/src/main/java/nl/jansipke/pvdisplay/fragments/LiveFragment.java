@@ -79,6 +79,21 @@ public class LiveFragment extends Fragment {
         }
     }
 
+    private List<LivePvDatum> createFullDay(int year, int month, int day,
+                                            List<LivePvDatum> livePvData) {
+        List<LivePvDatum> fullDay = new ArrayList<>();
+        for (int hour = 0; hour < 24; hour++) {
+            for (int minute = 0; minute < 60; minute += 5) {
+                fullDay.add(new LivePvDatum(year, month, day, hour, minute, 0, 0));
+            }
+        }
+        for (LivePvDatum livePvDatum : livePvData) {
+            int fullDayIndex = livePvDatum.getHour() * 12 + livePvDatum.getMinute() / 5;
+            fullDay.set(fullDayIndex, livePvDatum);
+        }
+        return fullDay;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,21 +183,12 @@ public class LiveFragment extends Fragment {
         graphLinearLayout.addView(lineChartView);
 
         List<PointValue> powerPointValues = new ArrayList<>();
-        List<AxisValue> xAxisValues = new ArrayList<>();
         for (int i = 0; i < livePvData.size(); i++) {
             LivePvDatum livePvDatum = livePvData.get(i);
 
             float x = (float) i;
             float y = (float) livePvDatum.getPowerGeneration();
             powerPointValues.add(new PointValue(x, y));
-
-            String xLabel = DateTimeUtils.formatTime(
-                    livePvDatum.getHour(),
-                    livePvDatum.getMinute(),
-                    true);
-            AxisValue axisValue = new AxisValue(x);
-            axisValue.setLabel(xLabel);
-            xAxisValues.add(axisValue);
         }
         List<Line> lines = new ArrayList<>();
         Line powerLine = new Line(powerPointValues)
@@ -193,12 +199,6 @@ public class LiveFragment extends Fragment {
         lines.add(powerLine);
         LineChartData lineChartData = new LineChartData();
         lineChartData.setLines(lines);
-
-        Axis xAxis = new Axis()
-                .setValues(xAxisValues)
-                .setMaxLabelChars(6)
-                .setTextColor(Color.GRAY);
-        lineChartData.setAxisXBottom(xAxis);
 
         Axis yAxis = Axis
                 .generateAxisFromRange(0, 1250, 250) // TODO Use real maximum value
@@ -263,7 +263,7 @@ public class LiveFragment extends Fragment {
             PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
         }
 
-        updateGraph(livePvData);
+        updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
         updateTable(livePvData);
     }
 }
