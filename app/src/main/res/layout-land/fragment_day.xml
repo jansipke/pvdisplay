@@ -58,7 +58,10 @@
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
-                    android:padding="5dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:text="@string/column_date" />
@@ -82,7 +85,10 @@
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
-                    android:padding="5dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:text="@string/column_peak" />
@@ -101,7 +107,10 @@
                 <TextView
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
-                    android:padding="5dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
                     android:textAlignment="textEnd"
                     android:textStyle="bold"
                     android:text="@string/column_energy" />

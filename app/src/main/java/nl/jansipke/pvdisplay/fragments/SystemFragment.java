@@ -106,6 +106,7 @@ public class SystemFragment extends Fragment {
             LinearLayout tableLinearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
             tableLinearLayout.removeAllViews();
             String[] keys = {
+                    "System name",
                     "System size",
                     "Number of panels",
                     "Panel power",
@@ -122,6 +123,7 @@ public class SystemFragment extends Fragment {
                     "Last date"
             };
             String[] values = {
+                    systemPvDatum.getSystemName(),
                     getResources().getString(R.string.value_w,
                             FormatUtils.POWER_FORMAT.format(systemPvDatum.getSystemSize())),
                     systemPvDatum.getNumberOfPanels() + "",
