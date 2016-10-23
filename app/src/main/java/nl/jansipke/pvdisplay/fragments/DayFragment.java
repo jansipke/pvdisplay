@@ -45,6 +45,9 @@ public class DayFragment extends Fragment {
 
     private final static String TAG = DayFragment.class.getSimpleName();
 
+    private final static String STATE_KEY_YEAR = "year";
+    private final static String STATE_KEY_MONTH = "month";
+
     private static DateTimeUtils.YearMonth picked;
 
     private View fragmentView;
@@ -65,37 +68,46 @@ public class DayFragment extends Fragment {
     }
 
     private Drawable getDrawable(String condition) {
-        if (condition.equals("Cloudy")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_cloudy);
-        } else if (condition.equals("Fine")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_fine);
-        } else if (condition.equals("Mostly Cloudy")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_mostly_cloudy);
-        } else if (condition.equals("Partly Cloudy")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_partly_cloudy);
-        } else if (condition.equals("Showers")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_showers);
-        } else if (condition.equals("Snow")) {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_snow);
-        } else {
-            return ContextCompat.getDrawable(getActivity(), R.drawable.ic_help_black_48dp);
+        switch(condition) {
+            case "Cloudy":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_cloudy);
+            case "Fine":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_fine);
+            case "Mostly Cloudy":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_mostly_cloudy);
+            case "Partly Cloudy":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_partly_cloudy);
+            case "Showers":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_showers);
+            case "Snow":
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_snow);
+            default:
+                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_help_black_48dp);
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
 
-        picked = DateTimeUtils.getTodaysYearMonth();
-
         pvDataOperations = new PvDataOperations(getContext());
+
+        if (savedInstanceState != null) {
+            picked = new DateTimeUtils.YearMonth();
+            picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
+            picked.month = savedInstanceState.getInt(STATE_KEY_MONTH);
+        } else {
+            picked = DateTimeUtils.getTodaysYearMonth();
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_day, menu);
         super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.menu_day, menu);
     }
 
     @Nullable
@@ -103,6 +115,7 @@ public class DayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_day, container, false);
@@ -130,6 +143,16 @@ public class DayFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d(TAG, "Saving fragment state");
+
+        outState.putInt(STATE_KEY_YEAR, picked.year);
+        outState.putInt(STATE_KEY_MONTH, picked.month);
     }
 
     private void updateGraph(List<HistoricalPvDatum> historicalPvData) {

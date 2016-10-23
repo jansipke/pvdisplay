@@ -24,13 +24,10 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:id="@+id/graph" />
 
     </LinearLayout>
@@ -57,7 +54,7 @@
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/table_column_time" />
+            android:text="@string/column_time" />
 
         <LinearLayout
             android:layout_width="20dp"
@@ -76,7 +73,7 @@
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/table_column_power" />
+            android:text="@string/column_power" />
 
         <LinearLayout
             android:layout_width="20dp"
@@ -95,7 +92,7 @@
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/table_column_energy" />
+            android:text="@string/column_energy" />
 
         <LinearLayout
             android:layout_width="20dp"

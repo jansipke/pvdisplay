@@ -5,11 +5,11 @@
     <string name="graph_legend_power">Power (W)</string>
     <string name="graph_legend_energy">Energy (kWh)</string>
 
-    <string name="table_column_time">Time</string>
-    <string name="table_column_date">Date</string>
-    <string name="table_column_power">Power\n(W)</string>
-    <string name="table_column_peak">Peak\n(W)</string>
-    <string name="table_column_energy">Energy\n(kWh)</string>
+    <string name="column_time">Time</string>
+    <string name="column_date">Date</string>
+    <string name="column_power">Power\n(W)</string>
+    <string name="column_peak">Peak\n(W)</string>
+    <string name="column_energy">Energy\n(kWh)</string>
 
     <string name="preferences_pv_data_file">preferences_pv_data</string>
     <string name="preferences_object_statistic">statistic</string>
@@ -26,5 +26,7 @@
     <string name="value_kwh">%s kWh</string>
     <string name="value_days">%d days</string>
     <string name="value_degrees">%s degrees</string>
+
+    <string name="image_condition">Condition</string>
 
 </resources>

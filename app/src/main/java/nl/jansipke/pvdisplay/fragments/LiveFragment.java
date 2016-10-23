@@ -47,6 +47,10 @@ public class LiveFragment extends Fragment {
 
     private final static String TAG = LiveFragment.class.getSimpleName();
 
+    private final static String STATE_KEY_YEAR = "year";
+    private final static String STATE_KEY_MONTH = "month";
+    private final static String STATE_KEY_DAY = "day";
+
     private static DatePickerListener datePickerListener;
     private static DateTimeUtils.YearMonthDay picked;
 
@@ -93,18 +97,28 @@ public class LiveFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
 
         datePickerListener = new DatePickerListener();
-        picked = DateTimeUtils.getTodaysYearMonthDay();
 
         pvDataOperations = new PvDataOperations(getContext());
+
+        if (savedInstanceState != null) {
+            picked = new DateTimeUtils.YearMonthDay();
+            picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
+            picked.month = savedInstanceState.getInt(STATE_KEY_MONTH);
+            picked.day = savedInstanceState.getInt(STATE_KEY_DAY);
+        } else {
+            picked = DateTimeUtils.getTodaysYearMonthDay();
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_live, menu);
         super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.menu_live, menu);
     }
 
     @Nullable
@@ -112,6 +126,7 @@ public class LiveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_live, container, false);
@@ -149,6 +164,17 @@ public class LiveFragment extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Log.d(TAG, "Saving fragment state");
+
+        outState.putInt(STATE_KEY_YEAR, picked.year);
+        outState.putInt(STATE_KEY_MONTH, picked.month);
+        outState.putInt(STATE_KEY_DAY, picked.day);
     }
 
     private void updateGraph(List<LivePvDatum> livePvData) {
