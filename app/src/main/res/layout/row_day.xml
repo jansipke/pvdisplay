@@ -17,7 +17,6 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
             android:layout_weight="3" />
 
         <TextView
@@ -29,8 +28,7 @@
 
         <LinearLayout
             android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary" />
+            android:layout_height="match_parent" />
 
         <ImageView
             android:layout_width="20dp"
@@ -40,7 +38,6 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
             android:layout_weight="1" />
 
         <TextView
@@ -52,13 +49,11 @@
 
         <LinearLayout
             android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary" />
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
             android:layout_weight="1"/>
 
         <TextView
@@ -70,13 +65,11 @@
 
         <LinearLayout
             android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary" />
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/colorAccent"
             android:layout_weight="3"/>
 
     </LinearLayout>
