@@ -28,8 +28,6 @@ public class PvDataService extends Service {
     private final static String API_KEY = "4054f46dd2c8e71855122e964c8e099cb9394d69";
     private final static String SYSTEM_ID = "23329";
     private final static String URL_BASE = "http://pvoutput.org/service/r2/";
-//    private final static String URL = "http://pvoutput.org/service/r2/getoutput.jsp?df=20160101&dt=20160801&limit=50";
-
 
     public static void callHistorical(Context context,
                                       int fromYear, int fromMonth, int fromDay,
@@ -85,23 +83,15 @@ public class PvDataService extends Service {
                     String url = URL_BASE + "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     String result = NetworkUtils.httpGet(url, headers);
 
-                    // Parse data
+                    // Parse and save data
                     List<HistoricalPvDatum> historicalPvData = new PvOutputParser().parseHistorical(result);
-                    Log.i(TAG, "Downloaded " + historicalPvData.size() + " data points");
-
-                    // Save data
                     new PvDataOperations(getApplicationContext()).saveHistorical(historicalPvData);
 
-                    // Notify that data has been saved
-                    Intent intent = new Intent(PvDataService.class.getName());
-                    intent.putExtra("type", "historical");
-                    intent.putExtra("fromDate", fromDate);
-                    intent.putExtra("toDate", toDate);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    reportStatus(true, "Downloaded " + historicalPvData.size() + " data points");
                 } catch (IOException e) {
-                    Log.w(TAG, "Could not download historical PV data");
+                    reportStatus(false, "Could not download historical PV data: " + e.getMessage());
                 } catch (ParseException e) {
-                    Log.w(TAG, "Could not parse historical PV data");
+                    reportStatus(false, "Could not parse historical PV data: " + e.getMessage());
                 }
             }
         }).start();
@@ -121,22 +111,15 @@ public class PvDataService extends Service {
                     String url = URL_BASE + "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
                     String result = NetworkUtils.httpGet(url, headers);
 
-                    // Parse data
+                    // Parse and save data
                     List<LivePvDatum> livePvData = new PvOutputParser().parseLive(result);
-                    Log.i(TAG, "Downloaded " + livePvData.size() + " data points");
-
-                    // Save data
                     new PvDataOperations(getApplicationContext()).saveLive(livePvData);
 
-                    // Notify that data has been saved
-                    Intent intent = new Intent(PvDataService.class.getName());
-                    intent.putExtra("type", "live");
-                    intent.putExtra("date", date);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    reportStatus(true, "Downloaded " + livePvData.size() + " data points");
                 } catch (IOException e) {
-                    Log.w(TAG, "Could not download live PV data");
+                    reportStatus(false, "Could not download live PV data: " + e.getMessage());
                 } catch (ParseException e) {
-                    Log.w(TAG, "Could not parse live PV data");
+                    reportStatus(false, "Could not parse live PV data: " + e.getMessage());
                 }
             }
         }).start();
@@ -155,21 +138,15 @@ public class PvDataService extends Service {
                     String url = URL_BASE + "getstatistic.jsp";
                     String result = NetworkUtils.httpGet(url, headers);
 
-                    // Parse data
+                    // Parse and save data
                     StatisticPvDatum statisticPvDatum = new PvOutputParser().parseStatistic(result);
-                    Log.i(TAG, "Downloaded statistic PV data");
-
-                    // Save data
                     new PvDataOperations(getApplicationContext()).saveStatistic(statisticPvDatum);
 
-                    // Notify that data has been saved
-                    Intent intent = new Intent(PvDataService.class.getName());
-                    intent.putExtra("type", "statistic");
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    reportStatus(true, "Downloaded statistic PV data");
                 } catch (IOException e) {
-                    Log.w(TAG, "Could not download statistic PV data");
+                    reportStatus(false, "Could not download statistic PV data: " + e.getMessage());
                 } catch (ParseException e) {
-                    Log.w(TAG, "Could not parse statistic PV data");
+                    reportStatus(false, "Could not parse statistic PV data: " + e.getMessage());
                 }
             }
         }).start();
@@ -188,21 +165,15 @@ public class PvDataService extends Service {
                     String url = URL_BASE + "getsystem.jsp";
                     String result = NetworkUtils.httpGet(url, headers);
 
-                    // Parse data
+                    // Parse and save data
                     SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
-                    Log.i(TAG, "Downloaded system PV data");
-
-                    // Save data
                     new PvDataOperations(getApplicationContext()).saveSystem(systemPvDatum);
 
-                    // Notify that data has been saved
-                    Intent intent = new Intent(PvDataService.class.getName());
-                    intent.putExtra("type", "system");
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    reportStatus(true, "Downloaded system PV data");
                 } catch (IOException e) {
-                    Log.w(TAG, "Could not download system PV data");
+                    reportStatus(false, "Could not download system PV data: " + e.getMessage());
                 } catch (ParseException e) {
-                    Log.w(TAG, "Could not parse system PV data");
+                    reportStatus(false, "Could not parse system PV data: " + e.getMessage());
                 }
             }
         }).start();
@@ -230,7 +201,7 @@ public class PvDataService extends Service {
                 downloadSystem();
             }
         } else {
-            Log.w(TAG, "Can not download PV data because network is not available");
+            Log.w(TAG, "Could not download PV data because network is unavailable");
         }
         return Service.START_NOT_STICKY;
     }
@@ -239,5 +210,17 @@ public class PvDataService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void reportStatus(boolean success, String message) {
+        if (success) {
+            Log.d(TAG, message);
+        } else {
+            Log.w(TAG, message);
+        }
+        Intent intent = new Intent(PvDataService.class.getName());
+        intent.putExtra("success", success);
+        intent.putExtra("message", message);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +261,14 @@ public class LiveFragment extends Fragment {
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    updateScreen(false);
+                    if (intent.getBooleanExtra("success", true)) {
+                        updateScreen(false);
+                    } else {
+                        if (getContext() != null) {
+                            Toast.makeText(getContext(), intent.getStringExtra("message"),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             };
             IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
