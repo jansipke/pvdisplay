@@ -3,6 +3,7 @@ package nl.jansipke.pvdisplay.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.net.URL;
 import java.util.Map;
 
 public class NetworkUtils {
+
+    private final static String TAG = NetworkUtils.class.getSimpleName();
 
     public static String httpGet(String urlString, Map<String, String> headers) throws IOException {
         InputStream is = null;
@@ -30,10 +33,16 @@ public class NetworkUtils {
             conn.connect();
             is = conn.getInputStream();
             return inputStreamToString(is);
-
+        } catch (IOException e) {
+            Log.w(TAG, "Could not open network connection");
+            throw e;
         } finally {
             if (is != null) {
-                is.close();
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    Log.w(TAG, "Could not close network connection");
+                }
             }
         }
     }

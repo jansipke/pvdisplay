@@ -33,7 +33,7 @@ public class PvDataOperations {
 
     public List<HistoricalPvDatum> loadHistorical(int fromYear, int fromMonth, int fromDay,
                                                   int toYear, int toMonth, int toDay) {
-        Log.i(TAG, "Loading historical PV data from " +
+        Log.d(TAG, "Loading historical PV data from " +
                 DateTimeUtils.formatDate(fromYear, fromMonth, fromDay, true) +
                 " to " + DateTimeUtils.formatDate(toYear, toMonth, toDay, true));
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
@@ -75,13 +75,13 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.i(TAG, "Loaded " + historicalPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + historicalPvData.size() + " rows");
 
         return historicalPvData;
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
-        Log.i(TAG, "Loading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+        Log.d(TAG, "Loading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -127,45 +127,45 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.i(TAG, "Loaded " + livePvData.size() + " rows");
+        Log.d(TAG, "Loaded " + livePvData.size() + " rows");
 
         return livePvData;
     }
 
     public StatisticPvDatum loadStatistic() {
-        Log.i(TAG, "Loading statistic PV data");
+        Log.d(TAG, "Loading statistic PV data");
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(context.getString(R.string.preferences_object_statistic), null);
         if (json != null) {
-            Log.i(TAG, "Loaded from preferences");
+            Log.d(TAG, "Loaded from preferences");
             return new Gson().fromJson(json, StatisticPvDatum.class);
         } else {
-            Log.i(TAG, "No statistic data found in preferences");
+            Log.d(TAG, "No statistic data found in preferences");
             return null;
         }
     }
 
     public SystemPvDatum loadSystem() {
-        Log.i(TAG, "Loading system PV data");
+        Log.d(TAG, "Loading system PV data");
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(context.getString(R.string.preferences_object_system), null);
         if (json != null) {
-            Log.i(TAG, "Loaded from preferences");
+            Log.d(TAG, "Loaded from preferences");
             return new Gson().fromJson(json, SystemPvDatum.class);
         } else {
-            Log.i(TAG, "No system data found in preferences");
+            Log.d(TAG, "No system data found in preferences");
             return null;
         }
     }
 
     public void saveHistorical(List<HistoricalPvDatum> historicalPvData) {
-        Log.i(TAG, "Saving historical PV data");
+        Log.d(TAG, "Saving historical PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -198,11 +198,11 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.i(TAG, "Saved " + historicalPvData.size() + " rows");
+        Log.d(TAG, "Saved " + historicalPvData.size() + " rows");
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
-        Log.i(TAG, "Saving live PV data");
+        Log.d(TAG, "Saving live PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -231,11 +231,11 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.i(TAG, "Saved " + livePvData.size() + " rows");
+        Log.d(TAG, "Saved " + livePvData.size() + " rows");
     }
 
     public void saveStatistic(StatisticPvDatum statisticPvDatum) {
-        Log.i(TAG, "Saving statistic PV data");
+        Log.d(TAG, "Saving statistic PV data");
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
@@ -245,11 +245,11 @@ public class PvDataOperations {
         editor.putString(context.getString(R.string.preferences_object_statistic), json);
         editor.apply();
 
-        Log.i(TAG, "Saved to preferences");
+        Log.d(TAG, "Saved to preferences");
     }
 
     public void saveSystem(SystemPvDatum systemPvDatum) {
-        Log.i(TAG, "Saving system PV data");
+        Log.d(TAG, "Saving system PV data");
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
@@ -259,6 +259,6 @@ public class PvDataOperations {
         editor.putString(context.getString(R.string.preferences_object_system), json);
         editor.apply();
 
-        Log.i(TAG, "Saved to preferences");
+        Log.d(TAG, "Saved to preferences");
     }
 }

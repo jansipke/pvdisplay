@@ -3,17 +3,20 @@ package nl.jansipke.pvdisplay.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-public class PvDataHelper extends SQLiteOpenHelper {
+class PvDataHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "PvData.db";
-    public static final int DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "PvData.db";
+    private static final int DATABASE_VERSION = 1;
+    private final static String TAG = PvDataHelper.class.getSimpleName();
 
-    public PvDataHelper(Context context) {
+    PvDataHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public void onCreate(SQLiteDatabase db) {
+        Log.d(TAG, "Creating database tables");
         db.execSQL("CREATE TABLE " + PvDataContract.LivePvData.TABLE_NAME + " (" +
                 PvDataContract.LivePvData._ID + " INTEGER PRIMARY KEY," +
                 PvDataContract.LivePvData.COLUMN_NAME_YEAR + " INTEGER," +
@@ -46,12 +49,14 @@ public class PvDataHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "Upgrading database tables");
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.HistoricalPvData.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.LivePvData.TABLE_NAME);
         onCreate(db);
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.d(TAG, "Downgrading database tables");
         onUpgrade(db, oldVersion, newVersion);
     }
 }

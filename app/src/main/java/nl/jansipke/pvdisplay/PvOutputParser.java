@@ -9,15 +9,15 @@ import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 
-public class PvOutputParser {
+class PvOutputParser {
 
     private final static String LINE_SEPARATOR = ";";
     private final static String ITEM_SEPARATOR = ",";
 
-    public PvOutputParser() {
+    PvOutputParser() {
     }
 
-    public List<HistoricalPvDatum> parseHistorical(String data) throws ParseException {
+    List<HistoricalPvDatum> parseHistorical(String data) throws ParseException {
         try {
             List<HistoricalPvDatum> historicalPvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
@@ -44,7 +44,7 @@ public class PvOutputParser {
         }
     }
 
-    public List<LivePvDatum> parseLive(String data) throws ParseException {
+    List<LivePvDatum> parseLive(String data) throws ParseException {
         try {
             List<LivePvDatum> livePvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
@@ -74,7 +74,7 @@ public class PvOutputParser {
         }
     }
 
-    public StatisticPvDatum parseStatistic(String data) throws ParseException {
+    StatisticPvDatum parseStatistic(String data) throws ParseException {
         try {
             String[] items = data.split(ITEM_SEPARATOR);
             double energyGenerated = Double.parseDouble(items[0]);
@@ -114,7 +114,7 @@ public class PvOutputParser {
         }
     }
 
-    public SystemPvDatum parseSystem(String data) throws ParseException {
+    SystemPvDatum parseSystem(String data) throws ParseException {
         try {
             String[] items = data.split(ITEM_SEPARATOR);
 

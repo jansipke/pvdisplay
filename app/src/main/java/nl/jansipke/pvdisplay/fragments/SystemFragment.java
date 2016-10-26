@@ -78,9 +78,9 @@ public class SystemFragment extends Fragment {
         SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
         if (refreshData || statisticPvDatum == null || systemPvDatum == null) {
             if (refreshData) {
-                Log.i(TAG, "Refreshing statistic and system PV data");
+                Log.d(TAG, "Refreshing statistic and system PV data");
             } else {
-                Log.i(TAG, "No statistic or system PV data");
+                Log.d(TAG, "No statistic or system PV data");
             }
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                 @Override

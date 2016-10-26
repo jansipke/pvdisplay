@@ -102,6 +102,7 @@ public class DayFragment extends Fragment {
         pvDataOperations = new PvDataOperations(getContext());
 
         if (savedInstanceState != null) {
+            Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonth();
             picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
             picked.month = savedInstanceState.getInt(STATE_KEY_MONTH);
@@ -245,12 +246,12 @@ public class DayFragment extends Fragment {
 
         if (refreshData || historicalPvData.size() == 0) {
             if (refreshData) {
-                Log.i(TAG, "Refreshing historical PV data for month " +
+                Log.d(TAG, "Refreshing historical PV data for month " +
                         DateTimeUtils.formatDate(picked.year, picked.month, 1, true) +
                         " to " +
                         DateTimeUtils.formatDate(picked.year, picked.month, 31, true));
             } else {
-                Log.i(TAG, "No live PV data for " +
+                Log.d(TAG, "No live PV data for " +
                         DateTimeUtils.formatDate(picked.year, picked.month, 1, true) +
                         " to " +
                         DateTimeUtils.formatDate(picked.year, picked.month, 31, true));

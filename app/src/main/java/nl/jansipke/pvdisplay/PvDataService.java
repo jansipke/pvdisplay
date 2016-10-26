@@ -66,7 +66,7 @@ public class PvDataService extends Service {
 
     private void downloadHistorical(final int fromYear, final int fromMonth, final int fromDay,
                                     final int toYear, final int toMonth, final int toDay) {
-        Log.i(TAG, "Downloading historical PV data for " +
+        Log.d(TAG, "Downloading historical PV data for " +
                 DateTimeUtils.formatDate(fromYear, fromMonth, fromDay, true) +
                 " to " +
                 DateTimeUtils.formatDate(toYear, toMonth, toDay, true));
@@ -98,7 +98,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadLive(final int year, final int month, final int day) {
-        Log.i(TAG, "Downloading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
+        Log.d(TAG, "Downloading live PV data for " + DateTimeUtils.formatDate(year, month, day, true));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -126,7 +126,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadStatistic() {
-        Log.i(TAG, "Downloading statistic PV data");
+        Log.d(TAG, "Downloading statistic PV data");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -153,7 +153,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadSystem() {
-        Log.i(TAG, "Downloading system PV data");
+        Log.d(TAG, "Downloading system PV data");
         new Thread(new Runnable() {
             @Override
             public void run() {

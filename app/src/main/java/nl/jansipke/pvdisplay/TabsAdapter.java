@@ -12,7 +12,7 @@ import nl.jansipke.pvdisplay.fragments.MonthFragment;
 import nl.jansipke.pvdisplay.fragments.SystemFragment;
 import nl.jansipke.pvdisplay.fragments.YearFragment;
 
-public class TabsAdapter extends FragmentPagerAdapter {
+class TabsAdapter extends FragmentPagerAdapter {
 
     private final static String TAG = TabsAdapter.class.getSimpleName();
     private final static String[] tabTitles = {"Live", "Day", "Month", "Year", "System"};
@@ -23,7 +23,7 @@ public class TabsAdapter extends FragmentPagerAdapter {
     private final YearFragment yearFragment;
     private final SystemFragment systemFragment;
 
-    public TabsAdapter(FragmentManager fragmentManager, Context context) {
+    TabsAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
 
         liveFragment = new LiveFragment();

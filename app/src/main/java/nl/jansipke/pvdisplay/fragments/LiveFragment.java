@@ -106,6 +106,7 @@ public class LiveFragment extends Fragment {
         pvDataOperations = new PvDataOperations(getContext());
 
         if (savedInstanceState != null) {
+            Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonthDay();
             picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
             picked.month = savedInstanceState.getInt(STATE_KEY_MONTH);
@@ -254,10 +255,10 @@ public class LiveFragment extends Fragment {
 
         if (refreshData || livePvData.size() == 0) {
             if (refreshData) {
-                Log.i(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(
+                Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(
                         picked.year, picked.month, picked.day, true));
             } else {
-                Log.i(TAG, "No live PV data for " + DateTimeUtils.formatDate(
+                Log.d(TAG, "No live PV data for " + DateTimeUtils.formatDate(
                         picked.year, picked.month, picked.day, true));
             }
 
