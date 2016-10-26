@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -69,21 +70,26 @@ public class DayFragment extends Fragment {
     }
 
     private Drawable getDrawable(String condition) {
-        switch(condition) {
-            case "Cloudy":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_cloudy);
-            case "Fine":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_fine);
-            case "Mostly Cloudy":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_mostly_cloudy);
-            case "Partly Cloudy":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_partly_cloudy);
-            case "Showers":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_showers);
-            case "Snow":
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_snow);
-            default:
-                return ContextCompat.getDrawable(getActivity(), R.drawable.ic_help_black_48dp);
+        final FragmentActivity activity = getActivity();
+        if (activity != null) {
+            switch (condition) {
+                case "Cloudy":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_cloudy);
+                case "Fine":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_fine);
+                case "Mostly Cloudy":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_mostly_cloudy);
+                case "Partly Cloudy":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_partly_cloudy);
+                case "Showers":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_showers);
+                case "Snow":
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_snow);
+                default:
+                    return ContextCompat.getDrawable(activity, R.drawable.ic_help_black_48dp);
+            }
+        } else {
+            return null;
         }
     }
 
@@ -160,40 +166,43 @@ public class DayFragment extends Fragment {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
-        ColumnChartView columnChartView = new ColumnChartView(getContext());
-        graphLinearLayout.addView(columnChartView);
+        final Context context = getContext();
+        if (context != null) {
+            ColumnChartView columnChartView = new ColumnChartView(context);
+            graphLinearLayout.addView(columnChartView);
 
-        List<Column> columns = new ArrayList<>();
-        List<SubcolumnValue> subcolumnValues;
-        int newestDay = 0;
-        for (int i = 0; i < historicalPvData.size(); i++) {
-            HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
-            subcolumnValues = new ArrayList<>();
-            subcolumnValues.add(new SubcolumnValue(
-                    (float) historicalPvDatum.getEnergyGenerated(),
-                    ChartUtils.COLORS[0]));
-            columns.add(new Column(subcolumnValues));
+            List<Column> columns = new ArrayList<>();
+            List<SubcolumnValue> subcolumnValues;
+            int newestDay = 0;
+            for (int i = 0; i < historicalPvData.size(); i++) {
+                HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
+                subcolumnValues = new ArrayList<>();
+                subcolumnValues.add(new SubcolumnValue(
+                        (float) historicalPvDatum.getEnergyGenerated(),
+                        ChartUtils.COLORS[0]));
+                columns.add(new Column(subcolumnValues));
 
-            if (historicalPvDatum.getDay() > newestDay) {
-                newestDay = historicalPvDatum.getDay();
+                if (historicalPvDatum.getDay() > newestDay) {
+                    newestDay = historicalPvDatum.getDay();
+                }
             }
+            ColumnChartData columnChartData = new ColumnChartData(columns);
+
+            Axis yAxis = Axis
+                    .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
+                    .setMaxLabelChars(6)
+                    .setTextColor(Color.GRAY)
+                    .setHasLines(true);
+            yAxis.setName(getResources().getString(R.string.graph_legend_energy));
+            columnChartData.setAxisYLeft(yAxis);
+
+            columnChartView.setColumnChartData(columnChartData);
+
+            columnChartView.setViewportCalculationEnabled(false);
+            final Viewport viewport = new Viewport(-1, 10700, newestDay, 0);  // TODO Use real maximum value
+            columnChartView.setMaximumViewport(viewport);
+            columnChartView.setCurrentViewport(viewport);
         }
-        ColumnChartData columnChartData = new ColumnChartData(columns);
-
-        Axis yAxis = Axis
-                .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
-                .setMaxLabelChars(6)
-                .setTextColor(Color.GRAY)
-                .setHasLines(true);
-        yAxis.setName(getResources().getString(R.string.graph_legend_energy));
-        columnChartData.setAxisYLeft(yAxis);
-
-        columnChartView.setColumnChartData(columnChartData);
-
-        columnChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 10700, newestDay, 0);  // TODO Use real maximum value
-        columnChartView.setMaximumViewport(viewport);
-        columnChartView.setCurrentViewport(viewport);
     }
 
     private void updateTable(List<HistoricalPvDatum> historicalPvData) {
@@ -209,8 +218,11 @@ public class DayFragment extends Fragment {
                             historicalPvDatum.getMonth(),
                             historicalPvDatum.getDay()) + " " +
                     historicalPvDatum.getDay());
-            ((ImageView) row.findViewById(R.id.condition)).setImageDrawable(
-                    getDrawable(historicalPvDatum.getCondition()));
+            final Drawable drawable = getDrawable(historicalPvDatum.getCondition());
+            if (drawable != null) {
+                ((ImageView) row.findViewById(R.id.condition)).setImageDrawable(
+                        drawable);
+            }
             ((TextView) row.findViewById(R.id.peak)).setText(
                     FormatUtils.POWER_FORMAT.format(historicalPvDatum.getPeakPower()));
             ((TextView) row.findViewById(R.id.energy)).setText(
@@ -250,10 +262,8 @@ public class DayFragment extends Fragment {
                     if (intent.getBooleanExtra("success", true)) {
                         updateScreen(false);
                     } else {
-                        if (getContext() != null) {
-                            Toast.makeText(getContext(), intent.getStringExtra("message"),
-                                    Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(context, intent.getStringExtra("message"),
+                                Toast.LENGTH_LONG).show();
                     }
                 }
             };

@@ -182,41 +182,44 @@ public class LiveFragment extends Fragment {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
-        LineChartView lineChartView = new LineChartView(getContext());
-        graphLinearLayout.addView(lineChartView);
+        final Context context = getContext();
+        if (context != null) {
+            LineChartView lineChartView = new LineChartView(context);
+            graphLinearLayout.addView(lineChartView);
 
-        List<PointValue> powerPointValues = new ArrayList<>();
-        for (int i = 0; i < livePvData.size(); i++) {
-            LivePvDatum livePvDatum = livePvData.get(i);
+            List<PointValue> powerPointValues = new ArrayList<>();
+            for (int i = 0; i < livePvData.size(); i++) {
+                LivePvDatum livePvDatum = livePvData.get(i);
 
-            float x = (float) i;
-            float y = (float) livePvDatum.getPowerGeneration();
-            powerPointValues.add(new PointValue(x, y));
+                float x = (float) i;
+                float y = (float) livePvDatum.getPowerGeneration();
+                powerPointValues.add(new PointValue(x, y));
+            }
+            List<Line> lines = new ArrayList<>();
+            Line powerLine = new Line(powerPointValues)
+                    .setColor(ChartUtils.COLORS[0])
+                    .setHasPoints(false)
+                    .setCubic(true)
+                    .setFilled(true);
+            lines.add(powerLine);
+            LineChartData lineChartData = new LineChartData();
+            lineChartData.setLines(lines);
+
+            Axis yAxis = Axis
+                    .generateAxisFromRange(0, 1250, 250) // TODO Use real maximum value
+                    .setMaxLabelChars(6)
+                    .setTextColor(Color.GRAY)
+                    .setHasLines(true);
+            yAxis.setName(getResources().getString(R.string.graph_legend_power));
+            lineChartData.setAxisYLeft(yAxis);
+
+            lineChartView.setLineChartData(lineChartData);
+
+            lineChartView.setViewportCalculationEnabled(false);
+            final Viewport viewport = new Viewport(-1, 1335, livePvData.size(), 0); // TODO Use real maximum value
+            lineChartView.setMaximumViewport(viewport);
+            lineChartView.setCurrentViewport(viewport);
         }
-        List<Line> lines = new ArrayList<>();
-        Line powerLine = new Line(powerPointValues)
-                .setColor(ChartUtils.COLORS[0])
-                .setHasPoints(false)
-                .setCubic(true)
-                .setFilled(true);
-        lines.add(powerLine);
-        LineChartData lineChartData = new LineChartData();
-        lineChartData.setLines(lines);
-
-        Axis yAxis = Axis
-                .generateAxisFromRange(0, 1250, 250) // TODO Use real maximum value
-                .setMaxLabelChars(6)
-                .setTextColor(Color.GRAY)
-                .setHasLines(true);
-        yAxis.setName(getResources().getString(R.string.graph_legend_power));
-        lineChartData.setAxisYLeft(yAxis);
-
-        lineChartView.setLineChartData(lineChartData);
-
-        lineChartView.setViewportCalculationEnabled(false);
-        final Viewport viewport = new Viewport(-1, 1335, livePvData.size(), 0); // TODO Use real maximum value
-        lineChartView.setMaximumViewport(viewport);
-        lineChartView.setCurrentViewport(viewport);
     }
 
     private void updateTable(List<LivePvDatum> livePvData) {
@@ -264,10 +267,8 @@ public class LiveFragment extends Fragment {
                     if (intent.getBooleanExtra("success", true)) {
                         updateScreen(false);
                     } else {
-                        if (getContext() != null) {
-                            Toast.makeText(getContext(), intent.getStringExtra("message"),
-                                    Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(context, intent.getStringExtra("message"),
+                                Toast.LENGTH_LONG).show();
                     }
                 }
             };
