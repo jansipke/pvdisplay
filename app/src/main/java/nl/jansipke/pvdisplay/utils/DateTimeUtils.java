@@ -37,10 +37,6 @@ public class DateTimeUtils {
         return yearMonth;
     }
 
-    public static int convertToInt(int year, int month, int day) {
-        return 10000 * year + 100 * month + day;
-    }
-
     public static String formatMonthDay(int month, int day, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         if (month < 10) {
@@ -70,7 +66,7 @@ public class DateTimeUtils {
         return sb.toString();
     }
 
-    public static String formatDate(int year, int month, int day, boolean dashes) {
+    public static String formatYearMonthDay(int year, int month, int day, boolean dashes) {
         StringBuilder sb = new StringBuilder();
         sb.append(formatYearMonth(year, month, dashes));
         if (dashes) {
@@ -84,7 +80,7 @@ public class DateTimeUtils {
     }
 
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
-        return formatDate(year, month, day, true) + " " + formatTime(hour, minute, true);
+        return formatYearMonthDay(year, month, day, true) + " " + formatTime(hour, minute, true);
     }
 
     public static String formatTime(int hour, int minute, boolean colon) {
@@ -109,11 +105,15 @@ public class DateTimeUtils {
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
+    public static int getTodaysYear() {
+        return getTodaysYearMonthDay().year;
+    }
+
     public static YearMonth getTodaysYearMonth() {
-        Calendar calendar = new GregorianCalendar();
+        YearMonthDay yearMonthDay = getTodaysYearMonthDay();
         YearMonth yearMonth = new YearMonth();
-        yearMonth.year = calendar.get(Calendar.YEAR);
-        yearMonth.month = calendar.get(Calendar.MONTH) + 1;
+        yearMonth.year = yearMonthDay.year;
+        yearMonth.month = yearMonthDay.month;
         return yearMonth;
     }
 

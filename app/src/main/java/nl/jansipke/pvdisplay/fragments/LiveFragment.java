@@ -217,7 +217,7 @@ public class LiveFragment extends Fragment {
             lineChartView.setLineChartData(lineChartData);
 
             lineChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 1335, livePvData.size(), 0); // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 1375, livePvData.size(), 0); // TODO Use real maximum value
             lineChartView.setMaximumViewport(viewport);
             lineChartView.setCurrentViewport(viewport);
         }
@@ -244,7 +244,7 @@ public class LiveFragment extends Fragment {
 
     private void updateTitle(int year, int month, int day) {
         TextView textView = (TextView) fragmentView.findViewById(R.id.title);
-        textView.setText(DateTimeUtils.formatDate(year, month, day, true));
+        textView.setText(DateTimeUtils.formatYearMonthDay(year, month, day, true));
     }
 
     public void updateScreen(boolean refreshData) {
@@ -255,10 +255,10 @@ public class LiveFragment extends Fragment {
 
         if (refreshData || livePvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatDate(
+                Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatYearMonthDay(
                         picked.year, picked.month, picked.day, true));
             } else {
-                Log.d(TAG, "No live PV data for " + DateTimeUtils.formatDate(
+                Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
                         picked.year, picked.month, picked.day, true));
             }
 

@@ -4,8 +4,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
+import nl.jansipke.pvdisplay.data.DayPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.data.MonthPvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 
@@ -17,9 +18,9 @@ class PvOutputParser {
     PvOutputParser() {
     }
 
-    List<HistoricalPvDatum> parseHistorical(String data) throws ParseException {
+    List<DayPvDatum> parseDay(String data) throws ParseException {
         try {
-            List<HistoricalPvDatum> historicalPvData = new ArrayList<>();
+            List<DayPvDatum> dayPvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
@@ -30,7 +31,7 @@ class PvOutputParser {
                 double energyGenerated = Double.parseDouble(items[1]);
                 double peakPower = Double.parseDouble(items[5]);
                 String condition = items[7];
-                historicalPvData.add(new HistoricalPvDatum(
+                dayPvData.add(new DayPvDatum(
                         year,
                         month,
                         day,
@@ -38,7 +39,7 @@ class PvOutputParser {
                         peakPower,
                         condition));
             }
-            return historicalPvData;
+            return dayPvData;
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), 0);
         }
@@ -69,6 +70,27 @@ class PvOutputParser {
                         powerGeneration));
             }
             return livePvData;
+        } catch (Exception e) {
+            throw new ParseException(e.getMessage(), 0);
+        }
+    }
+
+    List<MonthPvDatum> parseMonth(String data) throws ParseException {
+        try {
+            List<MonthPvDatum> monthPvData = new ArrayList<>();
+            String[] lines = data.split(LINE_SEPARATOR);
+            for (String line : lines) {
+                String[] items = line.split(ITEM_SEPARATOR);
+                String date = items[0];
+                int year = Integer.parseInt(date.substring(0, 4));
+                int month = Integer.parseInt(date.substring(4, 6));
+                double energyGenerated = Double.parseDouble(items[2]);
+                monthPvData.add(new MonthPvDatum(
+                        year,
+                        month,
+                        energyGenerated));
+            }
+            return monthPvData;
         } catch (Exception e) {
             throw new ParseException(e.getMessage(), 0);
         }

@@ -144,15 +144,15 @@ public class SystemFragment extends Fragment {
                             FormatUtils.ENERGY_FORMAT.format(
                                     statisticPvDatum.getMaximumGeneration() / 1000)),
                     getResources().getString(R.string.value_days, statisticPvDatum.getOutputs()),
-                    DateTimeUtils.formatDate(
+                    DateTimeUtils.formatYearMonthDay(
                             statisticPvDatum.getActualDateFromYear(),
                             statisticPvDatum.getActualDateFromMonth(),
                             statisticPvDatum.getActualDateFromDay(), true),
-                    DateTimeUtils.formatDate(
+                    DateTimeUtils.formatYearMonthDay(
                             statisticPvDatum.getRecordDateYear(),
                             statisticPvDatum.getRecordDateMonth(),
                             statisticPvDatum.getRecordDateDay(), true),
-                    DateTimeUtils.formatDate(
+                    DateTimeUtils.formatYearMonthDay(
                             statisticPvDatum.getActualDateToYear(),
                             statisticPvDatum.getActualDateToMonth(),
                             statisticPvDatum.getActualDateToDay(), true)

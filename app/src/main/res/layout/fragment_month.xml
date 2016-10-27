@@ -54,32 +54,7 @@
             android:paddingEnd="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/column_day" />
-
-        <LinearLayout
-            android:layout_width="20dp"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/image_condition" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:paddingTop="2dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:text="@string/column_peak" />
+            android:text="@string/column_month" />
 
         <LinearLayout
             android:layout_width="20dp"

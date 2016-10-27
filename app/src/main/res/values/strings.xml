@@ -6,7 +6,8 @@
     <string name="graph_legend_energy">Energy (kWh)</string>
 
     <string name="column_time">Time</string>
-    <string name="column_date">Date</string>
+    <string name="column_day">Day</string>
+    <string name="column_month">Month</string>
     <string name="column_power">Power\n(W)</string>
     <string name="column_peak">Peak\n(W)</string>
     <string name="column_energy">Energy\n(kWh)</string>

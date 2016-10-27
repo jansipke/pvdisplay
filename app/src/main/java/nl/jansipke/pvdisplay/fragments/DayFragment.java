@@ -36,7 +36,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
-import nl.jansipke.pvdisplay.data.HistoricalPvDatum;
+import nl.jansipke.pvdisplay.data.DayPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
@@ -56,15 +56,15 @@ public class DayFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
-    private List<HistoricalPvDatum> createFullMonth(int year, int month,
-                                            List<HistoricalPvDatum> historicalPvData) {
-        List<HistoricalPvDatum> fullMonth = new ArrayList<>();
+    private List<DayPvDatum> createFullMonth(int year, int month,
+                                             List<DayPvDatum> dayPvData) {
+        List<DayPvDatum> fullMonth = new ArrayList<>();
         for (int day = 1; day <= DateTimeUtils.getLastDayOfMonth(year, month); day++) {
-            fullMonth.add(new HistoricalPvDatum(year, month, day, 0, 0, ""));
+            fullMonth.add(new DayPvDatum(year, month, day, 0, 0, ""));
         }
-        for (HistoricalPvDatum historicalPvDatum : historicalPvData) {
-            int fullMonthIndex = historicalPvDatum.getDay() - 1;
-            fullMonth.set(fullMonthIndex, historicalPvDatum);
+        for (DayPvDatum dayPvDatum : dayPvData) {
+            int fullMonthIndex = dayPvDatum.getDay() - 1;
+            fullMonth.set(fullMonthIndex, dayPvDatum);
         }
         return fullMonth;
     }
@@ -163,7 +163,7 @@ public class DayFragment extends Fragment {
         outState.putInt(STATE_KEY_MONTH, picked.month);
     }
 
-    private void updateGraph(List<HistoricalPvDatum> historicalPvData) {
+    private void updateGraph(List<DayPvDatum> dayPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -175,22 +175,22 @@ public class DayFragment extends Fragment {
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
             int newestDay = 0;
-            for (int i = 0; i < historicalPvData.size(); i++) {
-                HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
+            for (int i = 0; i < dayPvData.size(); i++) {
+                DayPvDatum dayPvDatum = dayPvData.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
-                        (float) historicalPvDatum.getEnergyGenerated(),
+                        ((float) dayPvDatum.getEnergyGenerated()) / 1000,
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
 
-                if (historicalPvDatum.getDay() > newestDay) {
-                    newestDay = historicalPvDatum.getDay();
+                if (dayPvDatum.getDay() > newestDay) {
+                    newestDay = dayPvDatum.getDay();
                 }
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
             Axis yAxis = Axis
-                    .generateAxisFromRange(0, 10000, 1000) // TODO Use real maximum value
+                    .generateAxisFromRange(0, 10, 1) // TODO Use real maximum value
                     .setMaxLabelChars(6)
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
@@ -200,34 +200,34 @@ public class DayFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 10700, newestDay, 0);  // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 11, newestDay, 0);  // TODO Use real maximum value
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<HistoricalPvDatum> historicalPvData) {
+    private void updateTable(List<DayPvDatum> dayPvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
-        for (int i = historicalPvData.size() - 1; i >= 0; i--) {
-            HistoricalPvDatum historicalPvDatum = historicalPvData.get(i);
+        for (int i = dayPvData.size() - 1; i >= 0; i--) {
+            DayPvDatum dayPvDatum = dayPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_day, null);
-            ((TextView) row.findViewById(R.id.date)).setText(
+            ((TextView) row.findViewById(R.id.day)).setText(
                     DateTimeUtils.getDayOfWeek(
-                            historicalPvDatum.getYear(),
-                            historicalPvDatum.getMonth(),
-                            historicalPvDatum.getDay()) + " " +
-                    historicalPvDatum.getDay());
-            final Drawable drawable = getDrawable(historicalPvDatum.getCondition());
+                            dayPvDatum.getYear(),
+                            dayPvDatum.getMonth(),
+                            dayPvDatum.getDay()) + " " +
+                    dayPvDatum.getDay());
+            final Drawable drawable = getDrawable(dayPvDatum.getCondition());
             if (drawable != null) {
                 ((ImageView) row.findViewById(R.id.condition)).setImageDrawable(
                         drawable);
             }
             ((TextView) row.findViewById(R.id.peak)).setText(
-                    FormatUtils.POWER_FORMAT.format(historicalPvDatum.getPeakPower()));
+                    FormatUtils.POWER_FORMAT.format(dayPvDatum.getPeakPower()));
             ((TextView) row.findViewById(R.id.energy)).setText(
-                    FormatUtils.ENERGY_FORMAT.format(historicalPvDatum.getEnergyGenerated() / 1000.0));
+                    FormatUtils.ENERGY_FORMAT.format(dayPvDatum.getEnergyGenerated() / 1000.0));
             linearLayout.addView(row);
         }
     }
@@ -240,21 +240,15 @@ public class DayFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        List<HistoricalPvDatum> historicalPvData = pvDataOperations.loadHistorical(
-                picked.year, picked.month, 1,
-                picked.year, picked.month, 31);
+        List<DayPvDatum> dayPvData = pvDataOperations.loadDay(picked.year, picked.month);
 
-        if (refreshData || historicalPvData.size() == 0) {
+        if (refreshData || dayPvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing historical PV data for month " +
-                        DateTimeUtils.formatDate(picked.year, picked.month, 1, true) +
-                        " to " +
-                        DateTimeUtils.formatDate(picked.year, picked.month, 31, true));
+                Log.d(TAG, "Refreshing day PV data for " +
+                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             } else {
-                Log.d(TAG, "No live PV data for " +
-                        DateTimeUtils.formatDate(picked.year, picked.month, 1, true) +
-                        " to " +
-                        DateTimeUtils.formatDate(picked.year, picked.month, 31, true));
+                Log.d(TAG, "No day PV data for " +
+                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -272,12 +266,11 @@ public class DayFragment extends Fragment {
             LocalBroadcastManager.getInstance(getContext())
                     .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.callHistorical(getContext(),
-                    picked.year, picked.month, 1, picked.year, picked.month, 31);
+            PvDataService.callDay(getContext(), picked.year, picked.month);
         }
 
         updateTitle(picked.year, picked.month);
-        updateGraph(createFullMonth(picked.year, picked.month, historicalPvData));
-        updateTable(historicalPvData);
+        updateGraph(createFullMonth(picked.year, picked.month, dayPvData));
+        updateTable(dayPvData);
     }
 }

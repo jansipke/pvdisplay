@@ -33,25 +33,34 @@ class PvDataHelper extends SQLiteOpenHelper {
                 PvDataContract.LivePvData.COLUMN_NAME_HOUR + "," +
                 PvDataContract.LivePvData.COLUMN_NAME_MINUTE + "))");
 
-        db.execSQL("CREATE TABLE " + PvDataContract.HistoricalPvData.TABLE_NAME + " (" +
-                PvDataContract.HistoricalPvData._ID + " INTEGER PRIMARY KEY," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + " INTEGER," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH + " INTEGER," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_DAY + " INTEGER," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_DATE_NUMBER + " INTEGER," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_ENERGY_GENERATED + " REAL," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_PEAK_POWER + " REAL," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_CONDITION + " TEXT," +
+        db.execSQL("CREATE TABLE " + PvDataContract.DayPvData.TABLE_NAME + " (" +
+                PvDataContract.DayPvData._ID + " INTEGER PRIMARY KEY," +
+                PvDataContract.DayPvData.COLUMN_NAME_YEAR + " INTEGER," +
+                PvDataContract.DayPvData.COLUMN_NAME_MONTH + " INTEGER," +
+                PvDataContract.DayPvData.COLUMN_NAME_DAY + " INTEGER," +
+                PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED + " REAL," +
+                PvDataContract.DayPvData.COLUMN_NAME_PEAK_POWER + " REAL," +
+                PvDataContract.DayPvData.COLUMN_NAME_CONDITION + " TEXT," +
                 " UNIQUE(" +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_YEAR + "," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_MONTH + "," +
-                PvDataContract.HistoricalPvData.COLUMN_NAME_DAY + "))");
+                PvDataContract.DayPvData.COLUMN_NAME_YEAR + "," +
+                PvDataContract.DayPvData.COLUMN_NAME_MONTH + "," +
+                PvDataContract.DayPvData.COLUMN_NAME_DAY + "))");
+
+        db.execSQL("CREATE TABLE " + PvDataContract.MonthPvData.TABLE_NAME + " (" +
+                PvDataContract.MonthPvData._ID + " INTEGER PRIMARY KEY," +
+                PvDataContract.MonthPvData.COLUMN_NAME_YEAR + " INTEGER," +
+                PvDataContract.MonthPvData.COLUMN_NAME_MONTH + " INTEGER," +
+                PvDataContract.MonthPvData.COLUMN_NAME_ENERGY_GENERATED + " REAL," +
+                " UNIQUE(" +
+                PvDataContract.MonthPvData.COLUMN_NAME_YEAR + "," +
+                PvDataContract.MonthPvData.COLUMN_NAME_MONTH + "))");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d(TAG, "Upgrading database tables");
-        db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.HistoricalPvData.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.LivePvData.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.DayPvData.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PvDataContract.MonthPvData.TABLE_NAME);
         onCreate(db);
     }
 
