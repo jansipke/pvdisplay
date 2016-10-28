@@ -37,20 +37,8 @@ public class DateTimeUtils {
         return yearMonth;
     }
 
-    public static String formatMonthDay(int month, int day, boolean dashes) {
-        StringBuilder sb = new StringBuilder();
-        if (month < 10) {
-            sb.append("0");
-        }
-        sb.append(month);
-        if (dashes) {
-            sb.append("-");
-        }
-        if (day < 10) {
-            sb.append("0");
-        }
-        sb.append(day);
-        return sb.toString();
+    public static String formatYear(int year) {
+        return "" + year;
     }
 
     public static String formatYearMonth(int year, int month, boolean dashes) {

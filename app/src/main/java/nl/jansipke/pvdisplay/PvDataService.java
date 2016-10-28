@@ -14,11 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nl.jansipke.pvdisplay.data.DayPvDatum;
+import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
-import nl.jansipke.pvdisplay.data.MonthPvDatum;
+import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
+import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.NetworkUtils;
@@ -66,6 +67,12 @@ public class PvDataService extends Service {
         context.startService(intent);
     }
 
+    public static void callYear(Context context) {
+        Intent intent = new Intent(context, PvDataService.class);
+        intent.putExtra("type", "year");
+        context.startService(intent);
+    }
+
     private void downloadDay(final int year, final int month) {
         Log.d(TAG, "Downloading day PV data for " +
                 DateTimeUtils.formatYearMonth(year, month, true));
@@ -83,8 +90,8 @@ public class PvDataService extends Service {
                     String result = NetworkUtils.httpGet(url, headers);
 
                     // Parse and save data
-                    List<DayPvDatum> dayPvData = new PvOutputParser().parseDay(result);
-                    new PvDataOperations(getApplicationContext()).saveDay(dayPvData);
+                    List<DailyPvDatum> dayPvData = new PvOutputParser().parseDay(result);
+                    new PvDataOperations(getApplicationContext()).saveDaily(dayPvData);
 
                     reportStatus(true, "Downloaded " + dayPvData.size() + " data points");
                 } catch (IOException e) {
@@ -140,8 +147,8 @@ public class PvDataService extends Service {
                     String result = NetworkUtils.httpGet(url, headers);
 
                     // Parse and save data
-                    List<MonthPvDatum> monthPvData = new PvOutputParser().parseMonth(result);
-                    new PvDataOperations(getApplicationContext()).saveMonth(monthPvData);
+                    List<MonthlyPvDatum> monthPvData = new PvOutputParser().parseMonth(result);
+                    new PvDataOperations(getApplicationContext()).saveMonthly(monthPvData);
 
                     reportStatus(true, "Downloaded " + monthPvData.size() + " data points");
                 } catch (IOException e) {
@@ -207,9 +214,36 @@ public class PvDataService extends Service {
         }).start();
     }
 
+    private void downloadYear() {
+        Log.d(TAG, "Downloading year PV data for");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Download data
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("X-Pvoutput-Apikey", API_KEY);
+                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
+                    String url = URL_BASE + "getoutput.jsp?a=y";
+                    String result = NetworkUtils.httpGet(url, headers);
+
+                    // Parse and save data
+                    List<YearlyPvDatum> yearPvData = new PvOutputParser().parseYear(result);
+                    new PvDataOperations(getApplicationContext()).saveYearly(yearPvData);
+
+                    reportStatus(true, "Downloaded " + yearPvData.size() + " data points");
+                } catch (IOException e) {
+                    reportStatus(false, "Could not download year PV data: " + e.getMessage());
+                } catch (ParseException e) {
+                    reportStatus(false, "Could not parse year PV data: " + e.getMessage());
+                }
+            }
+        }).start();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (NetworkUtils.networkConnected(getApplicationContext())) {
+        if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
             switch(intent.getStringExtra("type")) {
                 case "day":
                     int year = intent.getIntExtra("year", 0);
@@ -231,6 +265,9 @@ public class PvDataService extends Service {
                     break;
                 case "system":
                     downloadSystem();
+                    break;
+                case "year":
+                    downloadYear();
                     break;
             }
         } else {

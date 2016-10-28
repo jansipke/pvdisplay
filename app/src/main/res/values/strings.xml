@@ -8,9 +8,12 @@
     <string name="column_time">Time</string>
     <string name="column_day">Day</string>
     <string name="column_month">Month</string>
+    <string name="column_year">Year</string>
     <string name="column_power">Power\n(W)</string>
     <string name="column_peak">Peak\n(W)</string>
     <string name="column_energy">Energy\n(kWh)</string>
+
+    <string name="title_yearly">Lifetime</string>
 
     <string name="preferences_pv_data_file">preferences_pv_data</string>
     <string name="preferences_object_statistic">statistic</string>

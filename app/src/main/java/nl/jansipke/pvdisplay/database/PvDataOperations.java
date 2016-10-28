@@ -13,11 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.jansipke.pvdisplay.R;
-import nl.jansipke.pvdisplay.data.DayPvDatum;
+import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
-import nl.jansipke.pvdisplay.data.MonthPvDatum;
+import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
+import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class PvDataOperations {
@@ -32,46 +33,46 @@ public class PvDataOperations {
         this.pvDataHelper = new PvDataHelper(context);
     }
 
-    public List<DayPvDatum> loadDay(int year, int month) {
-        Log.d(TAG, "Loading day PV data for " + DateTimeUtils.formatYearMonth(year, month, true));
+    public List<DailyPvDatum> loadDaily(int year, int month) {
+        Log.d(TAG, "Loading daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true));
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
-                PvDataContract.DayPvData.COLUMN_NAME_DAY,
-                PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED,
-                PvDataContract.DayPvData.COLUMN_NAME_PEAK_POWER,
-                PvDataContract.DayPvData.COLUMN_NAME_CONDITION
+                PvDataContract.DailyPvData.COLUMN_NAME_DAY,
+                PvDataContract.DailyPvData.COLUMN_NAME_ENERGY_GENERATED,
+                PvDataContract.DailyPvData.COLUMN_NAME_PEAK_POWER,
+                PvDataContract.DailyPvData.COLUMN_NAME_CONDITION
         };
         String sortOrder =
-                PvDataContract.DayPvData.COLUMN_NAME_DAY + " ASC";
+                PvDataContract.DailyPvData.COLUMN_NAME_DAY + " ASC";
         String selection =
-                PvDataContract.DayPvData.COLUMN_NAME_YEAR + "=? AND " +
-                PvDataContract.DayPvData.COLUMN_NAME_MONTH + "=?";
+                PvDataContract.DailyPvData.COLUMN_NAME_YEAR + "=? AND " +
+                PvDataContract.DailyPvData.COLUMN_NAME_MONTH + "=?";
         String[] selectionArgs = {
                 "" + year,
                 "" + month
         };
 
-        List<DayPvDatum> dayPvData = new ArrayList<>();
-        Cursor cursor = db.query(PvDataContract.DayPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        List<DailyPvDatum> dailyPvData = new ArrayList<>();
+        Cursor cursor = db.query(PvDataContract.DailyPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    dayPvData.add(new DayPvDatum(
+                    dailyPvData.add(new DailyPvDatum(
                             year,
                             month,
-                            cursor.getInt(cursor.getColumnIndex(PvDataContract.DayPvData.COLUMN_NAME_DAY)),
-                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED)),
-                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.DayPvData.COLUMN_NAME_PEAK_POWER)),
-                            cursor.getString(cursor.getColumnIndex(PvDataContract.DayPvData.COLUMN_NAME_CONDITION))));
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_DAY)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_ENERGY_GENERATED)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_PEAK_POWER)),
+                            cursor.getString(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_CONDITION))));
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + dayPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows");
 
-        return dayPvData;
+        return dailyPvData;
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
@@ -120,39 +121,39 @@ public class PvDataOperations {
         return livePvData;
     }
 
-    public List<MonthPvDatum> loadMonth(int year) {
-        Log.d(TAG, "Loading month PV data for " + year);
+    public List<MonthlyPvDatum> loadMonthly(int year) {
+        Log.d(TAG, "Loading monthly PV data for " + year);
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
-                PvDataContract.MonthPvData.COLUMN_NAME_MONTH,
-                PvDataContract.MonthPvData.COLUMN_NAME_ENERGY_GENERATED
+                PvDataContract.MonthlyPvData.COLUMN_NAME_MONTH,
+                PvDataContract.MonthlyPvData.COLUMN_NAME_ENERGY_GENERATED
         };
         String sortOrder =
-                PvDataContract.MonthPvData.COLUMN_NAME_MONTH + " ASC";
+                PvDataContract.MonthlyPvData.COLUMN_NAME_MONTH + " ASC";
         String selection =
-                PvDataContract.MonthPvData.COLUMN_NAME_YEAR + "=?";
+                PvDataContract.MonthlyPvData.COLUMN_NAME_YEAR + "=?";
         String[] selectionArgs = {
                 "" + year
         };
 
-        List<MonthPvDatum> monthPvData = new ArrayList<>();
-        Cursor cursor = db.query(PvDataContract.MonthPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        List<MonthlyPvDatum> monthlyPvData = new ArrayList<>();
+        Cursor cursor = db.query(PvDataContract.MonthlyPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    monthPvData.add(new MonthPvDatum(
+                    monthlyPvData.add(new MonthlyPvDatum(
                             year,
-                            cursor.getInt(cursor.getColumnIndex(PvDataContract.MonthPvData.COLUMN_NAME_MONTH)),
-                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED))));
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.MonthlyPvData.COLUMN_NAME_MONTH)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.MonthlyPvData.COLUMN_NAME_ENERGY_GENERATED))));
                 } while (cursor.moveToNext());
             }
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + monthPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows");
 
-        return monthPvData;
+        return monthlyPvData;
     }
 
     public StatisticPvDatum loadStatistic() {
@@ -187,35 +188,64 @@ public class PvDataOperations {
         }
     }
 
-    public void saveDay(List<DayPvDatum> dayPvData) {
-        Log.d(TAG, "Saving day PV data");
+    public List<YearlyPvDatum> loadYearly() {
+        Log.d(TAG, "Loading yearly PV data for");
+        SQLiteDatabase db = pvDataHelper.getReadableDatabase();
+
+        String[] projection = {
+                PvDataContract.YearlyPvData.COLUMN_NAME_YEAR,
+                PvDataContract.YearlyPvData.COLUMN_NAME_ENERGY_GENERATED
+        };
+        String sortOrder =
+                PvDataContract.YearlyPvData.COLUMN_NAME_YEAR + " ASC";
+
+        List<YearlyPvDatum> yearlyPvData = new ArrayList<>();
+        Cursor cursor = db.query(PvDataContract.YearlyPvData.TABLE_NAME, projection, null, null, null, null, sortOrder);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    yearlyPvData.add(new YearlyPvDatum(
+                            cursor.getInt(cursor.getColumnIndex(PvDataContract.YearlyPvData.COLUMN_NAME_YEAR)),
+                            cursor.getDouble(cursor.getColumnIndex(PvDataContract.YearlyPvData.COLUMN_NAME_ENERGY_GENERATED))));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        db.close();
+        Log.d(TAG, "Loaded " + yearlyPvData.size() + " rows");
+
+        return yearlyPvData;
+    }
+
+    public void saveDaily(List<DailyPvDatum> dailyPvData) {
+        Log.d(TAG, "Saving daily PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
-        String sql = "REPLACE INTO " + PvDataContract.DayPvData.TABLE_NAME +
-                "(" + PvDataContract.DayPvData.COLUMN_NAME_YEAR +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_MONTH +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_DAY +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_PEAK_POWER +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_CONDITION +
+        String sql = "REPLACE INTO " + PvDataContract.DailyPvData.TABLE_NAME +
+                "(" + PvDataContract.DailyPvData.COLUMN_NAME_YEAR +
+                "," + PvDataContract.DailyPvData.COLUMN_NAME_MONTH +
+                "," + PvDataContract.DailyPvData.COLUMN_NAME_DAY +
+                "," + PvDataContract.DailyPvData.COLUMN_NAME_ENERGY_GENERATED +
+                "," + PvDataContract.DailyPvData.COLUMN_NAME_PEAK_POWER +
+                "," + PvDataContract.DailyPvData.COLUMN_NAME_CONDITION +
                 ") VALUES (?,?,?,?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
-        for (DayPvDatum dayPvDatum : dayPvData) {
+        for (DailyPvDatum dailyPvDatum : dailyPvData) {
             statement.clearBindings();
-            statement.bindLong(1, dayPvDatum.getYear());
-            statement.bindLong(2, dayPvDatum.getMonth());
-            statement.bindLong(3, dayPvDatum.getDay());
-            statement.bindDouble(4, dayPvDatum.getEnergyGenerated());
-            statement.bindDouble(5, dayPvDatum.getPeakPower());
-            statement.bindString(6, dayPvDatum.getCondition());
+            statement.bindLong(1, dailyPvDatum.getYear());
+            statement.bindLong(2, dailyPvDatum.getMonth());
+            statement.bindLong(3, dailyPvDatum.getDay());
+            statement.bindDouble(4, dailyPvDatum.getEnergyGenerated());
+            statement.bindDouble(5, dailyPvDatum.getPeakPower());
+            statement.bindString(6, dailyPvDatum.getCondition());
             statement.execute();
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + dayPvData.size() + " rows");
+        Log.d(TAG, "Saved " + dailyPvData.size() + " rows");
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
@@ -251,29 +281,29 @@ public class PvDataOperations {
         Log.d(TAG, "Saved " + livePvData.size() + " rows");
     }
 
-    public void saveMonth(List<MonthPvDatum> monthPvData) {
-        Log.d(TAG, "Saving month PV data");
+    public void saveMonthly(List<MonthlyPvDatum> monthlyPvData) {
+        Log.d(TAG, "Saving monthly PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
-        String sql = "REPLACE INTO " + PvDataContract.MonthPvData.TABLE_NAME +
-                "(" + PvDataContract.DayPvData.COLUMN_NAME_YEAR +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_MONTH +
-                "," + PvDataContract.DayPvData.COLUMN_NAME_ENERGY_GENERATED +
+        String sql = "REPLACE INTO " + PvDataContract.MonthlyPvData.TABLE_NAME +
+                "(" + PvDataContract.MonthlyPvData.COLUMN_NAME_YEAR +
+                "," + PvDataContract.MonthlyPvData.COLUMN_NAME_MONTH +
+                "," + PvDataContract.MonthlyPvData.COLUMN_NAME_ENERGY_GENERATED +
                 ") VALUES (?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
-        for (MonthPvDatum monthPvDatum : monthPvData) {
+        for (MonthlyPvDatum monthlyPvDatum : monthlyPvData) {
             statement.clearBindings();
-            statement.bindLong(1, monthPvDatum.getYear());
-            statement.bindLong(2, monthPvDatum.getMonth());
-            statement.bindDouble(3, monthPvDatum.getEnergyGenerated());
+            statement.bindLong(1, monthlyPvDatum.getYear());
+            statement.bindLong(2, monthlyPvDatum.getMonth());
+            statement.bindDouble(3, monthlyPvDatum.getEnergyGenerated());
             statement.execute();
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + monthPvData.size() + " rows");
+        Log.d(TAG, "Saved " + monthlyPvData.size() + " rows");
     }
 
     public void saveStatistic(StatisticPvDatum statisticPvDatum) {
@@ -302,5 +332,28 @@ public class PvDataOperations {
         editor.apply();
 
         Log.d(TAG, "Saved to preferences");
+    }
+
+    public void saveYearly(List<YearlyPvDatum> yearlyPvData) {
+        Log.d(TAG, "Saving year PV data");
+        SQLiteDatabase db = pvDataHelper.getWritableDatabase();
+
+        db.beginTransaction();
+        String sql = "REPLACE INTO " + PvDataContract.YearlyPvData.TABLE_NAME +
+                "(" + PvDataContract.YearlyPvData.COLUMN_NAME_YEAR +
+                "," + PvDataContract.YearlyPvData.COLUMN_NAME_ENERGY_GENERATED +
+                ") VALUES (?,?);";
+        SQLiteStatement statement = db.compileStatement(sql);
+        for (YearlyPvDatum yearlyPvDatum : yearlyPvData) {
+            statement.clearBindings();
+            statement.bindLong(1, yearlyPvDatum.getYear());
+            statement.bindDouble(2, yearlyPvDatum.getEnergyGenerated());
+            statement.execute();
+        }
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+        db.close();
+        Log.d(TAG, "Saved " + yearlyPvData.size() + " rows");
     }
 }

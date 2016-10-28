@@ -16,8 +16,8 @@ final class PvDataContract {
         static final String COLUMN_NAME_POWER_GENERATION = "power_generation";
     }
 
-    static abstract class DayPvData implements BaseColumns {
-        static final String TABLE_NAME = "day";
+    static abstract class DailyPvData implements BaseColumns {
+        static final String TABLE_NAME = "daily";
         static final String COLUMN_NAME_YEAR = "year";
         static final String COLUMN_NAME_MONTH = "month";
         static final String COLUMN_NAME_DAY = "day";
@@ -26,10 +26,16 @@ final class PvDataContract {
         static final String COLUMN_NAME_CONDITION = "condition";
     }
 
-    static abstract class MonthPvData implements BaseColumns {
-        static final String TABLE_NAME = "month";
+    static abstract class MonthlyPvData implements BaseColumns {
+        static final String TABLE_NAME = "monthly";
         static final String COLUMN_NAME_YEAR = "year";
         static final String COLUMN_NAME_MONTH = "month";
+        static final String COLUMN_NAME_ENERGY_GENERATED = "energy_generated";
+    }
+
+    static abstract class YearlyPvData implements BaseColumns {
+        static final String TABLE_NAME = "yearly";
+        static final String COLUMN_NAME_YEAR = "year";
         static final String COLUMN_NAME_ENERGY_GENERATED = "energy_generated";
     }
 }

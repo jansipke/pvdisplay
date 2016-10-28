@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,37 +32,20 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
-import nl.jansipke.pvdisplay.data.DayPvDatum;
-import nl.jansipke.pvdisplay.data.MonthPvDatum;
+import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-public class MonthFragment extends Fragment {
+public class YearlyFragment extends Fragment {
 
-    private final static String TAG = MonthFragment.class.getSimpleName();
-
-    private final static String STATE_KEY_YEAR = "year";
-
-    private static int pickedYear;
+    private final static String TAG = YearlyFragment.class.getSimpleName();
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
-
-    private List<MonthPvDatum> createFullYear(int year, List<MonthPvDatum> monthPvData) {
-        List<MonthPvDatum> fullYear = new ArrayList<>();
-        for (int month = 1; month <= 12; month++) {
-            fullYear.add(new MonthPvDatum(year, month, 0));
-        }
-        for (MonthPvDatum monthPvDatum : monthPvData) {
-            int fullYearIndex = monthPvDatum.getMonth() - 1;
-            fullYear.set(fullYearIndex, monthPvDatum);
-        }
-        return fullYear;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,20 +54,13 @@ public class MonthFragment extends Fragment {
         setHasOptionsMenu(true);
 
         pvDataOperations = new PvDataOperations(getContext());
-
-        if (savedInstanceState != null) {
-            Log.d(TAG, "Loading fragment state");
-            pickedYear = savedInstanceState.getInt(STATE_KEY_YEAR);
-        } else {
-            pickedYear = DateTimeUtils.getTodaysYear();
-        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.menu_day, menu);
+        inflater.inflate(R.menu.menu_year, menu);
     }
 
     @Nullable
@@ -97,7 +71,7 @@ public class MonthFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         layoutInflater = inflater;
-        fragmentView = inflater.inflate(R.layout.fragment_month, container, false);
+        fragmentView = inflater.inflate(R.layout.fragment_year, container, false);
         updateScreen(false);
         return fragmentView;
     }
@@ -105,16 +79,6 @@ public class MonthFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_previous:
-                Log.d(TAG, "Clicked previous");
-                pickedYear--;
-                updateScreen(false);
-                break;
-            case R.id.action_next:
-                Log.d(TAG, "Clicked next");
-                pickedYear++;
-                updateScreen(false);
-                break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
@@ -124,16 +88,7 @@ public class MonthFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        Log.d(TAG, "Saving fragment state");
-
-        outState.putInt(STATE_KEY_YEAR, pickedYear);
-    }
-
-    private void updateGraph(List<MonthPvDatum> monthPvData) {
+    private void updateGraph(List<YearlyPvDatum> yearPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -144,23 +99,18 @@ public class MonthFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            int newestMonth = 0;
-            for (int i = 0; i < monthPvData.size(); i++) {
-                MonthPvDatum monthPvDatum = monthPvData.get(i);
+            for (int i = 0; i < yearPvData.size(); i++) {
+                YearlyPvDatum yearlyPvDatum = yearPvData.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
-                        ((float) monthPvDatum.getEnergyGenerated()) / 1000,
+                        ((float) yearlyPvDatum.getEnergyGenerated()) / 1000,
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
-
-                if (monthPvDatum.getMonth() > newestMonth) {
-                    newestMonth = monthPvDatum.getMonth();
-                }
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
             Axis yAxis = Axis
-                    .generateAxisFromRange(0, 250, 50) // TODO Use real maximum value
+                    .generateAxisFromRange(0, 1500, 250) // TODO Use real maximum value
                     .setMaxLabelChars(6)
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
@@ -170,41 +120,42 @@ public class MonthFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 275, newestMonth, 0);  // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 1650, yearPvData.size() + 1, 0);  // TODO Use real maximum value
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<MonthPvDatum> monthPvData) {
+    private void updateTable(List<YearlyPvDatum> yearPvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
-        for (int i = monthPvData.size() - 1; i >= 0; i--) {
-            MonthPvDatum monthPvDatum = monthPvData.get(i);
-            View row = layoutInflater.inflate(R.layout.row_month, null);
-            ((TextView) row.findViewById(R.id.month)).setText("" + monthPvDatum.getMonth());
+        for (int i = yearPvData.size() - 1; i >= 0; i--) {
+            YearlyPvDatum yearlyPvDatum = yearPvData.get(i);
+            View row = layoutInflater.inflate(R.layout.row_year, null);
+            ((TextView) row.findViewById(R.id.year)).setText(
+                    DateTimeUtils.formatYear(yearlyPvDatum.getYear()));
             ((TextView) row.findViewById(R.id.energy)).setText(
-                    FormatUtils.ENERGY_FORMAT.format(monthPvDatum.getEnergyGenerated() / 1000.0));
+                    FormatUtils.ENERGY_FORMAT.format(yearlyPvDatum.getEnergyGenerated() / 1000.0));
             linearLayout.addView(row);
         }
     }
 
-    private void updateTitle(int year) {
+    private void updateTitle() {
         TextView textView = (TextView) fragmentView.findViewById(R.id.title);
-        textView.setText("" + year);
+        textView.setText(getResources().getString(R.string.title_yearly));
     }
 
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        List<MonthPvDatum> monthPvData = pvDataOperations.loadMonth(pickedYear);
+        List<YearlyPvDatum> yearPvData = pvDataOperations.loadYearly();
 
-        if (refreshData || monthPvData.size() == 0) {
+        if (refreshData || yearPvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing month PV data for " + pickedYear);
+                Log.d(TAG, "Refreshing year PV data");
             } else {
-                Log.d(TAG, "No month PV data for " + pickedYear);
+                Log.d(TAG, "No year PV data");
             }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -222,11 +173,11 @@ public class MonthFragment extends Fragment {
             LocalBroadcastManager.getInstance(getContext())
                     .registerReceiver(broadcastReceiver, intentFilter);
 
-            PvDataService.callMonth(getContext(), pickedYear);
+            PvDataService.callYear(getContext());
         }
 
-        updateTitle(pickedYear);
-        updateGraph(createFullYear(pickedYear, monthPvData));
-        updateTable(monthPvData);
+        updateTitle();
+        updateGraph(yearPvData);
+        updateTable(yearPvData);
     }
 }

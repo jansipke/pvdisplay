@@ -6,30 +6,30 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
-import nl.jansipke.pvdisplay.fragments.DayFragment;
+import nl.jansipke.pvdisplay.fragments.DailyFragment;
 import nl.jansipke.pvdisplay.fragments.LiveFragment;
-import nl.jansipke.pvdisplay.fragments.MonthFragment;
+import nl.jansipke.pvdisplay.fragments.MonthlyFragment;
 import nl.jansipke.pvdisplay.fragments.SystemFragment;
-import nl.jansipke.pvdisplay.fragments.YearFragment;
+import nl.jansipke.pvdisplay.fragments.YearlyFragment;
 
 class TabsAdapter extends FragmentPagerAdapter {
 
     private final static String TAG = TabsAdapter.class.getSimpleName();
-    private final static String[] tabTitles = {"Live", "Day", "Month", "Year", "System"};
+    private final static String[] tabTitles = {"Live", "Daily", "Monthly", "Yearly", "System"};
 
     private final LiveFragment liveFragment;
-    private final DayFragment dayFragment;
-    private final MonthFragment monthFragment;
-    private final YearFragment yearFragment;
+    private final DailyFragment dailyFragment;
+    private final MonthlyFragment monthlyFragment;
+    private final YearlyFragment yearlyFragment;
     private final SystemFragment systemFragment;
 
     TabsAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
 
         liveFragment = new LiveFragment();
-        dayFragment = new DayFragment();
-        monthFragment = new MonthFragment();
-        yearFragment = new YearFragment();
+        dailyFragment = new DailyFragment();
+        monthlyFragment = new MonthlyFragment();
+        yearlyFragment = new YearlyFragment();
         systemFragment = new SystemFragment();
     }
 
@@ -46,11 +46,11 @@ class TabsAdapter extends FragmentPagerAdapter {
             case 0:
                 return liveFragment;
             case 1:
-                return dayFragment;
+                return dailyFragment;
             case 2:
-                return monthFragment;
+                return monthlyFragment;
             case 3:
-                return yearFragment;
+                return yearlyFragment;
             case 4:
                 return systemFragment;
             default:

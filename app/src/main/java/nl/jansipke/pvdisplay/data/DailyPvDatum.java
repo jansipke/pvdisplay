@@ -2,7 +2,7 @@ package nl.jansipke.pvdisplay.data;
 
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
-public class DayPvDatum {
+public class DailyPvDatum {
 
     private final int year;
     private final int month;
@@ -11,8 +11,8 @@ public class DayPvDatum {
     private final double peakPower;
     private final String condition;
 
-    public DayPvDatum(int year, int month, int day,
-                      double energyGenerated, double peakPower, String condition) {
+    public DailyPvDatum(int year, int month, int day,
+                        double energyGenerated, double peakPower, String condition) {
         this.year = year;
         this.month = month;
         this.day = day;
@@ -46,7 +46,7 @@ public class DayPvDatum {
     }
 
     public String toString() {
-        return "DayPvDatum[" + DateTimeUtils.formatYearMonthDay(year, month, day, true) +
+        return "DailyPvDatum[" + DateTimeUtils.formatYearMonthDay(year, month, day, true) +
                 ", energyGenerated=" + energyGenerated +
                 ", peakPower=" + peakPower +
                 ", condition=" + condition +
