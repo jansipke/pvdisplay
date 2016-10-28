@@ -115,7 +115,7 @@ public class DailyFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.menu_day, menu);
+        inflater.inflate(R.menu.menu_daily, menu);
     }
 
     @Nullable
@@ -142,6 +142,11 @@ public class DailyFragment extends Fragment {
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
+                updateScreen(false);
+                break;
+            case R.id.action_this_month:
+                Log.d(TAG, "Clicked this month");
+                picked = DateTimeUtils.getTodaysYearMonth();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:

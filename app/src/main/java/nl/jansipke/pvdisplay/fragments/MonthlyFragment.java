@@ -83,7 +83,7 @@ public class MonthlyFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        inflater.inflate(R.menu.menu_month, menu);
+        inflater.inflate(R.menu.menu_monthly, menu);
     }
 
     @Nullable
@@ -110,6 +110,11 @@ public class MonthlyFragment extends Fragment {
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 pickedYear++;
+                updateScreen(false);
+                break;
+            case R.id.action_this_year:
+                Log.d(TAG, "Clicked this year");
+                pickedYear = DateTimeUtils.getTodaysYear();
                 updateScreen(false);
                 break;
             case R.id.action_refresh:

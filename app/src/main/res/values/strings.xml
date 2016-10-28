@@ -25,6 +25,8 @@
     <string name="action_next">Next</string>
     <string name="action_date">Select date</string>
     <string name="action_today">Go to today</string>
+    <string name="action_this_month">Go to this month</string>
+    <string name="action_this_year">Go to this year</string>
 
     <string name="value_w">%s W</string>
     <string name="value_kwh">%s kWh</string>

@@ -21,7 +21,7 @@
     </style>
 
     <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">11sp</item>
+        <item name="android:textSize">10sp</item>
     </style>
 
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">
