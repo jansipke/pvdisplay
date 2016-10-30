@@ -97,72 +97,115 @@ public class SystemFragment extends Fragment {
         }
 
         if (statisticPvDatum != null && systemPvDatum != null) {
-            TextView textView = (TextView) fragmentView.findViewById(R.id.header);
-            textView.setText(getResources().getString(
-                    R.string.value_kwh,
-                    FormatUtils.ENERGY_FORMAT.format(
-                            statisticPvDatum.getEnergyGenerated() / 1000)));
+            ((TextView) fragmentView.findViewById(R.id.system)).setText(
+                    systemPvDatum.getSystemName() + "\n" +
+                    getResources().getString(R.string.value_location,
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude()),
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())));
 
-            LinearLayout tableLinearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
-            tableLinearLayout.removeAllViews();
-            String[] keys = {
-                    "System name",
-                    "System size",
-                    "Number of panels",
-                    "Panel power",
-                    "Panel brand",
-                    "Inverter power",
-                    "Inverter brand",
-                    "Latitude",
-                    "Longitude",
-                    "Average generation",
-                    "Maximum generation",
-                    "Outputs",
-                    "First date",
-                    "Record date",
-                    "Last date"
-            };
-            String[] values = {
-                    systemPvDatum.getSystemName(),
-                    getResources().getString(R.string.value_w,
-                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getSystemSize())),
-                    systemPvDatum.getNumberOfPanels() + "",
-                    getResources().getString(R.string.value_w,
-                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getPanelPower())),
-                    systemPvDatum.getPanelBrand(),
-                    getResources().getString(R.string.value_w,
-                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getInverterPower())),
-                    systemPvDatum.getInverterBrand(),
-                    getResources().getString(R.string.value_degrees,
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude())),
-                    getResources().getString(R.string.value_degrees,
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())),
-                    getResources().getString(R.string.value_kwh,
+            ((TextView) fragmentView.findViewById(R.id.panels)).setText(
+                    systemPvDatum.getPanelBrand() + "\n" +
+                    getResources().getString(R.string.value_panels,
+                            systemPvDatum.getNumberOfPanels(),
+                            systemPvDatum.getPanelPower(),
+                            systemPvDatum.getSystemSize()));
+
+            ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
+                    systemPvDatum.getInverterBrand() + "\n" +
+                    getResources().getString(R.string.value_inverter,
+                            systemPvDatum.getInverterPower()));
+
+            ((TextView) fragmentView.findViewById(R.id.statistics)).setText(
+                    getResources().getString(R.string.value_statistics_total,
                             FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getAverageGeneration() / 1000)),
-                    getResources().getString(R.string.value_kwh,
+                                    statisticPvDatum.getEnergyGenerated() / 1000)) + "\n" +
+                    getResources().getString(R.string.value_statistics_average,
                             FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getMaximumGeneration() / 1000)),
-                    getResources().getString(R.string.value_days, statisticPvDatum.getOutputs()),
-                    DateTimeUtils.formatYearMonthDay(
-                            statisticPvDatum.getActualDateFromYear(),
-                            statisticPvDatum.getActualDateFromMonth(),
-                            statisticPvDatum.getActualDateFromDay(), true),
-                    DateTimeUtils.formatYearMonthDay(
-                            statisticPvDatum.getRecordDateYear(),
-                            statisticPvDatum.getRecordDateMonth(),
-                            statisticPvDatum.getRecordDateDay(), true),
-                    DateTimeUtils.formatYearMonthDay(
-                            statisticPvDatum.getActualDateToYear(),
-                            statisticPvDatum.getActualDateToMonth(),
-                            statisticPvDatum.getActualDateToDay(), true)
-            };
-            for (int i = 0; i < keys.length; i++) {
-                View row = layoutInflater.inflate(R.layout.row_system, null);
-                ((TextView) row.findViewById(R.id.key)).setText(keys[i]);
-                ((TextView) row.findViewById(R.id.value)).setText(values[i]);
-                tableLinearLayout.addView(row);
-            }
+                                    statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
+                    getResources().getString(R.string.value_statistics_record,
+                            FormatUtils.ENERGY_FORMAT.format(
+                                    statisticPvDatum.getMaximumGeneration() / 1000),
+                            DateTimeUtils.formatYearMonthDay(
+                                    statisticPvDatum.getRecordDateYear(),
+                                    statisticPvDatum.getRecordDateMonth(),
+                                    statisticPvDatum.getRecordDateDay(), true)) + "\n" +
+                    getResources().getString(R.string.value_statistics_from_to,
+                            DateTimeUtils.formatYearMonthDay(
+                                    statisticPvDatum.getActualDateFromYear(),
+                                    statisticPvDatum.getActualDateFromMonth(),
+                                    statisticPvDatum.getActualDateFromDay(), true),
+                            DateTimeUtils.formatYearMonthDay(
+                                    statisticPvDatum.getActualDateToYear(),
+                                    statisticPvDatum.getActualDateToMonth(),
+                                    statisticPvDatum.getActualDateToDay(), true)));
+
+
+//            TextView textView = (TextView) fragmentView.findViewById(R.id.header);
+//            textView.setText(getResources().getString(
+//                    R.string.value_kwh,
+//                    FormatUtils.ENERGY_FORMAT.format(
+//                            statisticPvDatum.getEnergyGenerated() / 1000)));
+//
+//            LinearLayout tableLinearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
+//            tableLinearLayout.removeAllViews();
+//            String[] keys = {
+//                    "System name",
+//                    "System size",
+//                    "Number of panels",
+//                    "Panel power",
+//                    "Panel brand",
+//                    "Inverter power",
+//                    "Inverter brand",
+//                    "Latitude",
+//                    "Longitude",
+//                    "Average generation",
+//                    "Maximum generation",
+//                    "Outputs",
+//                    "First date",
+//                    "Record date",
+//                    "Last date"
+//            };
+//            String[] values = {
+//                    systemPvDatum.getSystemName(),
+//                    getResources().getString(R.string.value_w,
+//                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getSystemSize())),
+//                    systemPvDatum.getNumberOfPanels() + "",
+//                    getResources().getString(R.string.value_w,
+//                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getPanelPower())),
+//                    systemPvDatum.getPanelBrand(),
+//                    getResources().getString(R.string.value_w,
+//                            FormatUtils.POWER_FORMAT.format(systemPvDatum.getInverterPower())),
+//                    systemPvDatum.getInverterBrand(),
+//                    getResources().getString(R.string.value_degrees,
+//                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude())),
+//                    getResources().getString(R.string.value_degrees,
+//                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())),
+//                    getResources().getString(R.string.value_kwh,
+//                            FormatUtils.ENERGY_FORMAT.format(
+//                                    statisticPvDatum.getAverageGeneration() / 1000)),
+//                    getResources().getString(R.string.value_kwh,
+//                            FormatUtils.ENERGY_FORMAT.format(
+//                                    statisticPvDatum.getMaximumGeneration() / 1000)),
+//                    getResources().getString(R.string.value_days, statisticPvDatum.getOutputs()),
+//                    DateTimeUtils.formatYearMonthDay(
+//                            statisticPvDatum.getActualDateFromYear(),
+//                            statisticPvDatum.getActualDateFromMonth(),
+//                            statisticPvDatum.getActualDateFromDay(), true),
+//                    DateTimeUtils.formatYearMonthDay(
+//                            statisticPvDatum.getRecordDateYear(),
+//                            statisticPvDatum.getRecordDateMonth(),
+//                            statisticPvDatum.getRecordDateDay(), true),
+//                    DateTimeUtils.formatYearMonthDay(
+//                            statisticPvDatum.getActualDateToYear(),
+//                            statisticPvDatum.getActualDateToMonth(),
+//                            statisticPvDatum.getActualDateToDay(), true)
+//            };
+//            for (int i = 0; i < keys.length; i++) {
+//                View row = layoutInflater.inflate(R.layout.row_system, null);
+//                ((TextView) row.findViewById(R.id.key)).setText(keys[i]);
+//                ((TextView) row.findViewById(R.id.value)).setText(values[i]);
+//                tableLinearLayout.addView(row);
+//            }
         }
     }
 }
