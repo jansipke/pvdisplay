@@ -4,10 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.regex.Pattern;
 
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
@@ -75,7 +80,7 @@ public class SystemFragment extends Fragment {
         Log.d(TAG, "Updating screen");
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
-        SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
+        final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
         if (refreshData || statisticPvDatum == null || systemPvDatum == null) {
             if (refreshData) {
                 Log.d(TAG, "Refreshing statistic and system PV data");
@@ -97,6 +102,25 @@ public class SystemFragment extends Fragment {
         }
 
         if (statisticPvDatum != null && systemPvDatum != null) {
+            TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
+            systemTextView.setText(systemPvDatum.getSystemName() + "\n" +
+                    getResources().getString(R.string.value_location,
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude()),
+                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())));
+            systemTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri uri = Uri.parse("geo:" +
+                            systemPvDatum.getLatitude() + "," +
+                            systemPvDatum.getLongitude() + "?z=14");
+                    Log.d(TAG, "Opening Google Maps for URI: " + uri);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.setPackage("com.google.android.apps.maps");
+                    startActivity(intent);
+                }
+            });
+
+
             ((TextView) fragmentView.findViewById(R.id.system)).setText(
                     systemPvDatum.getSystemName() + "\n" +
                     getResources().getString(R.string.value_location,
