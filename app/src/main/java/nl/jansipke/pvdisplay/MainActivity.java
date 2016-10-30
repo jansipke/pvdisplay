@@ -1,6 +1,7 @@
 package nl.jansipke.pvdisplay;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
+    private final static String WEBSITE_URL = "http://www.jansipke.nl";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,17 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 Log.d(TAG, "Clicked settings");
                 Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                break;
+            case R.id.action_about:
+                Log.d(TAG, "Clicked about");
+                Uri webpage = Uri.parse(WEBSITE_URL);
+                intent = new Intent(Intent.ACTION_VIEW, webpage);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
                 break;
         }
 
