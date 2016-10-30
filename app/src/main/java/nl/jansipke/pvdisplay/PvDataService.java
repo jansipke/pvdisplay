@@ -3,7 +3,9 @@ package nl.jansipke.pvdisplay;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -27,8 +29,6 @@ import nl.jansipke.pvdisplay.utils.NetworkUtils;
 public class PvDataService extends Service {
 
     private final static String TAG = PvDataService.class.getSimpleName();
-    private final static String API_KEY = "4054f46dd2c8e71855122e964c8e099cb9394d69";
-    private final static String SYSTEM_ID = "23329";
     private final static String URL_BASE = "http://pvoutput.org/service/r2/";
 
     public static void callDay(Context context, int year, int month) {
@@ -73,6 +73,18 @@ public class PvDataService extends Service {
         context.startService(intent);
     }
 
+    private String download(String urlPath) throws IOException {
+        Map<String, String> headers = new HashMap<>();
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getApplicationContext());
+        headers.put("X-Pvoutput-Apikey", sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_pvoutput_api_key), null));
+        headers.put("X-Pvoutput-SystemId", sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_pvoutput_system_id), null));
+        String url = URL_BASE + urlPath;
+        return NetworkUtils.httpGet(url, headers);
+    }
+
     private void downloadDay(final int year, final int month) {
         Log.d(TAG, "Downloading day PV data for " +
                 DateTimeUtils.formatYearMonth(year, month, true));
@@ -81,13 +93,10 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
                     String fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
                     String toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
-                    String url = URL_BASE + "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
+                    String result = download(urlPath);
 
                     // Parse and save data
                     List<DailyPvDatum> dayPvData = new PvOutputParser().parseDay(result);
@@ -110,12 +119,9 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
                     String date = DateTimeUtils.formatYearMonthDay(year, month, day, false);
-                    String url = URL_BASE + "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
+                    String result = download(urlPath);
 
                     // Parse and save data
                     List<LivePvDatum> livePvData = new PvOutputParser().parseLive(result);
@@ -138,13 +144,10 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
                     String fromDate = DateTimeUtils.formatYearMonthDay(year, 1, 1, false);
                     String toDate = DateTimeUtils.formatYearMonthDay(year, 12, 31, false);
-                    String url = URL_BASE + "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
+                    String result = download(urlPath);
 
                     // Parse and save data
                     List<MonthlyPvDatum> monthPvData = new PvOutputParser().parseMonth(result);
@@ -167,11 +170,8 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
-                    String url = URL_BASE + "getstatistic.jsp";
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getstatistic.jsp";
+                    String result = download(urlPath);
 
                     // Parse and save data
                     StatisticPvDatum statisticPvDatum = new PvOutputParser().parseStatistic(result);
@@ -194,11 +194,8 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
-                    String url = URL_BASE + "getsystem.jsp";
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getsystem.jsp";
+                    String result = download(urlPath);
 
                     // Parse and save data
                     SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
@@ -221,11 +218,8 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("X-Pvoutput-Apikey", API_KEY);
-                    headers.put("X-Pvoutput-SystemId", SYSTEM_ID);
-                    String url = URL_BASE + "getoutput.jsp?a=y";
-                    String result = NetworkUtils.httpGet(url, headers);
+                    String urlPath = "getoutput.jsp?a=y";
+                    String result = download(urlPath);
 
                     // Parse and save data
                     List<YearlyPvDatum> yearPvData = new PvOutputParser().parseYear(result);
