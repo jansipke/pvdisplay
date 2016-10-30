@@ -103,10 +103,7 @@ public class SystemFragment extends Fragment {
 
         if (statisticPvDatum != null && systemPvDatum != null) {
             TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
-            systemTextView.setText(systemPvDatum.getSystemName() + "\n" +
-                    getResources().getString(R.string.value_location,
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude()),
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())));
+            systemTextView.setText(systemPvDatum.getSystemName());
             systemTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -119,13 +116,6 @@ public class SystemFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-
-
-            ((TextView) fragmentView.findViewById(R.id.system)).setText(
-                    systemPvDatum.getSystemName() + "\n" +
-                    getResources().getString(R.string.value_location,
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLatitude()),
-                            FormatUtils.DEGREES_FORMAT.format(systemPvDatum.getLongitude())));
 
             ((TextView) fragmentView.findViewById(R.id.panels)).setText(
                     systemPvDatum.getPanelBrand() + "\n" +
@@ -142,7 +132,8 @@ public class SystemFragment extends Fragment {
             ((TextView) fragmentView.findViewById(R.id.statistics)).setText(
                     getResources().getString(R.string.value_statistics_total,
                             FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getEnergyGenerated() / 1000)) + "\n" +
+                                    statisticPvDatum.getEnergyGenerated() / 1000),
+                            statisticPvDatum.getOutputs()) + "\n" +
                     getResources().getString(R.string.value_statistics_average,
                             FormatUtils.ENERGY_FORMAT.format(
                                     statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
@@ -152,16 +143,7 @@ public class SystemFragment extends Fragment {
                             DateTimeUtils.formatYearMonthDay(
                                     statisticPvDatum.getRecordDateYear(),
                                     statisticPvDatum.getRecordDateMonth(),
-                                    statisticPvDatum.getRecordDateDay(), true)) + "\n" +
-                    getResources().getString(R.string.value_statistics_from_to,
-                            DateTimeUtils.formatYearMonthDay(
-                                    statisticPvDatum.getActualDateFromYear(),
-                                    statisticPvDatum.getActualDateFromMonth(),
-                                    statisticPvDatum.getActualDateFromDay(), true),
-                            DateTimeUtils.formatYearMonthDay(
-                                    statisticPvDatum.getActualDateToYear(),
-                                    statisticPvDatum.getActualDateToMonth(),
-                                    statisticPvDatum.getActualDateToDay(), true)));
+                                    statisticPvDatum.getRecordDateDay(), true)) + "\n");
         }
     }
 }

@@ -44,14 +44,13 @@
     <string name="value_location">%1$s N, %2$s W</string>
     <string name="value_panels">%1$d x %2$d W = %3$d W</string>
     <string name="value_inverter">%d W</string>
-    <string name="value_statistics_total">Total %s kWh</string>
+    <string name="value_statistics_total">Total %1$s kWh in %2$d days</string>
     <string name="value_statistics_average">Average %s kWh per day</string>
     <string name="value_statistics_record">Record %1$s kWh on %2$s</string>
-    <string name="value_statistics_from_to">From %1$s to %2$s</string>
 
     <string name="image_condition">Condition</string>
 
-    <string name="fragment_system_system">System</string>
+    <string name="fragment_system_name">Name</string>
     <string name="fragment_system_panels">Panels</string>
     <string name="fragment_system_inverter">Inverter</string>
     <string name="fragment_system_statistics">Statistics</string>

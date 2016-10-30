@@ -121,4 +121,10 @@ public class DateTimeUtils {
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         return weekDays[dayOfWeek - 1];
     }
+
+    public static String getMonthName(int month) {
+        String[] months = {"January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"};
+        return months[month - 1];
+    }
 }

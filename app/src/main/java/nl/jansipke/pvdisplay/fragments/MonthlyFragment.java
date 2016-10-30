@@ -185,7 +185,8 @@ public class MonthlyFragment extends Fragment {
         for (int i = monthPvData.size() - 1; i >= 0; i--) {
             MonthlyPvDatum monthlyPvDatum = monthPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_month, null);
-            ((TextView) row.findViewById(R.id.month)).setText("" + monthlyPvDatum.getMonth());
+            ((TextView) row.findViewById(R.id.month)).setText(
+                    DateTimeUtils.getMonthName(monthlyPvDatum.getMonth()));
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(monthlyPvDatum.getEnergyGenerated() / 1000.0));
             linearLayout.addView(row);

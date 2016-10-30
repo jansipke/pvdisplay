@@ -33,7 +33,7 @@
                     android:layout_width="80dp"
                     android:layout_height="25dp"
                     android:textStyle="bold"
-                    android:text="@string/fragment_system_system"/>
+                    android:text="@string/fragment_system_name"/>
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -59,8 +59,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:background="@color/row_divider"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:layout_height="1dp" />
 
             <LinearLayout
@@ -105,8 +105,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:background="@color/row_divider"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:layout_height="1dp" />
 
             <LinearLayout
@@ -151,8 +151,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:background="@color/row_divider"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:layout_height="1dp" />
 
             <LinearLayout
