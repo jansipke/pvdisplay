@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +85,10 @@ public class YearlyFragment extends Fragment {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Yearly")
+                        .putContentId("Refresh"));
                 break;
         }
 

@@ -20,11 +20,17 @@ class PvOutputParser {
     }
 
     List<DailyPvDatum> parseDay(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("Day data is empty", 0);
+        }
         try {
             List<DailyPvDatum> dayPvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
+                if (items.length < 8) {
+                    throw new ParseException("Data does not contain valid day data", 0);
+                }
                 String date = items[0];
                 int year = Integer.parseInt(date.substring(0, 4));
                 int month = Integer.parseInt(date.substring(4, 6));
@@ -47,11 +53,17 @@ class PvOutputParser {
     }
 
     List<LivePvDatum> parseLive(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("Live data is empty", 0);
+        }
         try {
             List<LivePvDatum> livePvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
+                if (items.length < 5) {
+                    throw new ParseException("Data does not contain valid live data", 0);
+                }
                 String date = items[0]; // yyyyMMdd
                 int year = Integer.parseInt(date.substring(0, 4));
                 int month = Integer.parseInt(date.substring(4, 6));
@@ -77,11 +89,17 @@ class PvOutputParser {
     }
 
     List<MonthlyPvDatum> parseMonth(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("Month data is empty", 0);
+        }
         try {
             List<MonthlyPvDatum> monthPvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
+                if (items.length < 3) {
+                    throw new ParseException("Data does not contain valid month data", 0);
+                }
                 String date = items[0];
                 int year = Integer.parseInt(date.substring(0, 4));
                 int month = Integer.parseInt(date.substring(4, 6));
@@ -98,8 +116,14 @@ class PvOutputParser {
     }
 
     StatisticPvDatum parseStatistic(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("Statistic data is empty", 0);
+        }
         try {
             String[] items = data.split(ITEM_SEPARATOR);
+            if (items.length < 11) {
+                throw new ParseException("Data does not contain valid statistic data", 0);
+            }
             double energyGenerated = Double.parseDouble(items[0]);
             double averageGeneration = Double.parseDouble(items[2]);
             double minimumGeneration = Double.parseDouble(items[3]);
@@ -138,9 +162,14 @@ class PvOutputParser {
     }
 
     SystemPvDatum parseSystem(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("System data is empty", 0);
+        }
         try {
             String[] items = data.split(ITEM_SEPARATOR);
-
+            if (items.length < 15) {
+                throw new ParseException("Data does not contain valid system data", 0);
+            }
             String systemName = items[0];
             int systemSize = Integer.parseInt(items[1]);
             int numberOfPanels = Integer.parseInt(items[3]);
@@ -166,12 +195,17 @@ class PvOutputParser {
     }
 
     List<YearlyPvDatum> parseYear(String data) throws ParseException {
+        if (data == null || data.equals("")) {
+            throw new ParseException("Year data is empty", 0);
+        }
         try {
             List<YearlyPvDatum> yearPvData = new ArrayList<>();
             String[] lines = data.split(LINE_SEPARATOR);
             for (String line : lines) {
                 String[] items = line.split(ITEM_SEPARATOR);
-                String date = items[0];
+                if (items.length < 3) {
+                    throw new ParseException("Data does not contain valid year data", 0);
+                }
                 int year = Integer.parseInt(items[0]);
                 double energyGenerated = Double.parseDouble(items[2]);
                 yearPvData.add(new YearlyPvDatum(

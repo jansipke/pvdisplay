@@ -21,6 +21,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.regex.Pattern;
 
 import nl.jansipke.pvdisplay.PvDataService;
@@ -70,6 +73,10 @@ public class SystemFragment extends Fragment {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("System")
+                        .putContentId("Refresh"));
                 break;
         }
 

@@ -25,6 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,25 +146,45 @@ public class LiveFragment extends Fragment {
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addDays(picked, -1);
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Live")
+                        .putContentId("Previous"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Live")
+                        .putContentId("Next"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Live")
+                        .putContentId("Refresh"));
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
                 DialogFragment dialogFragment = new DatePickerFragment();
                 dialogFragment.show(getFragmentManager(), "datePicker");
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Live")
+                        .putContentId("Date"));
                 break;
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Live")
+                        .putContentId("Today"));
                 break;
         }
 

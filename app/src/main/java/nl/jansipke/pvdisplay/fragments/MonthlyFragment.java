@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,20 +109,36 @@ public class MonthlyFragment extends Fragment {
                 Log.d(TAG, "Clicked previous");
                 pickedYear--;
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Monthly")
+                        .putContentId("Previous"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 pickedYear++;
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Monthly")
+                        .putContentId("Next"));
                 break;
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
                 pickedYear = DateTimeUtils.getTodaysYear();
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Monthly")
+                        .putContentId("This year"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Monthly")
+                        .putContentId("Refresh"));
                 break;
         }
 

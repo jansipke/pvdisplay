@@ -9,6 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
         Log.i(TAG, "Creating main activity");
 
@@ -32,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Answers.getInstance().logContentView(new ContentViewEvent()
+                .putContentName("Activity")
+                .putContentType("Main"));
     }
 
     @Override
@@ -43,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 }
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Main")
+                        .putContentId("Settings"));
                 break;
             case R.id.action_about:
                 Log.d(TAG, "Clicked about");
@@ -51,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 }
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Main")
+                        .putContentId("About"));
                 break;
         }
 

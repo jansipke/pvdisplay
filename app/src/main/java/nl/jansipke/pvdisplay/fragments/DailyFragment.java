@@ -24,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,20 +141,36 @@ public class DailyFragment extends Fragment {
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addMonths(picked, -1);
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Daily")
+                        .putContentId("Previous"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Daily")
+                        .putContentId("Next"));
                 break;
             case R.id.action_this_month:
                 Log.d(TAG, "Clicked this month");
                 picked = DateTimeUtils.getTodaysYearMonth();
                 updateScreen(false);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Daily")
+                        .putContentId("This month"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
+                Answers.getInstance().logContentView(new ContentViewEvent()
+                        .putContentName("Activity")
+                        .putContentType("Daily")
+                        .putContentId("Refresh"));
                 break;
         }
 
