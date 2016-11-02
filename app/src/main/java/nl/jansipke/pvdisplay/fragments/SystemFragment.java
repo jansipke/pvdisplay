@@ -39,7 +39,6 @@ public class SystemFragment extends Fragment {
     private final static String TAG = SystemFragment.class.getSimpleName();
 
     private View fragmentView;
-    private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
     @Override
@@ -61,7 +60,6 @@ public class SystemFragment extends Fragment {
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_system, container, false);
         updateScreen(false);
         return fragmentView;

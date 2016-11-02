@@ -183,7 +183,7 @@ public class DailyFragment extends Fragment {
         outState.putInt(STATE_KEY_MONTH, picked.month);
     }
 
-    private void updateGraph(List<DailyPvDatum> dayPvData) {
+    private void updateGraph(List<DailyPvDatum> dailyPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -194,18 +194,13 @@ public class DailyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            int newestDay = 0;
-            for (int i = 0; i < dayPvData.size(); i++) {
-                DailyPvDatum dailyPvDatum = dayPvData.get(i);
+            for (int i = 0; i < dailyPvData.size(); i++) {
+                DailyPvDatum dailyPvDatum = dailyPvData.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
                         ((float) dailyPvDatum.getEnergyGenerated()) / 1000,
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
-
-                if (dailyPvDatum.getDay() > newestDay) {
-                    newestDay = dailyPvDatum.getDay();
-                }
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
@@ -220,18 +215,18 @@ public class DailyFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 11, newestDay, 0);  // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 11, dailyPvData.size() + 1, 0);  // TODO Use real maximum value
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<DailyPvDatum> dayPvData) {
+    private void updateTable(List<DailyPvDatum> dailyPvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
-        for (int i = dayPvData.size() - 1; i >= 0; i--) {
-            DailyPvDatum dailyPvDatum = dayPvData.get(i);
+        for (int i = dailyPvData.size() - 1; i >= 0; i--) {
+            DailyPvDatum dailyPvDatum = dailyPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_day, null);
             ((TextView) row.findViewById(R.id.day)).setText(
                     DateTimeUtils.getDayOfWeek(
@@ -260,14 +255,14 @@ public class DailyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        List<DailyPvDatum> dayPvData = pvDataOperations.loadDaily(picked.year, picked.month);
+        List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
 
-        if (refreshData || dayPvData.size() == 0) {
+        if (refreshData || dailyPvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing day PV data for " +
+                Log.d(TAG, "Refreshing daily PV data for " +
                         DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             } else {
-                Log.d(TAG, "No day PV data for " +
+                Log.d(TAG, "No daily PV data for " +
                         DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             }
 
@@ -290,7 +285,7 @@ public class DailyFragment extends Fragment {
         }
 
         updateTitle(picked.year, picked.month);
-        updateGraph(createFullMonth(picked.year, picked.month, dayPvData));
-        updateTable(dayPvData);
+        updateGraph(createFullMonth(picked.year, picked.month, dailyPvData));
+        updateTable(dailyPvData);
     }
 }

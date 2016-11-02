@@ -150,7 +150,7 @@ public class MonthlyFragment extends Fragment {
         outState.putInt(STATE_KEY_YEAR, pickedYear);
     }
 
-    private void updateGraph(List<MonthlyPvDatum> monthPvData) {
+    private void updateGraph(List<MonthlyPvDatum> monthlyPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -161,18 +161,13 @@ public class MonthlyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            int newestMonth = 0;
-            for (int i = 0; i < monthPvData.size(); i++) {
-                MonthlyPvDatum monthlyPvDatum = monthPvData.get(i);
+            for (int i = 0; i < monthlyPvData.size(); i++) {
+                MonthlyPvDatum monthlyPvDatum = monthlyPvData.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
                         ((float) monthlyPvDatum.getEnergyGenerated()) / 1000,
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
-
-                if (monthlyPvDatum.getMonth() > newestMonth) {
-                    newestMonth = monthlyPvDatum.getMonth();
-                }
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
@@ -187,18 +182,18 @@ public class MonthlyFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 275, newestMonth, 0);  // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 275, monthlyPvData.size() + 1, 0);  // TODO Use real maximum value
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<MonthlyPvDatum> monthPvData) {
+    private void updateTable(List<MonthlyPvDatum> monthlyPvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
-        for (int i = monthPvData.size() - 1; i >= 0; i--) {
-            MonthlyPvDatum monthlyPvDatum = monthPvData.get(i);
+        for (int i = monthlyPvData.size() - 1; i >= 0; i--) {
+            MonthlyPvDatum monthlyPvDatum = monthlyPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_month, null);
             ((TextView) row.findViewById(R.id.month)).setText(
                     DateTimeUtils.getMonthName(monthlyPvDatum.getMonth()));
@@ -216,13 +211,13 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        List<MonthlyPvDatum> monthPvData = pvDataOperations.loadMonthly(pickedYear);
+        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
 
-        if (refreshData || monthPvData.size() == 0) {
+        if (refreshData || monthlyPvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing month PV data for " + pickedYear);
+                Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
             } else {
-                Log.d(TAG, "No month PV data for " + pickedYear);
+                Log.d(TAG, "No monthly PV data for " + pickedYear);
             }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -244,7 +239,7 @@ public class MonthlyFragment extends Fragment {
         }
 
         updateTitle(pickedYear);
-        updateGraph(createFullYear(pickedYear, monthPvData));
-        updateTable(monthPvData);
+        updateGraph(createFullYear(pickedYear, monthlyPvData));
+        updateTable(monthlyPvData);
     }
 }

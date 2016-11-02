@@ -94,7 +94,7 @@ public class YearlyFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateGraph(List<YearlyPvDatum> yearPvData) {
+    private void updateGraph(List<YearlyPvDatum> yearlyPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -105,8 +105,8 @@ public class YearlyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            for (int i = 0; i < yearPvData.size(); i++) {
-                YearlyPvDatum yearlyPvDatum = yearPvData.get(i);
+            for (int i = 0; i < yearlyPvData.size(); i++) {
+                YearlyPvDatum yearlyPvDatum = yearlyPvData.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
                         ((float) yearlyPvDatum.getEnergyGenerated()) / 1000,
@@ -126,18 +126,18 @@ public class YearlyFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 1650, yearPvData.size() + 1, 0);  // TODO Use real maximum value
+            final Viewport viewport = new Viewport(-1, 1650, yearlyPvData.size() + 1, 0);  // TODO Use real maximum value
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<YearlyPvDatum> yearPvData) {
+    private void updateTable(List<YearlyPvDatum> yearlyPvData) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
-        for (int i = yearPvData.size() - 1; i >= 0; i--) {
-            YearlyPvDatum yearlyPvDatum = yearPvData.get(i);
+        for (int i = yearlyPvData.size() - 1; i >= 0; i--) {
+            YearlyPvDatum yearlyPvDatum = yearlyPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_year, null);
             ((TextView) row.findViewById(R.id.year)).setText(
                     DateTimeUtils.formatYear(yearlyPvDatum.getYear()));
@@ -155,13 +155,13 @@ public class YearlyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
-        List<YearlyPvDatum> yearPvData = pvDataOperations.loadYearly();
+        List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
 
-        if (refreshData || yearPvData.size() == 0) {
+        if (refreshData || yearlyPvData.size() == 0) {
             if (refreshData) {
-                Log.d(TAG, "Refreshing year PV data");
+                Log.d(TAG, "Refreshing yearly PV data");
             } else {
-                Log.d(TAG, "No year PV data");
+                Log.d(TAG, "No yearly PV data");
             }
 
             BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -183,7 +183,7 @@ public class YearlyFragment extends Fragment {
         }
 
         updateTitle();
-        updateGraph(yearPvData);
-        updateTable(yearPvData);
+        updateGraph(yearlyPvData);
+        updateTable(yearlyPvData);
     }
 }

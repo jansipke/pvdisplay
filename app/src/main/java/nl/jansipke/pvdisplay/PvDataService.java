@@ -111,10 +111,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + dayPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download day PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download daily PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse day PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse daily PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -166,10 +166,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + monthPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download month PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download monthly PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse month PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse monthly PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -244,10 +244,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + yearPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download year PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download yearly PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse year PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse yearly PV data: " + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
