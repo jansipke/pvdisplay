@@ -93,7 +93,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadDay(final int year, final int month) {
-        Log.d(TAG, "Downloading day PV data for " +
+        Log.d(TAG, "Downloading daily PV data for " +
                 DateTimeUtils.formatYearMonth(year, month, true));
         new Thread(new Runnable() {
             @Override
@@ -149,7 +149,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadMonth(final int year) {
-        Log.d(TAG, "Downloading month PV data for " + year);
+        Log.d(TAG, "Downloading monthly PV data for " + year);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -229,7 +229,7 @@ public class PvDataService extends Service {
     }
 
     private void downloadYear() {
-        Log.d(TAG, "Downloading year PV data for");
+        Log.d(TAG, "Downloading yearly PV data");
         new Thread(new Runnable() {
             @Override
             public void run() {
