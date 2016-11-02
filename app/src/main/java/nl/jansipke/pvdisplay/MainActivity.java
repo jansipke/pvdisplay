@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Activity")
-                .putContentType("Main"));
+                .putContentName("Main")
+                .putContentType("Activity"));
     }
 
     @Override
@@ -54,9 +54,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Main")
-                        .putContentId("Settings"));
+                        .putContentName("Settings")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_about:
                 Log.d(TAG, "Clicked about");
@@ -66,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Main")
-                        .putContentId("About"));
+                        .putContentName("About")
+                        .putContentType("Menu"));
                 break;
         }
 

@@ -142,35 +142,31 @@ public class DailyFragment extends Fragment {
                 picked = DateTimeUtils.addMonths(picked, -1);
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Daily")
-                        .putContentId("Previous"));
+                        .putContentName("Previous")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Daily")
-                        .putContentId("Next"));
+                        .putContentName("Next")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_this_month:
                 Log.d(TAG, "Clicked this month");
                 picked = DateTimeUtils.getTodaysYearMonth();
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Daily")
-                        .putContentId("This month"));
+                        .putContentName("This month")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Daily")
-                        .putContentId("Refresh"));
+                        .putContentName("Refresh")
+                        .putContentType("Menu"));
                 break;
         }
 

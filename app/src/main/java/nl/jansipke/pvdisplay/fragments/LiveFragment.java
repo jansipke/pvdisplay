@@ -147,44 +147,39 @@ public class LiveFragment extends Fragment {
                 picked = DateTimeUtils.addDays(picked, -1);
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Live")
-                        .putContentId("Previous"));
+                        .putContentName("Previous")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Live")
-                        .putContentId("Next"));
+                        .putContentName("Next")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Live")
-                        .putContentId("Refresh"));
+                        .putContentName("Refresh")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
                 DialogFragment dialogFragment = new DatePickerFragment();
                 dialogFragment.show(getFragmentManager(), "datePicker");
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Live")
-                        .putContentId("Date"));
+                        .putContentName("Date")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Live")
-                        .putContentId("Today"));
+                        .putContentName("Today")
+                        .putContentType("Menu"));
                 break;
         }
 

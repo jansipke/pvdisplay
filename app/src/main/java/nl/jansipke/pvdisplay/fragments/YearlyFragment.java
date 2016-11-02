@@ -86,9 +86,8 @@ public class YearlyFragment extends Fragment {
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Yearly")
-                        .putContentId("Refresh"));
+                        .putContentName("Refresh")
+                        .putContentType("Menu"));
                 break;
         }
 

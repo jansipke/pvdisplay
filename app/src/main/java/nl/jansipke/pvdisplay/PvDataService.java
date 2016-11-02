@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -77,10 +79,15 @@ public class PvDataService extends Service {
         Map<String, String> headers = new HashMap<>();
         SharedPreferences sharedPreferences = PreferenceManager.
                 getDefaultSharedPreferences(getApplicationContext());
-        headers.put("X-Pvoutput-Apikey", sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_pvoutput_api_key), null));
-        headers.put("X-Pvoutput-SystemId", sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_pvoutput_system_id), null));
+        String apiKey = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_pvoutput_api_key), null);
+        String systemId = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_pvoutput_system_id), null);
+        if (apiKey == null || apiKey.equals("") || systemId == null || systemId.equals("")) {
+            throw new IOException("API Key and System Id need to be set");
+        }
+        headers.put("X-Pvoutput-Apikey", apiKey);
+        headers.put("X-Pvoutput-SystemId", systemId);
         String url = URL_BASE + urlPath;
         return NetworkUtils.httpGet(url, headers);
     }
@@ -99,14 +106,16 @@ public class PvDataService extends Service {
                     String result = download(urlPath);
 
                     // Parse and save data
-                    List<DailyPvDatum> dayPvData = new PvOutputParser().parseDay(result);
+                    List<DailyPvDatum> dayPvData = new PvOutputParser().parseDaily(result);
                     new PvDataOperations(getApplicationContext()).saveDaily(dayPvData);
 
                     reportStatus(true, "Downloaded " + dayPvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download day PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse day PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();
@@ -130,8 +139,10 @@ public class PvDataService extends Service {
                     reportStatus(true, "Downloaded " + livePvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download live PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse live PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();
@@ -150,14 +161,16 @@ public class PvDataService extends Service {
                     String result = download(urlPath);
 
                     // Parse and save data
-                    List<MonthlyPvDatum> monthPvData = new PvOutputParser().parseMonth(result);
+                    List<MonthlyPvDatum> monthPvData = new PvOutputParser().parseMonthly(result);
                     new PvDataOperations(getApplicationContext()).saveMonthly(monthPvData);
 
                     reportStatus(true, "Downloaded " + monthPvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download month PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse month PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();
@@ -180,8 +193,10 @@ public class PvDataService extends Service {
                     reportStatus(true, "Downloaded statistic PV data");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download statistic PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse statistic PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();
@@ -204,8 +219,10 @@ public class PvDataService extends Service {
                     reportStatus(true, "Downloaded system PV data");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download system PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse system PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();
@@ -222,14 +239,16 @@ public class PvDataService extends Service {
                     String result = download(urlPath);
 
                     // Parse and save data
-                    List<YearlyPvDatum> yearPvData = new PvOutputParser().parseYear(result);
+                    List<YearlyPvDatum> yearPvData = new PvOutputParser().parseYearly(result);
                     new PvDataOperations(getApplicationContext()).saveYearly(yearPvData);
 
                     reportStatus(true, "Downloaded " + yearPvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download year PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 } catch (ParseException e) {
                     reportStatus(false, "Could not parse year PV data: " + e.getMessage());
+                    Crashlytics.logException(e);
                 }
             }
         }).start();

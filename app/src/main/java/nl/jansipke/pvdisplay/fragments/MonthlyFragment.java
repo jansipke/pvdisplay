@@ -110,35 +110,31 @@ public class MonthlyFragment extends Fragment {
                 pickedYear--;
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Monthly")
-                        .putContentId("Previous"));
+                        .putContentName("Previous")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 pickedYear++;
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Monthly")
-                        .putContentId("Next"));
+                        .putContentName("Next")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
                 pickedYear = DateTimeUtils.getTodaysYear();
                 updateScreen(false);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Monthly")
-                        .putContentId("This year"));
+                        .putContentName("This year")
+                        .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 updateScreen(true);
                 Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Activity")
-                        .putContentType("Monthly")
-                        .putContentId("Refresh"));
+                        .putContentName("Refresh")
+                        .putContentType("Menu"));
                 break;
         }
 
