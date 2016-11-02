@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
@@ -134,7 +135,8 @@ public class SystemFragment extends Fragment {
                                 getResources().getString(R.string.value_inverter,
                                         systemPvDatum.getInverterPower()));
 
-                ((TextView) fragmentView.findViewById(R.id.statistics)).setText(
+                TextView statisticsTextView = (TextView) fragmentView.findViewById(R.id.statistics);
+                statisticsTextView.setText(
                         getResources().getString(R.string.value_statistics_total,
                                 FormatUtils.ENERGY_FORMAT.format(
                                         statisticPvDatum.getEnergyGenerated() / 1000),
@@ -149,6 +151,17 @@ public class SystemFragment extends Fragment {
                                                 statisticPvDatum.getRecordDateYear(),
                                                 statisticPvDatum.getRecordDateMonth(),
                                                 statisticPvDatum.getRecordDateDay(), true)) + "\n");
+                statisticsTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Context context = getContext();
+                        if (context != null) {
+                            PvDataOperations pvDataOperations = new PvDataOperations(context);
+                            Toast.makeText(context, pvDataOperations.loadRecord().toString(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
             }
         }
     }

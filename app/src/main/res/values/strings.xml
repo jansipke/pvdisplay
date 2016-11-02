@@ -18,6 +18,7 @@
     <string name="preferences_pv_data_file">preferences_pv_data</string>
     <string name="preferences_object_statistic">statistic</string>
     <string name="preferences_object_system">system</string>
+    <string name="preferences_object_record">record</string>
 
     <string name="preferences_key_pvoutput_api_key">pvoutput_api_key</string>
     <string name="preferences_title_pvoutput_api_key">API Key</string>

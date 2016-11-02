@@ -16,6 +16,7 @@ import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
+import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.data.YearlyPvDatum;
@@ -156,6 +157,22 @@ public class PvDataOperations {
         return monthlyPvData;
     }
 
+    public RecordPvDatum loadRecord() {
+        Log.d(TAG, "Loading record PV data");
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        String json = sharedPreferences.getString(context.getString(R.string.preferences_object_record), null);
+        if (json != null) {
+            Log.d(TAG, "Loaded from preferences");
+            return new Gson().fromJson(json, RecordPvDatum.class);
+        } else {
+            Log.d(TAG, "No record data found in preferences");
+            return new RecordPvDatum(0, 0, 0, 0);
+        }
+    }
+
     public StatisticPvDatum loadStatistic() {
         Log.d(TAG, "Loading statistic PV data");
 
@@ -231,6 +248,7 @@ public class PvDataOperations {
                 "," + PvDataContract.DailyPvData.COLUMN_NAME_CONDITION +
                 ") VALUES (?,?,?,?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
+        double maxEnergyGenerated = Double.MIN_VALUE;
         for (DailyPvDatum dailyPvDatum : dailyPvData) {
             statement.clearBindings();
             statement.bindLong(1, dailyPvDatum.getYear());
@@ -240,12 +258,19 @@ public class PvDataOperations {
             statement.bindDouble(5, dailyPvDatum.getPeakPower());
             statement.bindString(6, dailyPvDatum.getCondition());
             statement.execute();
+            maxEnergyGenerated = Math.max(maxEnergyGenerated, dailyPvDatum.getEnergyGenerated());
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
         Log.d(TAG, "Saved " + dailyPvData.size() + " rows");
+
+        RecordPvDatum recordPvDatum = loadRecord();
+        if (maxEnergyGenerated > recordPvDatum.getDailyEnergyGenerated()) {
+            recordPvDatum.setDailyEnergyGenerated(maxEnergyGenerated);
+            saveRecord(recordPvDatum);
+        }
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
@@ -263,6 +288,7 @@ public class PvDataOperations {
                 "," + PvDataContract.LivePvData.COLUMN_NAME_POWER_GENERATION +
                 ") VALUES (?,?,?,?,?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
+        double maxPowerGeneration = Double.MIN_VALUE;
         for (LivePvDatum livePvDatum : livePvData) {
             statement.clearBindings();
             statement.bindLong(1, livePvDatum.getYear());
@@ -273,12 +299,19 @@ public class PvDataOperations {
             statement.bindDouble(6, livePvDatum.getEnergyGeneration());
             statement.bindDouble(7, livePvDatum.getPowerGeneration());
             statement.execute();
+            maxPowerGeneration = Math.max(maxPowerGeneration, livePvDatum.getEnergyGeneration());
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
         Log.d(TAG, "Saved " + livePvData.size() + " rows");
+
+        RecordPvDatum recordPvDatum = loadRecord();
+        if (maxPowerGeneration > recordPvDatum.getLivePowerGeneration()) {
+            recordPvDatum.setLivePowerGeneration(maxPowerGeneration);
+            saveRecord(recordPvDatum);
+        }
     }
 
     public void saveMonthly(List<MonthlyPvDatum> monthlyPvData) {
@@ -292,18 +325,40 @@ public class PvDataOperations {
                 "," + PvDataContract.MonthlyPvData.COLUMN_NAME_ENERGY_GENERATED +
                 ") VALUES (?,?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
+        double maxEnergyGenerated = Double.MIN_VALUE;
         for (MonthlyPvDatum monthlyPvDatum : monthlyPvData) {
             statement.clearBindings();
             statement.bindLong(1, monthlyPvDatum.getYear());
             statement.bindLong(2, monthlyPvDatum.getMonth());
             statement.bindDouble(3, monthlyPvDatum.getEnergyGenerated());
             statement.execute();
+            maxEnergyGenerated = Math.max(maxEnergyGenerated, monthlyPvDatum.getEnergyGenerated());
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
         Log.d(TAG, "Saved " + monthlyPvData.size() + " rows");
+
+        RecordPvDatum recordPvDatum = loadRecord();
+        if (maxEnergyGenerated > recordPvDatum.getMonthlyEnergyGenerated()) {
+            recordPvDatum.setMonthlyEnergyGenerated(maxEnergyGenerated);
+            saveRecord(recordPvDatum);
+        }
+    }
+
+    public void saveRecord(RecordPvDatum recordPvDatum) {
+        Log.d(TAG, "Saving record PV data");
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(
+                context.getString(R.string.preferences_pv_data_file),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = new Gson().toJson(recordPvDatum);
+        editor.putString(context.getString(R.string.preferences_object_record), json);
+        editor.apply();
+
+        Log.d(TAG, "Saved to preferences");
     }
 
     public void saveStatistic(StatisticPvDatum statisticPvDatum) {
@@ -344,16 +399,24 @@ public class PvDataOperations {
                 "," + PvDataContract.YearlyPvData.COLUMN_NAME_ENERGY_GENERATED +
                 ") VALUES (?,?);";
         SQLiteStatement statement = db.compileStatement(sql);
+        double maxEnergyGenerated = Double.MIN_VALUE;
         for (YearlyPvDatum yearlyPvDatum : yearlyPvData) {
             statement.clearBindings();
             statement.bindLong(1, yearlyPvDatum.getYear());
             statement.bindDouble(2, yearlyPvDatum.getEnergyGenerated());
             statement.execute();
+            maxEnergyGenerated = Math.max(maxEnergyGenerated, yearlyPvDatum.getEnergyGenerated());
         }
         db.setTransactionSuccessful();
         db.endTransaction();
 
         db.close();
         Log.d(TAG, "Saved " + yearlyPvData.size() + " rows");
+
+        RecordPvDatum recordPvDatum = loadRecord();
+        if (maxEnergyGenerated > recordPvDatum.getYearlyEnergyGenerated()) {
+            recordPvDatum.setYearlyEnergyGenerated(maxEnergyGenerated);
+            saveRecord(recordPvDatum);
+        }
     }
 }
