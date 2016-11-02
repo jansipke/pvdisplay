@@ -299,7 +299,7 @@ public class PvDataOperations {
             statement.bindDouble(6, livePvDatum.getEnergyGeneration());
             statement.bindDouble(7, livePvDatum.getPowerGeneration());
             statement.execute();
-            maxPowerGeneration = Math.max(maxPowerGeneration, livePvDatum.getEnergyGeneration());
+            maxPowerGeneration = Math.max(maxPowerGeneration, livePvDatum.getPowerGeneration());
         }
         db.setTransactionSuccessful();
         db.endTransaction();
