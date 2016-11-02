@@ -182,8 +182,10 @@ public class YearlyFragment extends Fragment {
             PvDataService.callYear(getContext());
         }
 
-        updateTitle();
-        updateGraph(yearlyPvData);
-        updateTable(yearlyPvData);
+        if (isAdded() && getActivity() != null) {
+            updateTitle();
+            updateGraph(yearlyPvData);
+            updateTable(yearlyPvData);
+        }
     }
 }

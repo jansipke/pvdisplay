@@ -284,8 +284,10 @@ public class DailyFragment extends Fragment {
             PvDataService.callDay(getContext(), picked.year, picked.month);
         }
 
-        updateTitle(picked.year, picked.month);
-        updateGraph(createFullMonth(picked.year, picked.month, dailyPvData));
-        updateTable(dailyPvData);
+        if (isAdded() && getActivity() != null) {
+            updateTitle(picked.year, picked.month);
+            updateGraph(createFullMonth(picked.year, picked.month, dailyPvData));
+            updateTable(dailyPvData);
+        }
     }
 }

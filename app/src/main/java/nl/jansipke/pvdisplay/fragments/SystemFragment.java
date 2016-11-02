@@ -105,49 +105,51 @@ public class SystemFragment extends Fragment {
             PvDataService.callSystem(getContext());
         }
 
-        if (statisticPvDatum != null && systemPvDatum != null) {
-            TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
-            systemTextView.setText(systemPvDatum.getSystemName());
-            systemTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Uri uri = Uri.parse("geo:" +
-                            systemPvDatum.getLatitude() + "," +
-                            systemPvDatum.getLongitude() + "?z=14");
-                    Log.d(TAG, "Opening Google Maps for URI: " + uri);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.setPackage("com.google.android.apps.maps");
-                    startActivity(intent);
-                }
-            });
+        if (isAdded() && getActivity() != null) {
+            if (statisticPvDatum != null && systemPvDatum != null) {
+                TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
+                systemTextView.setText(systemPvDatum.getSystemName());
+                systemTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Uri uri = Uri.parse("geo:" +
+                                systemPvDatum.getLatitude() + "," +
+                                systemPvDatum.getLongitude() + "?z=14");
+                        Log.d(TAG, "Opening Google Maps for URI: " + uri);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        intent.setPackage("com.google.android.apps.maps");
+                        startActivity(intent);
+                    }
+                });
 
-            ((TextView) fragmentView.findViewById(R.id.panels)).setText(
-                    systemPvDatum.getPanelBrand() + "\n" +
-                    getResources().getString(R.string.value_panels,
-                            systemPvDatum.getNumberOfPanels(),
-                            systemPvDatum.getPanelPower(),
-                            systemPvDatum.getSystemSize()));
+                ((TextView) fragmentView.findViewById(R.id.panels)).setText(
+                        systemPvDatum.getPanelBrand() + "\n" +
+                                getResources().getString(R.string.value_panels,
+                                        systemPvDatum.getNumberOfPanels(),
+                                        systemPvDatum.getPanelPower(),
+                                        systemPvDatum.getSystemSize()));
 
-            ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
-                    systemPvDatum.getInverterBrand() + "\n" +
-                    getResources().getString(R.string.value_inverter,
-                            systemPvDatum.getInverterPower()));
+                ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
+                        systemPvDatum.getInverterBrand() + "\n" +
+                                getResources().getString(R.string.value_inverter,
+                                        systemPvDatum.getInverterPower()));
 
-            ((TextView) fragmentView.findViewById(R.id.statistics)).setText(
-                    getResources().getString(R.string.value_statistics_total,
-                            FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getEnergyGenerated() / 1000),
-                            statisticPvDatum.getOutputs()) + "\n" +
-                    getResources().getString(R.string.value_statistics_average,
-                            FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
-                    getResources().getString(R.string.value_statistics_record,
-                            FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getMaximumGeneration() / 1000),
-                            DateTimeUtils.formatYearMonthDay(
-                                    statisticPvDatum.getRecordDateYear(),
-                                    statisticPvDatum.getRecordDateMonth(),
-                                    statisticPvDatum.getRecordDateDay(), true)) + "\n");
+                ((TextView) fragmentView.findViewById(R.id.statistics)).setText(
+                        getResources().getString(R.string.value_statistics_total,
+                                FormatUtils.ENERGY_FORMAT.format(
+                                        statisticPvDatum.getEnergyGenerated() / 1000),
+                                statisticPvDatum.getOutputs()) + "\n" +
+                                getResources().getString(R.string.value_statistics_average,
+                                        FormatUtils.ENERGY_FORMAT.format(
+                                                statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
+                                getResources().getString(R.string.value_statistics_record,
+                                        FormatUtils.ENERGY_FORMAT.format(
+                                                statisticPvDatum.getMaximumGeneration() / 1000),
+                                        DateTimeUtils.formatYearMonthDay(
+                                                statisticPvDatum.getRecordDateYear(),
+                                                statisticPvDatum.getRecordDateMonth(),
+                                                statisticPvDatum.getRecordDateDay(), true)) + "\n");
+            }
         }
     }
 }

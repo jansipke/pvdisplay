@@ -298,8 +298,10 @@ public class LiveFragment extends Fragment {
             PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
         }
 
-        updateTitle(picked.year, picked.month, picked.day);
-        updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
-        updateTable(livePvData);
+        if (isAdded() && getActivity() != null) {
+            updateTitle(picked.year, picked.month, picked.day);
+            updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
+            updateTable(livePvData);
+        }
     }
 }

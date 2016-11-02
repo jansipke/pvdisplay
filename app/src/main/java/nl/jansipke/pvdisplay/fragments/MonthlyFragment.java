@@ -238,8 +238,10 @@ public class MonthlyFragment extends Fragment {
             PvDataService.callMonth(getContext(), pickedYear);
         }
 
-        updateTitle(pickedYear);
-        updateGraph(createFullYear(pickedYear, monthlyPvData));
-        updateTable(monthlyPvData);
+        if (isAdded() && getActivity() != null) {
+            updateTitle(pickedYear);
+            updateGraph(createFullYear(pickedYear, monthlyPvData));
+            updateTable(monthlyPvData);
+        }
     }
 }
