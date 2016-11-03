@@ -31,10 +31,15 @@ public class NetworkUtils {
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect();
-            is = conn.getInputStream();
-            return inputStreamToString(is);
+            if (conn.getResponseCode() == 200) {
+                is = conn.getInputStream();
+                return inputStreamToString(is);
+            } else {
+                is = conn.getErrorStream();
+                throw new IOException(inputStreamToString(is));
+            }
         } catch (IOException e) {
-            Log.w(TAG, "Could not open network connection");
+            Log.w(TAG, e.getMessage());
             throw e;
         } finally {
             if (is != null) {
