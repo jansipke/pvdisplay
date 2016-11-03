@@ -59,6 +59,26 @@ public class DailyFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
+    private void callPvDataService() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+                if (intent.getBooleanExtra("success", true)) {
+                    updateScreen(false);
+                } else {
+                    Toast.makeText(context, intent.getStringExtra("message"),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(broadcastReceiver, intentFilter);
+
+        PvDataService.callDay(getContext(), picked.year, picked.month);
+    }
+
     private List<DailyPvDatum> createFullMonth(int year, int month,
                                                List<DailyPvDatum> dayPvData) {
         List<DailyPvDatum> fullMonth = new ArrayList<>();
@@ -255,36 +275,23 @@ public class DailyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
+        if (refreshData) {
+            Log.d(TAG, "Refreshing daily PV data for " +
+                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+            callPvDataService();
+            return;
+        }
+
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
-
-        if (refreshData || dailyPvData.size() == 0) {
-            if (refreshData) {
-                Log.d(TAG, "Refreshing daily PV data for " +
-                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            } else {
-                Log.d(TAG, "No daily PV data for " +
-                        DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            }
-
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getBooleanExtra("success", true)) {
-                        updateScreen(false);
-                    } else {
-                        Toast.makeText(context, intent.getStringExtra("message"),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-            };
-            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(broadcastReceiver, intentFilter);
-
-            PvDataService.callDay(getContext(), picked.year, picked.month);
+        if (dailyPvData.size() == 0) {
+            Log.d(TAG, "No daily PV data for " +
+                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+            callPvDataService();
+            return;
         }
 
         if (isAdded() && getActivity() != null) {
+            Log.d(TAG, "Updating title, graph and table");
             updateTitle(picked.year, picked.month);
             updateGraph(createFullMonth(picked.year, picked.month, dailyPvData));
             updateTable(dailyPvData);

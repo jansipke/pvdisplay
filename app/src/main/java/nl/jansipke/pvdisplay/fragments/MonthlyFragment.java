@@ -54,6 +54,26 @@ public class MonthlyFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
+    private void callPvDataService() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+                if (intent.getBooleanExtra("success", true)) {
+                    updateScreen(false);
+                } else {
+                    Toast.makeText(context, intent.getStringExtra("message"),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(broadcastReceiver, intentFilter);
+
+        PvDataService.callMonth(getContext(), pickedYear);
+    }
+
     private List<MonthlyPvDatum> createFullYear(int year, List<MonthlyPvDatum> monthPvData) {
         List<MonthlyPvDatum> fullYear = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
@@ -211,34 +231,21 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
+        if (refreshData) {
+            Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
+            callPvDataService();
+            return;
+        }
+
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
-
-        if (refreshData || monthlyPvData.size() == 0) {
-            if (refreshData) {
-                Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
-            } else {
-                Log.d(TAG, "No monthly PV data for " + pickedYear);
-            }
-
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getBooleanExtra("success", true)) {
-                        updateScreen(false);
-                    } else {
-                        Toast.makeText(context, intent.getStringExtra("message"),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-            };
-            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(broadcastReceiver, intentFilter);
-
-            PvDataService.callMonth(getContext(), pickedYear);
+        if (monthlyPvData.size() == 0) {
+            Log.d(TAG, "No monthly PV data for " + pickedYear);
+            callPvDataService();
+            return;
         }
 
         if (isAdded() && getActivity() != null) {
+            Log.d(TAG, "Updating title, graph and table");
             updateTitle(pickedYear);
             updateGraph(createFullYear(pickedYear, monthlyPvData));
             updateTable(monthlyPvData);

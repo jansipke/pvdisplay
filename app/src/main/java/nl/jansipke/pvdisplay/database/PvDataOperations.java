@@ -206,7 +206,7 @@ public class PvDataOperations {
     }
 
     public List<YearlyPvDatum> loadYearly() {
-        Log.d(TAG, "Loading yearly PV data for");
+        Log.d(TAG, "Loading yearly PV data");
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {

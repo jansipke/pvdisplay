@@ -50,6 +50,26 @@ public class YearlyFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
+    private void callPvDataService() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+                if (intent.getBooleanExtra("success", true)) {
+                    updateScreen(false);
+                } else {
+                    Toast.makeText(context, intent.getStringExtra("message"),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(broadcastReceiver, intentFilter);
+
+        PvDataService.callYear(getContext());
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,34 +175,21 @@ public class YearlyFragment extends Fragment {
     public void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
+        if (refreshData) {
+            Log.d(TAG, "Refreshing yearly PV data");
+            callPvDataService();
+            return;
+        }
+
         List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
-
-        if (refreshData || yearlyPvData.size() == 0) {
-            if (refreshData) {
-                Log.d(TAG, "Refreshing yearly PV data");
-            } else {
-                Log.d(TAG, "No yearly PV data");
-            }
-
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (intent.getBooleanExtra("success", true)) {
-                        updateScreen(false);
-                    } else {
-                        Toast.makeText(context, intent.getStringExtra("message"),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-            };
-            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(broadcastReceiver, intentFilter);
-
-            PvDataService.callYear(getContext());
+        if (yearlyPvData.size() == 0) {
+            Log.d(TAG, "No yearly PV data");
+            callPvDataService();
+            return;
         }
 
         if (isAdded() && getActivity() != null) {
+            Log.d(TAG, "Updating title, graph and table");
             updateTitle();
             updateGraph(yearlyPvData);
             updateTable(yearlyPvData);

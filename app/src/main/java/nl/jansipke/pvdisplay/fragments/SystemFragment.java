@@ -42,6 +42,27 @@ public class SystemFragment extends Fragment {
     private View fragmentView;
     private PvDataOperations pvDataOperations;
 
+    private void callPvDataService() {
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+                if (intent.getBooleanExtra("success", true)) {
+                    updateScreen(false);
+                } else {
+                    Toast.makeText(context, intent.getStringExtra("message"),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(broadcastReceiver, intentFilter);
+
+        PvDataService.callStatistic(getContext());
+        PvDataService.callSystem(getContext());
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,85 +105,77 @@ public class SystemFragment extends Fragment {
     private void updateScreen(boolean refreshData) {
         Log.d(TAG, "Updating screen");
 
+        if (refreshData) {
+            Log.d(TAG, "Refreshing statistic and system PV data");
+            callPvDataService();
+            return;
+        }
+
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
-        if (refreshData || statisticPvDatum == null || systemPvDatum == null) {
-            if (refreshData) {
-                Log.d(TAG, "Refreshing statistic and system PV data");
-            } else {
-                Log.d(TAG, "No statistic or system PV data");
-            }
-            BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    updateScreen(false);
-                }
-            };
-            IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-            LocalBroadcastManager.getInstance(getContext())
-                    .registerReceiver(broadcastReceiver, intentFilter);
-
-            PvDataService.callStatistic(getContext());
-            PvDataService.callSystem(getContext());
+        if (statisticPvDatum == null || systemPvDatum == null) {
+            Log.d(TAG, "No statistic or system PV data");
+            callPvDataService();
+            return;
         }
 
         if (isAdded() && getActivity() != null) {
-            if (statisticPvDatum != null && systemPvDatum != null) {
-                TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
-                systemTextView.setText(systemPvDatum.getSystemName());
-                systemTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Uri uri = Uri.parse("geo:" +
-                                systemPvDatum.getLatitude() + "," +
-                                systemPvDatum.getLongitude() + "?z=14");
-                        Log.d(TAG, "Opening Google Maps for URI: " + uri);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        intent.setPackage("com.google.android.apps.maps");
-                        startActivity(intent);
+            Log.d(TAG, "Updating table");
+
+            TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
+            systemTextView.setText(systemPvDatum.getSystemName());
+            systemTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Uri uri = Uri.parse("geo:" +
+                            systemPvDatum.getLatitude() + "," +
+                            systemPvDatum.getLongitude() + "?z=14");
+                    Log.d(TAG, "Opening Google Maps for URI: " + uri);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    intent.setPackage("com.google.android.apps.maps");
+                    startActivity(intent);
+                }
+            });
+
+            ((TextView) fragmentView.findViewById(R.id.panels)).setText(
+                    systemPvDatum.getPanelBrand() + "\n" +
+                            getResources().getString(R.string.value_panels,
+                                    systemPvDatum.getNumberOfPanels(),
+                                    systemPvDatum.getPanelPower(),
+                                    systemPvDatum.getSystemSize()));
+
+            ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
+                    systemPvDatum.getInverterBrand() + "\n" +
+                            getResources().getString(R.string.value_inverter,
+                                    systemPvDatum.getInverterPower()));
+
+            TextView statisticsTextView = (TextView) fragmentView.findViewById(R.id.statistics);
+            statisticsTextView.setText(
+                    getResources().getString(R.string.value_statistics_total,
+                            FormatUtils.ENERGY_FORMAT.format(
+                                    statisticPvDatum.getEnergyGenerated() / 1000),
+                            statisticPvDatum.getOutputs()) + "\n" +
+                            getResources().getString(R.string.value_statistics_average,
+                                    FormatUtils.ENERGY_FORMAT.format(
+                                            statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
+                            getResources().getString(R.string.value_statistics_record,
+                                    FormatUtils.ENERGY_FORMAT.format(
+                                            statisticPvDatum.getMaximumGeneration() / 1000),
+                                    DateTimeUtils.formatYearMonthDay(
+                                            statisticPvDatum.getRecordDateYear(),
+                                            statisticPvDatum.getRecordDateMonth(),
+                                            statisticPvDatum.getRecordDateDay(), true)) + "\n");
+            statisticsTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Context context = getContext();
+                    if (context != null) {
+                        PvDataOperations pvDataOperations = new PvDataOperations(context);
+                        Toast.makeText(context, pvDataOperations.loadRecord().toString(),
+                                Toast.LENGTH_LONG).show();
                     }
-                });
-
-                ((TextView) fragmentView.findViewById(R.id.panels)).setText(
-                        systemPvDatum.getPanelBrand() + "\n" +
-                                getResources().getString(R.string.value_panels,
-                                        systemPvDatum.getNumberOfPanels(),
-                                        systemPvDatum.getPanelPower(),
-                                        systemPvDatum.getSystemSize()));
-
-                ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
-                        systemPvDatum.getInverterBrand() + "\n" +
-                                getResources().getString(R.string.value_inverter,
-                                        systemPvDatum.getInverterPower()));
-
-                TextView statisticsTextView = (TextView) fragmentView.findViewById(R.id.statistics);
-                statisticsTextView.setText(
-                        getResources().getString(R.string.value_statistics_total,
-                                FormatUtils.ENERGY_FORMAT.format(
-                                        statisticPvDatum.getEnergyGenerated() / 1000),
-                                statisticPvDatum.getOutputs()) + "\n" +
-                                getResources().getString(R.string.value_statistics_average,
-                                        FormatUtils.ENERGY_FORMAT.format(
-                                                statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
-                                getResources().getString(R.string.value_statistics_record,
-                                        FormatUtils.ENERGY_FORMAT.format(
-                                                statisticPvDatum.getMaximumGeneration() / 1000),
-                                        DateTimeUtils.formatYearMonthDay(
-                                                statisticPvDatum.getRecordDateYear(),
-                                                statisticPvDatum.getRecordDateMonth(),
-                                                statisticPvDatum.getRecordDateDay(), true)) + "\n");
-                statisticsTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Context context = getContext();
-                        if (context != null) {
-                            PvDataOperations pvDataOperations = new PvDataOperations(context);
-                            Toast.makeText(context, pvDataOperations.loadRecord().toString(),
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
+                }
+            });
         }
     }
 }
