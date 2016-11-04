@@ -60,7 +60,7 @@ public class MonthlyFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 if (intent.getBooleanExtra("success", true)) {
-                    updateScreen(false);
+                    updateScreen();
                 } else {
                     Toast.makeText(context, intent.getStringExtra("message"),
                             Toast.LENGTH_LONG).show();
@@ -118,7 +118,7 @@ public class MonthlyFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_month, container, false);
-        updateScreen(false);
+        updateScreen();
         return fragmentView;
     }
 
@@ -128,7 +128,7 @@ public class MonthlyFragment extends Fragment {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 pickedYear--;
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Previous")
                         .putContentType("Menu"));
@@ -136,7 +136,7 @@ public class MonthlyFragment extends Fragment {
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 pickedYear++;
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Next")
                         .putContentType("Menu"));
@@ -144,14 +144,14 @@ public class MonthlyFragment extends Fragment {
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
                 pickedYear = DateTimeUtils.getTodaysYear();
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("This year")
                         .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                updateScreen(true);
+                callPvDataService();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Refresh")
                         .putContentType("Menu"));
@@ -228,14 +228,8 @@ public class MonthlyFragment extends Fragment {
         textView.setText("" + year);
     }
 
-    public void updateScreen(boolean refreshData) {
+    public void updateScreen() {
         Log.d(TAG, "Updating screen");
-
-        if (refreshData) {
-            Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
-            callPvDataService();
-            return;
-        }
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
         if (monthlyPvData.size() == 0) {

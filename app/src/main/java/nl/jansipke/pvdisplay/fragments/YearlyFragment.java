@@ -56,7 +56,7 @@ public class YearlyFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 if (intent.getBooleanExtra("success", true)) {
-                    updateScreen(false);
+                    updateScreen();
                 } else {
                     Toast.makeText(context, intent.getStringExtra("message"),
                             Toast.LENGTH_LONG).show();
@@ -95,7 +95,7 @@ public class YearlyFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_year, container, false);
-        updateScreen(false);
+        updateScreen();
         return fragmentView;
     }
 
@@ -104,7 +104,7 @@ public class YearlyFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                updateScreen(true);
+                callPvDataService();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Refresh")
                         .putContentType("Menu"));
@@ -172,14 +172,8 @@ public class YearlyFragment extends Fragment {
         textView.setText(getResources().getString(R.string.title_yearly));
     }
 
-    public void updateScreen(boolean refreshData) {
+    public void updateScreen() {
         Log.d(TAG, "Updating screen");
-
-        if (refreshData) {
-            Log.d(TAG, "Refreshing yearly PV data");
-            callPvDataService();
-            return;
-        }
 
         List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
         if (yearlyPvData.size() == 0) {

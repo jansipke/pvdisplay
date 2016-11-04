@@ -65,7 +65,7 @@ public class DailyFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 if (intent.getBooleanExtra("success", true)) {
-                    updateScreen(false);
+                    updateScreen();
                 } else {
                     Toast.makeText(context, intent.getStringExtra("message"),
                             Toast.LENGTH_LONG).show();
@@ -150,7 +150,7 @@ public class DailyFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_day, container, false);
-        updateScreen(false);
+        updateScreen();
         return fragmentView;
     }
 
@@ -160,7 +160,7 @@ public class DailyFragment extends Fragment {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addMonths(picked, -1);
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Previous")
                         .putContentType("Menu"));
@@ -168,7 +168,7 @@ public class DailyFragment extends Fragment {
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addMonths(picked, 1);
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Next")
                         .putContentType("Menu"));
@@ -176,14 +176,14 @@ public class DailyFragment extends Fragment {
             case R.id.action_this_month:
                 Log.d(TAG, "Clicked this month");
                 picked = DateTimeUtils.getTodaysYearMonth();
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("This month")
                         .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                updateScreen(true);
+                callPvDataService();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Refresh")
                         .putContentType("Menu"));
@@ -272,15 +272,8 @@ public class DailyFragment extends Fragment {
         textView.setText(DateTimeUtils.formatYearMonth(year, month, true));
     }
 
-    public void updateScreen(boolean refreshData) {
+    public void updateScreen() {
         Log.d(TAG, "Updating screen");
-
-        if (refreshData) {
-            Log.d(TAG, "Refreshing daily PV data for " +
-                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            callPvDataService();
-            return;
-        }
 
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
         if (dailyPvData.size() == 0) {

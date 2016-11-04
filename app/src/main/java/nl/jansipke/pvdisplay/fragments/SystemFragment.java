@@ -48,7 +48,7 @@ public class SystemFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 if (intent.getBooleanExtra("success", true)) {
-                    updateScreen(false);
+                    updateScreen();
                 } else {
                     Toast.makeText(context, intent.getStringExtra("message"),
                             Toast.LENGTH_LONG).show();
@@ -83,7 +83,7 @@ public class SystemFragment extends Fragment {
                              @Nullable final Bundle savedInstanceState) {
 
         fragmentView = inflater.inflate(R.layout.fragment_system, container, false);
-        updateScreen(false);
+        updateScreen();
         return fragmentView;
     }
 
@@ -92,7 +92,7 @@ public class SystemFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                updateScreen(true);
+                callPvDataService();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Refresh")
                         .putContentType("Menu"));
@@ -102,14 +102,8 @@ public class SystemFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateScreen(boolean refreshData) {
+    private void updateScreen() {
         Log.d(TAG, "Updating screen");
-
-        if (refreshData) {
-            Log.d(TAG, "Refreshing statistic and system PV data");
-            callPvDataService();
-            return;
-        }
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
@@ -120,7 +114,7 @@ public class SystemFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            Log.d(TAG, "Updating table");
+            Log.d(TAG, "Updating view");
 
             TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
             systemTextView.setText(systemPvDatum.getSystemName());

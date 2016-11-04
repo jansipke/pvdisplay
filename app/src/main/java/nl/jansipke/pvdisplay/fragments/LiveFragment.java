@@ -79,7 +79,7 @@ public class LiveFragment extends Fragment {
             picked.year = year;
             picked.month = month + 1;
             picked.day = day;
-            LiveFragment.this.updateScreen(false);
+            LiveFragment.this.updateScreen();
         }
     }
 
@@ -89,7 +89,7 @@ public class LiveFragment extends Fragment {
             public void onReceive(Context context, Intent intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                 if (intent.getBooleanExtra("success", true)) {
-                    updateScreen(false);
+                    updateScreen();
                 } else {
                     Toast.makeText(context, intent.getStringExtra("message"),
                             Toast.LENGTH_LONG).show();
@@ -155,7 +155,7 @@ public class LiveFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_live, container, false);
-        updateScreen(false);
+        updateScreen();
         return fragmentView;
     }
 
@@ -165,7 +165,7 @@ public class LiveFragment extends Fragment {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addDays(picked, -1);
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Previous")
                         .putContentType("Menu"));
@@ -173,14 +173,14 @@ public class LiveFragment extends Fragment {
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Next")
                         .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                updateScreen(true);
+                callPvDataService();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Refresh")
                         .putContentType("Menu"));
@@ -196,7 +196,7 @@ public class LiveFragment extends Fragment {
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
-                updateScreen(false);
+                updateScreen();
                 Answers.getInstance().logContentView(new ContentViewEvent()
                         .putContentName("Today")
                         .putContentType("Menu"));
@@ -285,15 +285,8 @@ public class LiveFragment extends Fragment {
         textView.setText(DateTimeUtils.formatYearMonthDay(year, month, day, true));
     }
 
-    public void updateScreen(boolean refreshData) {
+    public void updateScreen() {
         Log.d(TAG, "Updating screen");
-
-        if (refreshData) {
-            Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatYearMonthDay(
-                    picked.year, picked.month, picked.day, true));
-            callPvDataService();
-            return;
-        }
 
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
