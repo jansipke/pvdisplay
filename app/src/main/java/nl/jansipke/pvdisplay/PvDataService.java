@@ -89,7 +89,25 @@ public class PvDataService extends Service {
         headers.put("X-Pvoutput-Apikey", apiKey);
         headers.put("X-Pvoutput-SystemId", systemId);
         String url = URL_BASE + urlPath;
-        return NetworkUtils.httpGet(url, headers);
+        try {
+            return NetworkUtils.httpGet(url, headers);
+        } catch (Exception e) {
+            switch (e.getMessage()) {
+                case "Bad request 400: No status found":
+                    throw new IOException("No PV data found\n(please select other time range)");
+                case "Unauthorized 401: Invalid System ID":
+                    throw new IOException("Invalid System ID\n(please edit in settings)");
+                case "Unauthorized 401: Invalid API Key":
+                    throw new IOException("Invalid API Key\n(please edit in settings)");
+                case "Unauthorized 401: Disabled API Key":
+                    throw new IOException("Disabled API Key\n(please enable on PVOutput website)");
+                case "Forbidden 403: Exceeded 60 requests per hour":
+                    throw new IOException("Exceeded 60 requests per hour\n(please do not refresh too often)");
+                case "Forbidden 403: Exceeded 300 requests per hour":
+                    throw new IOException("Exceeded 300 requests per hour\n(please do not refresh too often)");
+            }
+            throw e;
+        }
     }
 
     private void downloadDay(final int year, final int month) {
@@ -111,10 +129,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + dayPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download daily PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download daily PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse daily PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse daily PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -138,10 +156,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + livePvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download live PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download live PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse live PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse live PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -166,10 +184,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + monthPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download monthly PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download monthly PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse monthly PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse monthly PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -192,10 +210,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded statistic PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download statistic PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download statistic PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse statistic PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse statistic PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -218,10 +236,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded system PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download system PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download system PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse system PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse system PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -244,10 +262,10 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "Downloaded " + yearPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download yearly PV data: " + e.getMessage());
+                    reportStatus(false, "Could not download yearly PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 } catch (ParseException e) {
-                    reportStatus(false, "Could not parse yearly PV data: " + e.getMessage());
+                    reportStatus(false, "Could not parse yearly PV data:\n" + e.getMessage());
                     Crashlytics.logException(e);
                 }
             }
@@ -284,7 +302,7 @@ public class PvDataService extends Service {
                     break;
             }
         } else {
-            Log.w(TAG, "Could not download PV data because network is unavailable");
+            Log.w(TAG, "Could not download PV data because\nnetwork is unavailable");
         }
         return Service.START_NOT_STICKY;
     }
