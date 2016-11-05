@@ -25,9 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +37,9 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
+import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
+import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
@@ -166,40 +165,25 @@ public class LiveFragment extends Fragment {
                 Log.d(TAG, "Clicked previous");
                 picked = DateTimeUtils.addDays(picked, -1);
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Previous")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 picked = DateTimeUtils.addDays(picked, 1);
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Next")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 callPvDataService();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Refresh")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
                 DialogFragment dialogFragment = new DatePickerFragment();
                 dialogFragment.show(getFragmentManager(), "datePicker");
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Date")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
                 picked = DateTimeUtils.getTodaysYearMonthDay();
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Today")
-                        .putContentType("Menu"));
                 break;
         }
 
@@ -244,8 +228,11 @@ public class LiveFragment extends Fragment {
             LineChartData lineChartData = new LineChartData();
             lineChartData.setLines(lines);
 
+            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
+            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(
+                    recordPvDatum.getLivePowerGeneration());
             Axis yAxis = Axis
-                    .generateAxisFromRange(0, 1250, 250) // TODO Use real maximum value
+                    .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
                     .setMaxLabelChars(6)
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
@@ -255,7 +242,7 @@ public class LiveFragment extends Fragment {
             lineChartView.setLineChartData(lineChartData);
 
             lineChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 1375, livePvData.size(), 0); // TODO Use real maximum value
+            Viewport viewport = new Viewport(-1, axisLabelValues.getView(), livePvData.size(), 0);
             lineChartView.setMaximumViewport(viewport);
             lineChartView.setCurrentViewport(viewport);
         }

@@ -20,9 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +32,9 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
+import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
+import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
@@ -129,32 +128,20 @@ public class MonthlyFragment extends Fragment {
                 Log.d(TAG, "Clicked previous");
                 pickedYear--;
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Previous")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
                 pickedYear++;
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Next")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
                 pickedYear = DateTimeUtils.getTodaysYear();
                 updateScreen();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("This year")
-                        .putContentType("Menu"));
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 callPvDataService();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Refresh")
-                        .putContentType("Menu"));
                 break;
         }
 
@@ -191,8 +178,11 @@ public class MonthlyFragment extends Fragment {
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
+            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
+            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(
+                    recordPvDatum.getMonthlyEnergyGenerated() / 1000);
             Axis yAxis = Axis
-                    .generateAxisFromRange(0, 250, 50) // TODO Use real maximum value
+                    .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
                     .setMaxLabelChars(6)
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
@@ -202,7 +192,8 @@ public class MonthlyFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 275, monthlyPvData.size() + 1, 0);  // TODO Use real maximum value
+            Viewport viewport = new Viewport(
+                    -1, axisLabelValues.getView(), monthlyPvData.size() + 1, 0);
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }

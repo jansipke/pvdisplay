@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Html;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,14 +16,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-
-import java.util.regex.Pattern;
 
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
@@ -93,9 +85,6 @@ public class SystemFragment extends Fragment {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 callPvDataService();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Refresh")
-                        .putContentType("Menu"));
                 break;
         }
 

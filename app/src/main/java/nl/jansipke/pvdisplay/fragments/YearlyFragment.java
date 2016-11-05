@@ -20,9 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +32,8 @@ import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
+import nl.jansipke.pvdisplay.data.AxisLabelValues;
+import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -105,9 +104,6 @@ public class YearlyFragment extends Fragment {
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
                 callPvDataService();
-                Answers.getInstance().logContentView(new ContentViewEvent()
-                        .putContentName("Refresh")
-                        .putContentType("Menu"));
                 break;
         }
 
@@ -135,8 +131,11 @@ public class YearlyFragment extends Fragment {
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
+            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
+            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(
+                    recordPvDatum.getYearlyEnergyGenerated() / 1000);
             Axis yAxis = Axis
-                    .generateAxisFromRange(0, 1500, 250) // TODO Use real maximum value
+                    .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
                     .setMaxLabelChars(6)
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
@@ -146,7 +145,8 @@ public class YearlyFragment extends Fragment {
             columnChartView.setColumnChartData(columnChartData);
 
             columnChartView.setViewportCalculationEnabled(false);
-            final Viewport viewport = new Viewport(-1, 1650, yearlyPvData.size() + 1, 0);  // TODO Use real maximum value
+            Viewport viewport = new Viewport(
+                    -1, axisLabelValues.getView(), yearlyPvData.size() + 1, 0);
             columnChartView.setMaximumViewport(viewport);
             columnChartView.setCurrentViewport(viewport);
         }
@@ -162,7 +162,7 @@ public class YearlyFragment extends Fragment {
             ((TextView) row.findViewById(R.id.year)).setText(
                     DateTimeUtils.formatYear(yearlyPvDatum.getYear()));
             ((TextView) row.findViewById(R.id.energy)).setText(
-                    FormatUtils.ENERGY_FORMAT.format(yearlyPvDatum.getEnergyGenerated() / 1000.0));
+                    FormatUtils.ENERGY_FORMAT.format(yearlyPvDatum.getEnergyGenerated() / 1000));
             linearLayout.addView(row);
         }
     }
