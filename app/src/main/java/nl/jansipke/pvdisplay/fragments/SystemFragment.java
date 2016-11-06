@@ -1,5 +1,6 @@
 package nl.jansipke.pvdisplay.fragments;
 
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
+import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
@@ -105,9 +107,9 @@ public class SystemFragment extends Fragment {
         if (isAdded() && getActivity() != null) {
             Log.d(TAG, "Updating view");
 
-            TextView systemTextView = (TextView) fragmentView.findViewById(R.id.system);
-            systemTextView.setText(systemPvDatum.getSystemName());
-            systemTextView.setOnClickListener(new View.OnClickListener() {
+            TextView nameTextView = (TextView) fragmentView.findViewById(R.id.system);
+            nameTextView.setText(systemPvDatum.getSystemName());
+            nameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri uri = Uri.parse("geo:" +
@@ -120,17 +122,35 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            ((TextView) fragmentView.findViewById(R.id.panels)).setText(
+            TextView panelsTextView = (TextView) fragmentView.findViewById(R.id.panels);
+            panelsTextView.setText(
                     systemPvDatum.getPanelBrand() + "\n" +
                             getResources().getString(R.string.value_panels,
                                     systemPvDatum.getNumberOfPanels(),
                                     systemPvDatum.getPanelPower(),
                                     systemPvDatum.getSystemSize()));
+            panelsTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEARCH);
+                    intent.putExtra(SearchManager.QUERY, systemPvDatum.getPanelBrand());
+                    startActivity(intent);
+                }
+            });
 
-            ((TextView) fragmentView.findViewById(R.id.inverter)).setText(
+            TextView inverterTextView = (TextView) fragmentView.findViewById(R.id.inverter);
+            inverterTextView.setText(
                     systemPvDatum.getInverterBrand() + "\n" +
                             getResources().getString(R.string.value_inverter,
                                     systemPvDatum.getInverterPower()));
+            inverterTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEARCH);
+                    intent.putExtra(SearchManager.QUERY, systemPvDatum.getInverterBrand());
+                    startActivity(intent);
+                }
+            });
 
             TextView statisticsTextView = (TextView) fragmentView.findViewById(R.id.statistics);
             statisticsTextView.setText(
@@ -154,7 +174,22 @@ public class SystemFragment extends Fragment {
                     Context context = getContext();
                     if (context != null) {
                         PvDataOperations pvDataOperations = new PvDataOperations(context);
-                        Toast.makeText(context, pvDataOperations.loadRecord().toString(),
+                        RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
+                        String text =
+                                "Live power: " + getResources().getString(R.string.value_w,
+                                        FormatUtils.POWER_FORMAT.format(
+                                                recordPvDatum.getLivePowerGeneration())) +
+                                "\nDaily energy: " + getResources().getString(R.string.value_kwh,
+                                        FormatUtils.ENERGY_FORMAT.format(
+                                                recordPvDatum.getDailyEnergyGenerated() / 1000)) +
+                                "\nMonthly energy: " + getResources().getString(R.string.value_kwh,
+                                        FormatUtils.ENERGY_FORMAT.format(
+                                                recordPvDatum.getMonthlyEnergyGenerated() / 1000)) +
+                                "\nYearly energy: " + getResources().getString(R.string.value_kwh,
+                                        FormatUtils.ENERGY_FORMAT.format(
+                                                recordPvDatum.getYearlyEnergyGenerated() / 1000));
+
+                        Toast.makeText(context, text,
                                 Toast.LENGTH_LONG).show();
                     }
                 }
