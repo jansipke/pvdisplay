@@ -132,8 +132,9 @@ public class SystemFragment extends Fragment {
             panelsTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_SEARCH);
-                    intent.putExtra(SearchManager.QUERY, systemPvDatum.getPanelBrand());
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    String uri = "http://www.google.com/#q=" + systemPvDatum.getPanelBrand();
+                    intent.setData(Uri.parse(uri));
                     startActivity(intent);
                 }
             });
@@ -146,8 +147,9 @@ public class SystemFragment extends Fragment {
             inverterTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_SEARCH);
-                    intent.putExtra(SearchManager.QUERY, systemPvDatum.getInverterBrand());
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    String uri = "http://www.google.com/#q=" + systemPvDatum.getInverterBrand();
+                    intent.setData(Uri.parse(uri));
                     startActivity(intent);
                 }
             });
