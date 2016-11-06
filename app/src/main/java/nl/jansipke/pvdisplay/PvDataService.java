@@ -96,7 +96,7 @@ public class PvDataService extends Service {
                 case "Bad request 400: No status found":
                     throw new IOException("No PV data found\n(please select other time range)");
                 case "Unauthorized 401: Invalid System ID":
-                    throw new IOException("Invalid System ID\n(please edit in settings)");
+                    throw new IOException("Invalid System Id\n(please edit in settings)");
                 case "Unauthorized 401: Invalid API Key":
                     throw new IOException("Invalid API Key\n(please edit in settings)");
                 case "Unauthorized 401: Disabled API Key":

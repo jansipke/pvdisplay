@@ -1,8 +1,10 @@
 package nl.jansipke.pvdisplay;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +23,7 @@ import nl.jansipke.pvdisplay.database.PvDataOperations;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
-    private final static String WEBSITE_URL = "http://www.jansipke.nl";
+    private final static String WEBSITE_URL = "http://www.jansipke.nl/pv-display";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
 
         SystemPvDatum systemPvDatum = new PvDataOperations(this).loadSystem();
         if (systemPvDatum != null) {
+            SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getApplicationContext());
+            String systemId = sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_pvoutput_system_id), "0");
             Answers.getInstance().logLogin(new LoginEvent()
+                    .putCustomAttribute("System Id", systemId)
                     .putCustomAttribute("System Name", systemPvDatum.getSystemName())
                     .putCustomAttribute("System Size", systemPvDatum.getSystemSize())
                     .putCustomAttribute("System Latitude", systemPvDatum.getLatitude())
