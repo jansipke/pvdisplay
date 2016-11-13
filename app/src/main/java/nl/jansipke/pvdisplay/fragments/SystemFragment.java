@@ -35,6 +35,7 @@ public class SystemFragment extends Fragment {
 
     private View fragmentView;
     private PvDataOperations pvDataOperations;
+    private boolean refreshed = false;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -95,6 +96,13 @@ public class SystemFragment extends Fragment {
 
     private void updateScreen() {
         Log.d(TAG, "Updating screen");
+
+        if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing statistic and system PV data");
+            callPvDataService();
+            return;
+        }
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();

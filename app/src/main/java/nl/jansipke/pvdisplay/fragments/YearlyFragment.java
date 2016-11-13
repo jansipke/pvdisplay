@@ -48,6 +48,7 @@ public class YearlyFragment extends Fragment {
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
+    private boolean refreshed = false;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -174,6 +175,13 @@ public class YearlyFragment extends Fragment {
 
     public void updateScreen() {
         Log.d(TAG, "Updating screen");
+
+        if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing yearly PV data");
+            callPvDataService();
+            return;
+        }
 
         List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
         if (yearlyPvData.size() == 0) {
