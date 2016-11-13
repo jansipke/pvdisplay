@@ -52,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
             String systemId = sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_pvoutput_system_id), "0");
             Answers.getInstance().logLogin(new LoginEvent()
-                    .putCustomAttribute("System Id", systemId)
-                    .putCustomAttribute("System Name", systemPvDatum.getSystemName())
-                    .putCustomAttribute("System Size", systemPvDatum.getSystemSize())
-                    .putCustomAttribute("System Latitude", systemPvDatum.getLatitude())
-                    .putCustomAttribute("System Longitude", systemPvDatum.getLongitude()));
+                    .putCustomAttribute("System Id", "id " + systemId)
+                    .putCustomAttribute("System Name", "name " + systemPvDatum.getSystemName())
+                    .putCustomAttribute("System Size", "size " + systemPvDatum.getSystemSize())
+                    .putCustomAttribute("System Location", "locartion " +
+                            systemPvDatum.getLatitude() + " " + systemPvDatum.getLongitude()));
         }
     }
 
