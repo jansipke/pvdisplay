@@ -223,18 +223,14 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen");
 
-        if (!refreshed) {
-            refreshed = true;
-            Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
-            callPvDataService();
-            return;
-        }
-
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + pickedYear);
             callPvDataService();
-            return;
+        } else if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
+            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

@@ -97,19 +97,15 @@ public class SystemFragment extends Fragment {
     private void updateScreen() {
         Log.d(TAG, "Updating screen");
 
-        if (!refreshed) {
-            refreshed = true;
-            Log.d(TAG, "Refreshing statistic and system PV data");
-            callPvDataService();
-            return;
-        }
-
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
         if (statisticPvDatum == null || systemPvDatum == null) {
             Log.d(TAG, "No statistic or system PV data");
             callPvDataService();
-            return;
+        } else if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing statistic and system PV data");
+            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

@@ -176,18 +176,14 @@ public class YearlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen");
 
-        if (!refreshed) {
-            refreshed = true;
-            Log.d(TAG, "Refreshing yearly PV data");
-            callPvDataService();
-            return;
-        }
-
         List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
         if (yearlyPvData.size() == 0) {
             Log.d(TAG, "No yearly PV data");
             callPvDataService();
-            return;
+        } else if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing yearly PV data");
+            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

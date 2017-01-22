@@ -267,20 +267,16 @@ public class DailyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen");
 
-        if (!refreshed) {
-            refreshed = true;
-            Log.d(TAG, "Refreshing daily PV data for " +
-                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            callPvDataService();
-            return;
-        }
-
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
         if (dailyPvData.size() == 0) {
             Log.d(TAG, "No daily PV data for " +
                     DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             callPvDataService();
-            return;
+        } else if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing daily PV data for " +
+                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

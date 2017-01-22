@@ -276,21 +276,17 @@ public class LiveFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen");
 
-        if (!refreshed) {
-            refreshed = true;
-            Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatYearMonthDay(
-                    picked.year, picked.month, picked.day, true));
-            callPvDataService();
-            return;
-        }
-
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
         if (livePvData.size() == 0) {
             Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
                     picked.year, picked.month, picked.day, true));
             callPvDataService();
-            return;
+        } else if (!refreshed) {
+            refreshed = true;
+            Log.d(TAG, "Refreshing live PV data for " + DateTimeUtils.formatYearMonthDay(
+                    picked.year, picked.month, picked.day, true));
+            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

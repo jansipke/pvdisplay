@@ -297,7 +297,7 @@ public class PvDataService extends Service {
                     break;
             }
         } else {
-            Log.w(TAG, "Could not download PV data because\nnetwork is unavailable");
+            reportStatus(false, "Could not download PV data because\nnetwork is unavailable");
         }
         return Service.START_NOT_STICKY;
     }
