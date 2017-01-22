@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -52,7 +54,7 @@ public class MonthlyFragment extends Fragment {
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
-    private boolean refreshed = false;
+    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -100,6 +102,11 @@ public class MonthlyFragment extends Fragment {
         } else {
             pickedYear = DateTimeUtils.getTodaysYear();
         }
+
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        autoRefresh = sharedPreferences.getBoolean(getResources().
+                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -227,8 +234,8 @@ public class MonthlyFragment extends Fragment {
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + pickedYear);
             callPvDataService();
-        } else if (!refreshed) {
-            refreshed = true;
+        } else if (autoRefresh) {
+            autoRefresh = false;
             Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
             callPvDataService();
         }

@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -57,7 +59,7 @@ public class DailyFragment extends Fragment {
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
-    private boolean refreshed = false;
+    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -132,6 +134,11 @@ public class DailyFragment extends Fragment {
         } else {
             picked = DateTimeUtils.getTodaysYearMonth();
         }
+
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        autoRefresh = sharedPreferences.getBoolean(getResources().
+                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -272,8 +279,8 @@ public class DailyFragment extends Fragment {
             Log.d(TAG, "No daily PV data for " +
                     DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             callPvDataService();
-        } else if (!refreshed) {
-            refreshed = true;
+        } else if (autoRefresh) {
+            autoRefresh = false;
             Log.d(TAG, "Refreshing daily PV data for " +
                     DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             callPvDataService();

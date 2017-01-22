@@ -1,12 +1,13 @@
 package nl.jansipke.pvdisplay.fragments;
 
-import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -35,7 +36,7 @@ public class SystemFragment extends Fragment {
 
     private View fragmentView;
     private PvDataOperations pvDataOperations;
-    private boolean refreshed = false;
+    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -61,8 +62,14 @@ public class SystemFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
+
         pvDataOperations = new PvDataOperations(getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        autoRefresh = sharedPreferences.getBoolean(getResources().
+                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -102,8 +109,8 @@ public class SystemFragment extends Fragment {
         if (statisticPvDatum == null || systemPvDatum == null) {
             Log.d(TAG, "No statistic or system PV data");
             callPvDataService();
-        } else if (!refreshed) {
-            refreshed = true;
+        } else if (autoRefresh) {
+            autoRefresh = false;
             Log.d(TAG, "Refreshing statistic and system PV data");
             callPvDataService();
         }
