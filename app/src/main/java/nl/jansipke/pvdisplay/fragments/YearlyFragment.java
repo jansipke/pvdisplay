@@ -181,7 +181,7 @@ public class YearlyFragment extends Fragment {
     }
 
     public void updateScreen() {
-        Log.d(TAG, "Updating screen");
+        Log.d(TAG, "Updating screen with yearly PV data");
 
         List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
         if (yearlyPvData.size() == 0) {
@@ -194,7 +194,6 @@ public class YearlyFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            Log.d(TAG, "Updating title, graph and table");
             updateTitle();
             updateGraph(yearlyPvData);
             updateTable(yearlyPvData);

@@ -102,7 +102,7 @@ public class SystemFragment extends Fragment {
     }
 
     private void updateScreen() {
-        Log.d(TAG, "Updating screen");
+        Log.d(TAG, "Updating screen with statistic and system PV data");
 
         StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
         final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
@@ -116,8 +116,6 @@ public class SystemFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            Log.d(TAG, "Updating view");
-
             TextView nameTextView = (TextView) fragmentView.findViewById(R.id.system);
             nameTextView.setText(systemPvDatum.getSystemName());
             nameTextView.setOnClickListener(new View.OnClickListener() {

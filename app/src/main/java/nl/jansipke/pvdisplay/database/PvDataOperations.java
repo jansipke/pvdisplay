@@ -35,7 +35,6 @@ public class PvDataOperations {
     }
 
     public List<DailyPvDatum> loadDaily(int year, int month) {
-        Log.d(TAG, "Loading daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true));
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -71,13 +70,12 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true));
 
         return dailyPvData;
     }
 
     public List<LivePvDatum> loadLive(int year, int month, int day) {
-        Log.d(TAG, "Loading live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true));
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -117,13 +115,12 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + livePvData.size() + " rows");
+        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true));
 
         return livePvData;
     }
 
     public List<MonthlyPvDatum> loadMonthly(int year) {
-        Log.d(TAG, "Loading monthly PV data for " + year);
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -152,61 +149,54 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows of monthly PV data for " + year);
 
         return monthlyPvData;
     }
 
     public RecordPvDatum loadRecord() {
-        Log.d(TAG, "Loading record PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(context.getString(R.string.preferences_object_record), null);
         if (json != null) {
-            Log.d(TAG, "Loaded from preferences");
+            Log.d(TAG, "Loaded record PV data from preferences");
             return new Gson().fromJson(json, RecordPvDatum.class);
         } else {
-            Log.d(TAG, "No record data found in preferences");
+            Log.d(TAG, "No record PV data found in preferences");
             return new RecordPvDatum(0, 0, 0, 0);
         }
     }
 
     public StatisticPvDatum loadStatistic() {
-        Log.d(TAG, "Loading statistic PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(context.getString(R.string.preferences_object_statistic), null);
         if (json != null) {
-            Log.d(TAG, "Loaded from preferences");
+            Log.d(TAG, "Loaded statistic PV data from preferences");
             return new Gson().fromJson(json, StatisticPvDatum.class);
         } else {
-            Log.d(TAG, "No statistic data found in preferences");
+            Log.d(TAG, "No statistic PV data found in preferences");
             return null;
         }
     }
 
     public SystemPvDatum loadSystem() {
-        Log.d(TAG, "Loading system PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
         String json = sharedPreferences.getString(context.getString(R.string.preferences_object_system), null);
         if (json != null) {
-            Log.d(TAG, "Loaded from preferences");
+            Log.d(TAG, "Loaded system PV data from preferences");
             return new Gson().fromJson(json, SystemPvDatum.class);
         } else {
-            Log.d(TAG, "No system data found in preferences");
+            Log.d(TAG, "No system PV data found in preferences");
             return null;
         }
     }
 
     public List<YearlyPvDatum> loadYearly() {
-        Log.d(TAG, "Loading yearly PV data");
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -229,13 +219,12 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + yearlyPvData.size() + " rows");
+        Log.d(TAG, "Loaded " + yearlyPvData.size() + " rows of yearly PV data");
 
         return yearlyPvData;
     }
 
     public void saveDaily(List<DailyPvDatum> dailyPvData) {
-        Log.d(TAG, "Saving daily PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -264,7 +253,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + dailyPvData.size() + " rows");
+        Log.d(TAG, "Saved " + dailyPvData.size() + " rows of daily PV data");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getDailyEnergyGenerated()) {
@@ -274,7 +263,6 @@ public class PvDataOperations {
     }
 
     public void saveLive(List<LivePvDatum> livePvData) {
-        Log.d(TAG, "Saving live PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -305,7 +293,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + livePvData.size() + " rows");
+        Log.d(TAG, "Saved " + livePvData.size() + " rows of live PV data");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxPowerGeneration > recordPvDatum.getLivePowerGeneration()) {
@@ -315,7 +303,6 @@ public class PvDataOperations {
     }
 
     public void saveMonthly(List<MonthlyPvDatum> monthlyPvData) {
-        Log.d(TAG, "Saving monthly PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -338,7 +325,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + monthlyPvData.size() + " rows");
+        Log.d(TAG, "Saved " + monthlyPvData.size() + " rows of monthly PV data");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getMonthlyEnergyGenerated()) {
@@ -348,8 +335,6 @@ public class PvDataOperations {
     }
 
     public void saveRecord(RecordPvDatum recordPvDatum) {
-        Log.d(TAG, "Saving record PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
@@ -358,12 +343,10 @@ public class PvDataOperations {
         editor.putString(context.getString(R.string.preferences_object_record), json);
         editor.apply();
 
-        Log.d(TAG, "Saved to preferences");
+        Log.d(TAG, "Saved record PV data to preferences");
     }
 
     public void saveStatistic(StatisticPvDatum statisticPvDatum) {
-        Log.d(TAG, "Saving statistic PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
@@ -372,12 +355,10 @@ public class PvDataOperations {
         editor.putString(context.getString(R.string.preferences_object_statistic), json);
         editor.apply();
 
-        Log.d(TAG, "Saved to preferences");
+        Log.d(TAG, "Saved statistic PV data to preferences");
     }
 
     public void saveSystem(SystemPvDatum systemPvDatum) {
-        Log.d(TAG, "Saving system PV data");
-
         SharedPreferences sharedPreferences = context.getSharedPreferences(
                 context.getString(R.string.preferences_pv_data_file),
                 Context.MODE_PRIVATE);
@@ -386,11 +367,10 @@ public class PvDataOperations {
         editor.putString(context.getString(R.string.preferences_object_system), json);
         editor.apply();
 
-        Log.d(TAG, "Saved to preferences");
+        Log.d(TAG, "Saved system PV data to preferences");
     }
 
     public void saveYearly(List<YearlyPvDatum> yearlyPvData) {
-        Log.d(TAG, "Saving year PV data");
         SQLiteDatabase db = pvDataHelper.getWritableDatabase();
 
         db.beginTransaction();
@@ -411,7 +391,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + yearlyPvData.size() + " rows");
+        Log.d(TAG, "Saved " + yearlyPvData.size() + " rows of yearly PV data");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getYearlyEnergyGenerated()) {

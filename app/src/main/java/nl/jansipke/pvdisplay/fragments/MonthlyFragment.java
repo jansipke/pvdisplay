@@ -228,7 +228,7 @@ public class MonthlyFragment extends Fragment {
     }
 
     public void updateScreen() {
-        Log.d(TAG, "Updating screen");
+        Log.d(TAG, "Updating screen with monthly PV data");
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
         if (monthlyPvData.size() == 0) {
@@ -241,7 +241,6 @@ public class MonthlyFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            Log.d(TAG, "Updating title, graph and table");
             updateTitle(pickedYear);
             updateGraph(createFullYear(pickedYear, monthlyPvData));
             updateTable(monthlyPvData);

@@ -281,7 +281,7 @@ public class LiveFragment extends Fragment {
     }
 
     public void updateScreen() {
-        Log.d(TAG, "Updating screen");
+        Log.d(TAG, "Updating screen with live PV data");
 
         List<LivePvDatum> livePvData = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
@@ -297,7 +297,6 @@ public class LiveFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            Log.d(TAG, "Updating title, graph and table");
             updateTitle(picked.year, picked.month, picked.day);
             updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
             updateTable(livePvData);
