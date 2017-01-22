@@ -70,7 +70,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true));
+        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true) + " from database");
 
         return dailyPvData;
     }
@@ -115,7 +115,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true));
+        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true) + " from database");
 
         return livePvData;
     }
@@ -149,7 +149,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows of monthly PV data for " + year);
+        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows of monthly PV data for " + year + " from database");
 
         return monthlyPvData;
     }
@@ -219,7 +219,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + yearlyPvData.size() + " rows of yearly PV data");
+        Log.d(TAG, "Loaded " + yearlyPvData.size() + " rows of yearly PV data from database");
 
         return yearlyPvData;
     }
@@ -253,7 +253,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + dailyPvData.size() + " rows of daily PV data");
+        Log.d(TAG, "Saved " + dailyPvData.size() + " rows of daily PV data to database");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getDailyEnergyGenerated()) {
@@ -293,7 +293,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + livePvData.size() + " rows of live PV data");
+        Log.d(TAG, "Saved " + livePvData.size() + " rows of live PV data to database");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxPowerGeneration > recordPvDatum.getLivePowerGeneration()) {
@@ -325,7 +325,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + monthlyPvData.size() + " rows of monthly PV data");
+        Log.d(TAG, "Saved " + monthlyPvData.size() + " rows of monthly PV data to database");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getMonthlyEnergyGenerated()) {
@@ -391,7 +391,7 @@ public class PvDataOperations {
         db.endTransaction();
 
         db.close();
-        Log.d(TAG, "Saved " + yearlyPvData.size() + " rows of yearly PV data");
+        Log.d(TAG, "Saved " + yearlyPvData.size() + " rows of yearly PV data to database");
 
         RecordPvDatum recordPvDatum = loadRecord();
         if (maxEnergyGenerated > recordPvDatum.getYearlyEnergyGenerated()) {
