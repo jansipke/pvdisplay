@@ -109,6 +109,7 @@ public class SystemFragment extends Fragment {
         if (statisticPvDatum == null || systemPvDatum == null) {
             Log.d(TAG, "No statistic or system PV data");
             callPvDataService();
+            return;
         } else if (autoRefresh) {
             autoRefresh = false;
             Log.d(TAG, "Refreshing statistic and system PV data");

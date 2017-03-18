@@ -237,8 +237,8 @@ public class LiveFragment extends Fragment {
             lineChartData.setLines(lines);
 
             RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(
-                    recordPvDatum.getLivePowerGeneration());
+            double yAxisMax = Math.max(recordPvDatum.getLivePowerGeneration(), 1.0);
+            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
                     .setMaxLabelChars(6)

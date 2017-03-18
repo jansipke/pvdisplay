@@ -220,8 +220,8 @@ public class DailyFragment extends Fragment {
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
             RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(
-                    recordPvDatum.getDailyEnergyGenerated() / 1000);
+            double yAxisMax = Math.max(recordPvDatum.getDailyEnergyGenerated() / 1000, 1.0);
+            AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
                     .setMaxLabelChars(6)
