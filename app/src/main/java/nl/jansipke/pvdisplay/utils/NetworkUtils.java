@@ -36,7 +36,11 @@ public class NetworkUtils {
                 return inputStreamToString(is);
             } else {
                 is = conn.getErrorStream();
-                throw new IOException(inputStreamToString(is));
+                if (is == null) {
+                    throw new IOException("Could not connect to " + urlString);
+                } else {
+                    throw new IOException(inputStreamToString(is));
+                }
             }
         } catch (IOException e) {
             Log.w(TAG, e.getMessage());
