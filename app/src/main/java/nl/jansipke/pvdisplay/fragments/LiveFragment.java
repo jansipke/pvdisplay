@@ -276,8 +276,10 @@ public class LiveFragment extends Fragment {
     }
 
     private void updateTitle(int year, int month, int day) {
+        String title = DateTimeUtils.getDayOfWeek(year, month, day) + "  " +
+                DateTimeUtils.formatYearMonthDay(year, month, day, true);
         TextView textView = (TextView) fragmentView.findViewById(R.id.title);
-        textView.setText(DateTimeUtils.formatYearMonthDay(year, month, day, true));
+        textView.setText(title);
     }
 
     public void updateScreen() {
