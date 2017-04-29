@@ -28,10 +28,14 @@ import java.util.List;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ComboLineColumnChartData;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.ColumnChartView;
+import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
@@ -165,14 +169,15 @@ public class MonthlyFragment extends Fragment {
         outState.putInt(STATE_KEY_YEAR, pickedYear);
     }
 
-    private void updateGraph(List<MonthlyPvDatum> monthlyPvData) {
+    private void updateGraph(List<MonthlyPvDatum> monthlyPvData,
+                             List<MonthlyPvDatum> previousYearMonthlyPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
         if (context != null) {
-            ColumnChartView columnChartView = new ColumnChartView(context);
-            graphLinearLayout.addView(columnChartView);
+            ComboLineColumnChartView comboLineColumnChartView = new ComboLineColumnChartView(context);
+            graphLinearLayout.addView(comboLineColumnChartView);
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
@@ -184,7 +189,19 @@ public class MonthlyFragment extends Fragment {
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
-            ColumnChartData columnChartData = new ColumnChartData(columns);
+            List<Line> lines = new ArrayList<>();
+            List<PointValue> lineValues = new ArrayList<>();
+            for (int i = 0; i < previousYearMonthlyPvData.size(); i++) {
+                MonthlyPvDatum previousYearMonthlyPvDatum = previousYearMonthlyPvData.get(i);
+                lineValues.add(new PointValue(i,
+                        ((float) previousYearMonthlyPvDatum.getEnergyGenerated()) / 1000));
+            }
+            Line line = new Line(lineValues);
+            line.setPointRadius(3);
+            line.setHasLines(false);
+            lines.add(line);
+            ComboLineColumnChartData comboLineColumnChartData = new ComboLineColumnChartData(
+                    new ColumnChartData(columns), new LineChartData(lines));
 
             RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
             double yAxisMax = Math.max(recordPvDatum.getMonthlyEnergyGenerated() / 1000, 1.0);
@@ -195,15 +212,15 @@ public class MonthlyFragment extends Fragment {
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
             yAxis.setName(getResources().getString(R.string.graph_legend_energy));
-            columnChartData.setAxisYLeft(yAxis);
+            comboLineColumnChartData.setAxisYLeft(yAxis);
 
-            columnChartView.setColumnChartData(columnChartData);
+            comboLineColumnChartView.setComboLineColumnChartData(comboLineColumnChartData);
 
-            columnChartView.setViewportCalculationEnabled(false);
+            comboLineColumnChartView.setViewportCalculationEnabled(false);
             Viewport viewport = new Viewport(
                     -1, axisLabelValues.getView(), monthlyPvData.size() + 1, 0);
-            columnChartView.setMaximumViewport(viewport);
-            columnChartView.setCurrentViewport(viewport);
+            comboLineColumnChartView.setMaximumViewport(viewport);
+            comboLineColumnChartView.setCurrentViewport(viewport);
         }
     }
 
@@ -231,6 +248,8 @@ public class MonthlyFragment extends Fragment {
         Log.d(TAG, "Updating screen with monthly PV data");
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
+        List<MonthlyPvDatum> previousYearMonthlyPvData =
+                pvDataOperations.loadMonthly(pickedYear - 1);
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + pickedYear);
             callPvDataService();
@@ -242,7 +261,8 @@ public class MonthlyFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             updateTitle(pickedYear);
-            updateGraph(createFullYear(pickedYear, monthlyPvData));
+            updateGraph(createFullYear(pickedYear, monthlyPvData),
+                    createFullYear(pickedYear - 1, previousYearMonthlyPvData));
             updateTable(monthlyPvData);
         }
     }

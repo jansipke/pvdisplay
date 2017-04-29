@@ -166,13 +166,13 @@ public class PvDataService extends Service {
     }
 
     private void downloadMonth(final int year) {
-        Log.d(TAG, "Downloading monthly PV data for " + year);
+        Log.d(TAG, "Downloading monthly PV data for " + year + " and previous year");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     // Download data
-                    String fromDate = DateTimeUtils.formatYearMonthDay(year, 1, 1, false);
+                    String fromDate = DateTimeUtils.formatYearMonthDay(year - 1, 1, 1, false);
                     String toDate = DateTimeUtils.formatYearMonthDay(year, 12, 31, false);
                     String urlPath = "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
