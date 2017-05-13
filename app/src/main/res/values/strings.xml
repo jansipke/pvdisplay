@@ -30,7 +30,11 @@
 
     <string name="preferences_key_auto_refresh">auto_refresh</string>
     <string name="preferences_title_auto_refresh">Auto refresh</string>
-    <string name="preferences_summary_auto_refresh">Refresh PV data on startup</string>
+    <string name="preferences_summary_auto_refresh">Schedule refreshing of PV data on startup</string>
+
+    <string name="preferences_key_show_previous">show_previous</string>
+    <string name="preferences_title_show_previous">Show previous</string>
+    <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs</string>
 
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>

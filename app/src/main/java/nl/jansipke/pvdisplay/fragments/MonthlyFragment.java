@@ -248,8 +248,16 @@ public class MonthlyFragment extends Fragment {
         Log.d(TAG, "Updating screen with monthly PV data");
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
-        List<MonthlyPvDatum> previousYearMonthlyPvData =
-                pvDataOperations.loadMonthly(pickedYear - 1);
+        List<MonthlyPvDatum> previousYearMonthlyPvData = new ArrayList<>();
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        boolean showPrevious = sharedPreferences.getBoolean(getResources().
+                getString(R.string.preferences_key_show_previous), true);
+        if (showPrevious) {
+            previousYearMonthlyPvData = createFullYear(
+                    pickedYear - 1,
+                    pvDataOperations.loadMonthly(pickedYear - 1));
+        }
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + pickedYear);
             callPvDataService();
@@ -261,8 +269,7 @@ public class MonthlyFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             updateTitle(pickedYear);
-            updateGraph(createFullYear(pickedYear, monthlyPvData),
-                    createFullYear(pickedYear - 1, previousYearMonthlyPvData));
+            updateGraph(createFullYear(pickedYear, monthlyPvData), previousYearMonthlyPvData);
             updateTable(monthlyPvData);
         }
     }

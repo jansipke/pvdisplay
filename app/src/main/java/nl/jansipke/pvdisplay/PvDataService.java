@@ -113,22 +113,29 @@ public class PvDataService extends Service {
 
     private void downloadDay(final int year, final int month) {
         Log.d(TAG, "Downloading daily PV data for " +
-                DateTimeUtils.formatYearMonth(year, month, true));
+                DateTimeUtils.formatYearMonth(year, month, true) + " and previous year");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    // Download data
-                    String fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
-                    String toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
+                    PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
+                    // Download, parse and save data for previous year
+                    String fromDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 1, false);
+                    String toDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 31, false);
                     String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
+                    List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
+                    pvDataOperations.saveDaily(previousYearDailyPvData);
 
-                    // Parse and save data
-                    List<DailyPvDatum> dayPvData = new PvOutputParser().parseDaily(result);
-                    new PvDataOperations(getApplicationContext()).saveDaily(dayPvData);
+                    // Download, parse and save data
+                    fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
+                    toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
+                    urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
+                    result = download(urlPath);
+                    List<DailyPvDatum> dailyPvData = new PvOutputParser().parseDaily(result);
+                    pvDataOperations.saveDaily(dailyPvData);
 
-                    reportStatus(true, "Downloaded " + dayPvData.size() + " data points");
+                    reportStatus(true, "Downloaded " + (previousYearDailyPvData.size() + dailyPvData.size()) + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download daily PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
@@ -178,10 +185,10 @@ public class PvDataService extends Service {
                     String result = download(urlPath);
 
                     // Parse and save data
-                    List<MonthlyPvDatum> monthPvData = new PvOutputParser().parseMonthly(result);
-                    new PvDataOperations(getApplicationContext()).saveMonthly(monthPvData);
+                    List<MonthlyPvDatum> monthlyPvData = new PvOutputParser().parseMonthly(result);
+                    new PvDataOperations(getApplicationContext()).saveMonthly(monthlyPvData);
 
-                    reportStatus(true, "Downloaded " + monthPvData.size() + " data points");
+                    reportStatus(true, "Downloaded " + monthlyPvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download monthly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
@@ -253,10 +260,10 @@ public class PvDataService extends Service {
                     String result = download(urlPath);
 
                     // Parse and save data
-                    List<YearlyPvDatum> yearPvData = new PvOutputParser().parseYearly(result);
-                    new PvDataOperations(getApplicationContext()).saveYearly(yearPvData);
+                    List<YearlyPvDatum> yearlyPvData = new PvOutputParser().parseYearly(result);
+                    new PvDataOperations(getApplicationContext()).saveYearly(yearlyPvData);
 
-                    reportStatus(true, "Downloaded " + yearPvData.size() + " data points");
+                    reportStatus(true, "Downloaded " + yearlyPvData.size() + " data points");
                 } catch (IOException e) {
                     reportStatus(false, "Could not download yearly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {

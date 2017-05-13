@@ -32,14 +32,20 @@ import java.util.List;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ComboLineColumnChartData;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
+import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
+import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -89,7 +95,9 @@ public class DailyFragment extends Fragment {
         }
         for (DailyPvDatum dailyPvDatum : dayPvData) {
             int fullMonthIndex = dailyPvDatum.getDay() - 1;
-            fullMonth.set(fullMonthIndex, dailyPvDatum);
+            if (dailyPvDatum.getEnergyGenerated() >= 0.001) {
+                fullMonth.set(fullMonthIndex, dailyPvDatum);
+            }
         }
         return fullMonth;
     }
@@ -198,14 +206,15 @@ public class DailyFragment extends Fragment {
         outState.putInt(STATE_KEY_MONTH, picked.month);
     }
 
-    private void updateGraph(List<DailyPvDatum> dailyPvData) {
+    private void updateGraph(List<DailyPvDatum> dailyPvData,
+                             List<DailyPvDatum> previousYearDailyPvData) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
         if (context != null) {
-            ColumnChartView columnChartView = new ColumnChartView(context);
-            graphLinearLayout.addView(columnChartView);
+            ComboLineColumnChartView comboLineColumnChartView = new ComboLineColumnChartView(context);
+            graphLinearLayout.addView(comboLineColumnChartView);
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
@@ -217,7 +226,19 @@ public class DailyFragment extends Fragment {
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
-            ColumnChartData columnChartData = new ColumnChartData(columns);
+            List<Line> lines = new ArrayList<>();
+            List<PointValue> lineValues = new ArrayList<>();
+            for (int i = 0; i < previousYearDailyPvData.size(); i++) {
+                DailyPvDatum previousYearDailyPvDatum = previousYearDailyPvData.get(i);
+                lineValues.add(new PointValue(i,
+                        ((float) previousYearDailyPvDatum.getEnergyGenerated()) / 1000));
+            }
+            Line line = new Line(lineValues);
+            line.setPointRadius(3);
+            line.setHasLines(false);
+            lines.add(line);
+            ComboLineColumnChartData comboLineColumnChartData = new ComboLineColumnChartData(
+                    new ColumnChartData(columns), new LineChartData(lines));
 
             RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
             double yAxisMax = Math.max(recordPvDatum.getDailyEnergyGenerated() / 1000, 1.0);
@@ -228,15 +249,15 @@ public class DailyFragment extends Fragment {
                     .setTextColor(Color.GRAY)
                     .setHasLines(true);
             yAxis.setName(getResources().getString(R.string.graph_legend_energy));
-            columnChartData.setAxisYLeft(yAxis);
+            comboLineColumnChartData.setAxisYLeft(yAxis);
 
-            columnChartView.setColumnChartData(columnChartData);
+            comboLineColumnChartView.setComboLineColumnChartData(comboLineColumnChartData);
 
-            columnChartView.setViewportCalculationEnabled(false);
+            comboLineColumnChartView.setViewportCalculationEnabled(false);
             Viewport viewport = new Viewport(
                     -1, axisLabelValues.getView(), dailyPvData.size() + 1, 0);
-            columnChartView.setMaximumViewport(viewport);
-            columnChartView.setCurrentViewport(viewport);
+            comboLineColumnChartView.setMaximumViewport(viewport);
+            comboLineColumnChartView.setCurrentViewport(viewport);
         }
     }
 
@@ -275,6 +296,18 @@ public class DailyFragment extends Fragment {
         Log.d(TAG, "Updating screen with daily PV data");
 
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
+        List<DailyPvDatum> previousYearDailyPvData = new ArrayList<>();
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        boolean showPrevious = sharedPreferences.getBoolean(getResources().
+                getString(R.string.preferences_key_show_previous), true);
+        if (showPrevious) {
+            previousYearDailyPvData = createFullMonth(
+                    picked.year - 1,
+                    picked.month,
+                    pvDataOperations.loadDaily(picked.year - 1, picked.month));
+        }
+
         if (dailyPvData.size() == 0) {
             Log.d(TAG, "No daily PV data for " +
                     DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
@@ -288,7 +321,8 @@ public class DailyFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             updateTitle(picked.year, picked.month);
-            updateGraph(createFullMonth(picked.year, picked.month, dailyPvData));
+            updateGraph(createFullMonth(picked.year, picked.month, dailyPvData),
+                    previousYearDailyPvData);
             updateTable(dailyPvData);
         }
     }
