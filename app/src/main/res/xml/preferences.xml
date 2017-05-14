@@ -25,13 +25,13 @@
             android:key="@string/preferences_key_auto_refresh"
             android:title="@string/preferences_title_auto_refresh"
             android:summary="@string/preferences_summary_auto_refresh"
-            android:checked="true"/>
+            android:defaultValue="true"/>
 
         <CheckBoxPreference
             android:key="@string/preferences_key_show_previous"
             android:title="@string/preferences_title_show_previous"
             android:summary="@string/preferences_summary_show_previous"
-            android:checked="true"/>
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 
