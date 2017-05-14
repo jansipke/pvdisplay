@@ -5,18 +5,32 @@ import java.util.GregorianCalendar;
 
 public class DateTimeUtils {
 
+    public static class Year {
+        public int year;
+        boolean isLaterThan(Year other) {
+            return year > other.year;
+        }
+    }
+
     public static class YearMonth {
         public int year;
         public int month;
+        boolean isLaterThan(YearMonth other) {
+            return (year > other.year) || (year == other.year && month > other.month);
+        }
     }
 
     public static class YearMonthDay {
         public int year;
         public int month;
         public int day;
+        boolean isLaterThan(YearMonthDay other) {
+            return (year > other.year) || (year == other.year && month > other.month) ||
+                    (year == other.year && month == other.month && day > other.day);
+        }
     }
 
-    public static YearMonthDay addDays(YearMonthDay picked, int daysToAdd) {
+    public static YearMonthDay addDays(YearMonthDay picked, int daysToAdd, boolean allowFuture) {
         Calendar calendar = new GregorianCalendar();
         calendar.set(picked.year, picked.month - 1, picked.day);
         calendar.add(Calendar.DATE, daysToAdd);
@@ -24,17 +38,41 @@ public class DateTimeUtils {
         yearMonthDay.year = calendar.get(Calendar.YEAR);
         yearMonthDay.month = calendar.get(Calendar.MONTH) + 1;
         yearMonthDay.day = calendar.get(Calendar.DAY_OF_MONTH);
+        if (!allowFuture) {
+            YearMonthDay todaysYearMonthDay = getTodaysYearMonthDay();
+            if (yearMonthDay.isLaterThan(todaysYearMonthDay)) {
+                return todaysYearMonthDay;
+            }
+        }
         return yearMonthDay;
     }
 
-    public static YearMonth addMonths(YearMonth picked, int monthsToAdd) {
+    public static YearMonth addMonths(YearMonth picked, int monthsToAdd, boolean allowFuture) {
         Calendar calendar = new GregorianCalendar();
         calendar.set(picked.year, picked.month - 1, 1);
         calendar.add(Calendar.MONTH, monthsToAdd);
         YearMonth yearMonth = new YearMonth();
         yearMonth.year = calendar.get(Calendar.YEAR);
         yearMonth.month = calendar.get(Calendar.MONTH) + 1;
+        if (!allowFuture) {
+            YearMonth todaysYearMonth = getTodaysYearMonth();
+            if (yearMonth.isLaterThan(todaysYearMonth)) {
+                return todaysYearMonth;
+            }
+        }
         return yearMonth;
+    }
+
+    public static Year addYears(Year picked, int yearsToAdd, boolean allowFuture) {
+        Year year = new Year();
+        year.year = picked.year + yearsToAdd;
+        if (!allowFuture) {
+            Year todaysYear = getTodaysYear();
+            if (year.isLaterThan(todaysYear)) {
+                return todaysYear;
+            }
+        }
+        return year;
     }
 
     public static String formatYear(int year) {
@@ -93,8 +131,11 @@ public class DateTimeUtils {
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
-    public static int getTodaysYear() {
-        return getTodaysYearMonthDay().year;
+    public static Year getTodaysYear() {
+        YearMonthDay yearMonthDay = getTodaysYearMonthDay();
+        Year year = new Year();
+        year.year = yearMonthDay.year;
+        return year;
     }
 
     public static YearMonth getTodaysYearMonth() {

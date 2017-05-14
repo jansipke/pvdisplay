@@ -171,12 +171,12 @@ public class LiveFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                picked = DateTimeUtils.addDays(picked, -1);
+                picked = DateTimeUtils.addDays(picked, -1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                picked = DateTimeUtils.addDays(picked, 1);
+                picked = DateTimeUtils.addDays(picked, 1, false);
                 updateScreen();
                 break;
             case R.id.action_refresh:

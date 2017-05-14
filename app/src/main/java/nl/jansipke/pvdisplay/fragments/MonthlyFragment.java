@@ -53,7 +53,7 @@ public class MonthlyFragment extends Fragment {
 
     private final static String STATE_KEY_YEAR = "year";
 
-    private static int pickedYear;
+    private static DateTimeUtils.Year picked;
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
@@ -77,7 +77,7 @@ public class MonthlyFragment extends Fragment {
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        PvDataService.callMonth(getContext(), pickedYear);
+        PvDataService.callMonth(getContext(), picked.year);
     }
 
     private List<MonthlyPvDatum> createFullYear(int year, List<MonthlyPvDatum> monthPvData) {
@@ -102,9 +102,9 @@ public class MonthlyFragment extends Fragment {
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
-            pickedYear = savedInstanceState.getInt(STATE_KEY_YEAR);
+            picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
         } else {
-            pickedYear = DateTimeUtils.getTodaysYear();
+            picked = DateTimeUtils.getTodaysYear();
         }
 
         SharedPreferences sharedPreferences = PreferenceManager.
@@ -138,17 +138,17 @@ public class MonthlyFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                pickedYear--;
+                picked = DateTimeUtils.addYears(picked, -1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                pickedYear++;
+                picked = DateTimeUtils.addYears(picked, 1, false);
                 updateScreen();
                 break;
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
-                pickedYear = DateTimeUtils.getTodaysYear();
+                picked = DateTimeUtils.getTodaysYear();
                 updateScreen();
                 break;
             case R.id.action_refresh:
@@ -166,7 +166,7 @@ public class MonthlyFragment extends Fragment {
 
         Log.d(TAG, "Saving fragment state");
 
-        outState.putInt(STATE_KEY_YEAR, pickedYear);
+        outState.putInt(STATE_KEY_YEAR, picked.year);
     }
 
     private void updateGraph(List<MonthlyPvDatum> monthlyPvData,
@@ -247,7 +247,7 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with monthly PV data");
 
-        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(pickedYear);
+        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked.year);
         List<MonthlyPvDatum> previousYearMonthlyPvData = new ArrayList<>();
         SharedPreferences sharedPreferences = PreferenceManager.
                 getDefaultSharedPreferences(getContext());
@@ -255,21 +255,21 @@ public class MonthlyFragment extends Fragment {
                 getString(R.string.preferences_key_show_previous), true);
         if (showPrevious) {
             previousYearMonthlyPvData = createFullYear(
-                    pickedYear - 1,
-                    pvDataOperations.loadMonthly(pickedYear - 1));
+                    picked.year - 1,
+                    pvDataOperations.loadMonthly(picked.year - 1));
         }
         if (monthlyPvData.size() == 0) {
-            Log.d(TAG, "No monthly PV data for " + pickedYear);
+            Log.d(TAG, "No monthly PV data for " + picked.year);
             callPvDataService();
         } else if (autoRefresh) {
             autoRefresh = false;
-            Log.d(TAG, "Refreshing monthly PV data for " + pickedYear);
+            Log.d(TAG, "Refreshing monthly PV data for " + picked.year);
             callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {
-            updateTitle(pickedYear);
-            updateGraph(createFullYear(pickedYear, monthlyPvData), previousYearMonthlyPvData);
+            updateTitle(picked.year);
+            updateGraph(createFullYear(picked.year, monthlyPvData), previousYearMonthlyPvData);
             updateTable(monthlyPvData);
         }
     }

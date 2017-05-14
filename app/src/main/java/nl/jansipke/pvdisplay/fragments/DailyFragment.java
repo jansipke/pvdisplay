@@ -172,12 +172,12 @@ public class DailyFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                picked = DateTimeUtils.addMonths(picked, -1);
+                picked = DateTimeUtils.addMonths(picked, -1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                picked = DateTimeUtils.addMonths(picked, 1);
+                picked = DateTimeUtils.addMonths(picked, 1, false);
                 updateScreen();
                 break;
             case R.id.action_this_month:
