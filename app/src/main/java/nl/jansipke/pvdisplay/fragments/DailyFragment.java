@@ -95,9 +95,7 @@ public class DailyFragment extends Fragment {
         }
         for (DailyPvDatum dailyPvDatum : dayPvData) {
             int fullMonthIndex = dailyPvDatum.getDay() - 1;
-            if (dailyPvDatum.getEnergyGenerated() >= 0.001) {
-                fullMonth.set(fullMonthIndex, dailyPvDatum);
-            }
+            fullMonth.set(fullMonthIndex, dailyPvDatum);
         }
         return fullMonth;
     }
