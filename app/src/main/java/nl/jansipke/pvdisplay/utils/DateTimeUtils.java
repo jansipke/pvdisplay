@@ -24,7 +24,7 @@ public class DateTimeUtils {
         public int year;
         public int month;
         public int day;
-        boolean isLaterThan(YearMonthDay other) {
+        public boolean isLaterThan(YearMonthDay other) {
             return (year > other.year) || (year == other.year && month > other.month) ||
                     (year == other.year && month == other.month && day > other.day);
         }

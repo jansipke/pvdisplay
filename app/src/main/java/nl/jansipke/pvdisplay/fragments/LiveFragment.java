@@ -81,6 +81,10 @@ public class LiveFragment extends Fragment {
             picked.year = year;
             picked.month = month + 1;
             picked.day = day;
+            DateTimeUtils.YearMonthDay today = DateTimeUtils.getTodaysYearMonthDay();
+            if (picked.isLaterThan(today)) {
+                picked = today;
+            }
             LiveFragment.this.updateScreen();
         }
     }
