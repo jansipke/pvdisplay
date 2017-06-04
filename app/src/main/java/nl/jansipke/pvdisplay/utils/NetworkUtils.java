@@ -42,7 +42,7 @@ public class NetworkUtils {
                     throw new IOException(inputStreamToString(is));
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.w(TAG, e.getMessage());
             throw e;
         } finally {
