@@ -1,10 +1,8 @@
 package nl.jansipke.pvdisplay;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +11,8 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.LoginEvent;
 
 import io.fabric.sdk.android.Fabric;
-import nl.jansipke.pvdisplay.data.SystemPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,20 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        SystemPvDatum systemPvDatum = new PvDataOperations(this).loadSystem();
-        if (systemPvDatum != null) {
-            SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getApplicationContext());
-            String systemId = sharedPreferences.getString(getResources().
-                    getString(R.string.preferences_key_pvoutput_system_id), "0");
-            Answers.getInstance().logLogin(new LoginEvent()
-                    .putCustomAttribute("System Id", "id " + systemId)
-                    .putCustomAttribute("System Name", "name " + systemPvDatum.getSystemName())
-                    .putCustomAttribute("System Size", "size " + systemPvDatum.getSystemSize())
-                    .putCustomAttribute("System Location", "locartion " +
-                            systemPvDatum.getLatitude() + " " + systemPvDatum.getLongitude()));
-        }
     }
 
     @Override
