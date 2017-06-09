@@ -31,7 +31,7 @@ import nl.jansipke.pvdisplay.utils.NetworkUtils;
 public class PvDataService extends Service {
 
     private final static String TAG = PvDataService.class.getSimpleName();
-    private final static String URL_BASE = "http://pvoutput.org/service/r2/";
+    protected final static String URL_BASE = "http://pvoutput.org/service/r2/";
 
     public static void callDay(Context context, int year, int month) {
         Intent intent = new Intent(context, PvDataService.class);
@@ -119,21 +119,21 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
-                    // Download, parse and save data for previous year
-                    String fromDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 1, false);
-                    String toDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 31, false);
+                    // Download, parse and save data
+                    String fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
+                    String toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
                     String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
-                    List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
-                    pvDataOperations.saveDaily(previousYearDailyPvData);
-
-                    // Download, parse and save data
-                    fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
-                    toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
-                    urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
-                    result = download(urlPath);
                     List<DailyPvDatum> dailyPvData = new PvOutputParser().parseDaily(result);
                     pvDataOperations.saveDaily(dailyPvData);
+
+                    // Download, parse and save data for previous year
+                    fromDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 1, false);
+                    toDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 31, false);
+                    urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
+                    result = download(urlPath);
+                    List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
+                    pvDataOperations.saveDaily(previousYearDailyPvData);
 
                     reportStatus(true, "Downloaded " + (previousYearDailyPvData.size() + dailyPvData.size()) + " data points");
                 } catch (IOException e) {
