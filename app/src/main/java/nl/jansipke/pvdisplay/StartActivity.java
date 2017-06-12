@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +15,9 @@ import java.util.Map;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.utils.NetworkUtils;
 
-public class SplashActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity {
 
-    private final static String TAG = SplashActivity.class.getSimpleName();
+    private final static String TAG = StartActivity.class.getSimpleName();
 
     private void getInitialSystemPvDatum(final String systemId, final String apiKey) {
         new Thread() {
@@ -31,12 +30,12 @@ public class SplashActivity extends AppCompatActivity {
                 try {
                     String result = NetworkUtils.httpGet(url, headers);
                     SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
-                    intent = new Intent(SplashActivity.this, SplashSuccessActivity.class);
+                    intent = new Intent(StartActivity.this, StartSuccessActivity.class);
                     intent.putExtra("systemId", systemId);
                     intent.putExtra("apiKey", apiKey);
                     intent.putExtra("systemName", systemPvDatum.getSystemName());
                 } catch (Exception e) {
-                    intent = new Intent(SplashActivity.this, SplashFailureActivity.class);
+                    intent = new Intent(StartActivity.this, StartFailureActivity.class);
                 } finally {
                     startActivity(intent);
                     finish();
@@ -48,7 +47,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        setContentView(R.layout.activity_start);
 
         final SharedPreferences sharedPreferences = PreferenceManager.
                 getDefaultSharedPreferences(getApplicationContext());
@@ -66,7 +65,7 @@ public class SplashActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+            Intent intent = new Intent(StartActivity.this, FetchActivity.class);
             startActivity(intent);
             finish();
         }

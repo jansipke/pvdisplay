@@ -41,7 +41,7 @@ dependencies {
     compile 'com.github.lecho:hellocharts-android:v1.5.8'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.android.support:design:25.3.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
     testCompile 'junit:junit:4.12'

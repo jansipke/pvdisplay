@@ -9,14 +9,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class SplashSuccessActivity extends AppCompatActivity {
+public class StartSuccessActivity extends AppCompatActivity {
 
-    private final static String TAG = SplashSuccessActivity.class.getSimpleName();
+    private final static String TAG = StartSuccessActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_success);
+        setContentView(R.layout.activity_start_success);
 
         Intent intent = getIntent();
 
@@ -32,7 +32,7 @@ public class SplashSuccessActivity extends AppCompatActivity {
         Button button = (Button) findViewById(R.id.start_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(SplashSuccessActivity.this, MainActivity.class);
+                Intent intent = new Intent(StartSuccessActivity.this, FetchActivity.class);
                 startActivity(intent);
                 finish();
             }

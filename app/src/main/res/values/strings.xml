@@ -2,14 +2,17 @@
     <string name="app_name">PV Display</string>
     <string name="service_name">PV Display Service</string>
 
-    <string name="splash_text">"Provide your PV Output settings to start using this application.\n\nYou can find these on the Account Settings page at www.pvoutput.org.\n\nTip: instead of the API Key, you may provide the Read Only Key."</string>
-    <string name="splash_button">Continue</string>
+    <string name="start_text">"Provide your PV Output settings to start using this application.\n\nYou can find these on the Account Settings page at www.pvoutput.org.\n\nTip: instead of the API Key, you may provide the Read Only Key."</string>
+    <string name="start_button">Continue</string>
 
-    <string name="splash_success_text">"You have successfully configured your PV Output settings."</string>
-    <string name="splash_success_button">Start</string>
+    <string name="start_success_text">"You have successfully configured your PV Output settings."</string>
+    <string name="start_success_button">Start</string>
 
-    <string name="splash_failure_text">"The PV Output settings you supplied are not correct.\n\nPlease check your settings and try to use the Read Only Key for easier typing on your mobile device."</string>
-    <string name="splash_failure_button">Retry</string>
+    <string name="start_failure_text">"The PV Output settings you supplied are not correct.\n\nPlease check your settings and try to use the Read Only Key for easier typing on your mobile device."</string>
+    <string name="start_failure_button">Retry</string>
+
+    <string name="fetch_text">"Downloading PV data..."</string>
+    <string name="fetch_button">Cancel</string>
 
     <string name="graph_legend_power">Power (W)</string>
     <string name="graph_legend_energy">Energy (kWh)</string>

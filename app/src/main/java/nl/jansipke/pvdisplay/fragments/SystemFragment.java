@@ -36,7 +36,6 @@ public class SystemFragment extends Fragment {
 
     private View fragmentView;
     private PvDataOperations pvDataOperations;
-    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -66,10 +65,6 @@ public class SystemFragment extends Fragment {
         setHasOptionsMenu(true);
 
         pvDataOperations = new PvDataOperations(getContext());
-        SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        autoRefresh = sharedPreferences.getBoolean(getResources().
-                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -110,10 +105,6 @@ public class SystemFragment extends Fragment {
             Log.d(TAG, "No statistic or system PV data");
             callPvDataService();
             return;
-        } else if (autoRefresh) {
-            autoRefresh = false;
-            Log.d(TAG, "Refreshing statistic and system PV data");
-            callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {

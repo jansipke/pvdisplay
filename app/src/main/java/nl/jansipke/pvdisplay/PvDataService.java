@@ -33,6 +33,15 @@ public class PvDataService extends Service {
     private final static String TAG = PvDataService.class.getSimpleName();
     protected final static String URL_BASE = "http://pvoutput.org/service/r2/";
 
+    public static void callAll(Context context, int year, int month, int day) {
+        Intent intent = new Intent(context, PvDataService.class);
+        intent.putExtra("type", "all");
+        intent.putExtra("year", year);
+        intent.putExtra("month", month);
+        intent.putExtra("day", day);
+        context.startService(intent);
+    }
+
     public static void callDay(Context context, int year, int month) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "day");
@@ -277,16 +286,28 @@ public class PvDataService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
+            int year, month, day;
             switch(intent.getStringExtra("type")) {
+                case "all":
+                    year = intent.getIntExtra("year", 0);
+                    month = intent.getIntExtra("month", 0);
+                    day = intent.getIntExtra("day", 0);
+                    downloadLive(year, month, day);
+                    downloadDay(year, month);
+                    downloadMonth(year);
+                    downloadYear();
+                    downloadSystem();
+                    downloadStatistic();
+                    break;
                 case "day":
-                    int year = intent.getIntExtra("year", 0);
-                    int month = intent.getIntExtra("month", 0);
+                    year = intent.getIntExtra("year", 0);
+                    month = intent.getIntExtra("month", 0);
                     downloadDay(year, month);
                     break;
                 case "live":
                     year = intent.getIntExtra("year", 0);
                     month = intent.getIntExtra("month", 0);
-                    int day = intent.getIntExtra("day", 0);
+                    day = intent.getIntExtra("day", 0);
                     downloadLive(year, month, day);
                     break;
                 case "month":

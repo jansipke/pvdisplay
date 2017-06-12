@@ -58,7 +58,6 @@ public class MonthlyFragment extends Fragment {
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
-    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -106,11 +105,6 @@ public class MonthlyFragment extends Fragment {
         } else {
             picked = DateTimeUtils.getTodaysYear();
         }
-
-        SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        autoRefresh = sharedPreferences.getBoolean(getResources().
-                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -260,10 +254,6 @@ public class MonthlyFragment extends Fragment {
         }
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + picked.year);
-            callPvDataService();
-        } else if (autoRefresh) {
-            autoRefresh = false;
-            Log.d(TAG, "Refreshing monthly PV data for " + picked.year);
             callPvDataService();
         }
 

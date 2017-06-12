@@ -39,13 +39,11 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
-import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -65,7 +63,6 @@ public class DailyFragment extends Fragment {
     private View fragmentView;
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
-    private boolean autoRefresh;
 
     private void callPvDataService() {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -140,11 +137,6 @@ public class DailyFragment extends Fragment {
         } else {
             picked = DateTimeUtils.getTodaysYearMonth();
         }
-
-        SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        autoRefresh = sharedPreferences.getBoolean(getResources().
-                getString(R.string.preferences_key_auto_refresh), true);
     }
 
     @Override
@@ -308,11 +300,6 @@ public class DailyFragment extends Fragment {
 
         if (dailyPvData.size() == 0) {
             Log.d(TAG, "No daily PV data for " +
-                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
-            callPvDataService();
-        } else if (autoRefresh) {
-            autoRefresh = false;
-            Log.d(TAG, "Refreshing daily PV data for " +
                     DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
             callPvDataService();
         }
