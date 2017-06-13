@@ -11,12 +11,13 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class FetchActivity extends AppCompatActivity {
 
-    private final static String TAG = FetchActivity.class.getSimpleName();
+    private final static int NR_DOWNLOADS = 6;
 
     private void fetchPvData() {
         new Thread() {
@@ -25,11 +26,13 @@ public class FetchActivity extends AppCompatActivity {
                 DateTimeUtils.YearMonthDay now = DateTimeUtils.getTodaysYearMonthDay();
 
                 BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                    int nrReceived = 0;
+                    int downloadsFinished = 0;
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        nrReceived += 1;
-                        if (nrReceived == 6) {
+                        downloadsFinished += 1;
+                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+                        progressBar.setProgress(downloadsFinished);
+                        if (downloadsFinished == NR_DOWNLOADS) {
                             LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
                             Intent mainIntent = new Intent(FetchActivity.this, MainActivity.class);
                             startActivity(mainIntent);
@@ -51,6 +54,9 @@ public class FetchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fetch);
+
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setMax(NR_DOWNLOADS);
 
         Button button = (Button) findViewById(R.id.cancel_button);
         button.setOnClickListener(new View.OnClickListener() {

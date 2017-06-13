@@ -22,7 +22,7 @@
             android:layout_margin="20dp"
             android:padding="10dp"
             android:background="#8fff"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textAlignment="center"
             android:text="@string/start_failure_text"/>
 

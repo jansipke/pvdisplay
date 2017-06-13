@@ -48,7 +48,7 @@
                 android:layout_margin="20dp"
                 android:padding="10dp"
                 android:background="#8fff"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:textAlignment="center"/>
 
             <LinearLayout
