@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -18,6 +19,7 @@ import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 public class FetchActivity extends AppCompatActivity {
 
     private final static int NR_DOWNLOADS = 6;
+    private final static String TAG = FetchActivity.class.getSimpleName();
 
     private void fetchPvData() {
         new Thread() {
@@ -29,6 +31,8 @@ public class FetchActivity extends AppCompatActivity {
                     int downloadsFinished = 0;
                     @Override
                     public void onReceive(Context context, Intent intent) {
+                        String type = intent.getStringExtra("type");
+                        Log.d(TAG, "Fetched " + type);
                         downloadsFinished += 1;
                         ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
                         progressBar.setProgress(downloadsFinished);

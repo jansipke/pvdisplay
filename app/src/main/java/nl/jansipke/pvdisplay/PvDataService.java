@@ -144,12 +144,12 @@ public class PvDataService extends Service {
                     List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
                     pvDataOperations.saveDaily(previousYearDailyPvData);
 
-                    reportStatus(true, "Downloaded " + (previousYearDailyPvData.size() + dailyPvData.size()) + " data points");
+                    reportStatus(true, "day", "Downloaded " + (previousYearDailyPvData.size() + dailyPvData.size()) + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download daily PV data:\n" + e.getMessage());
+                    reportStatus(false, "day", "Could not download daily PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse daily PV data:\n" + e.getMessage());
+                    reportStatus(false, "day", "Could not parse daily PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -170,12 +170,12 @@ public class PvDataService extends Service {
                     List<LivePvDatum> livePvData = new PvOutputParser().parseLive(result);
                     new PvDataOperations(getApplicationContext()).saveLive(livePvData);
 
-                    reportStatus(true, "Downloaded " + livePvData.size() + " data points");
+                    reportStatus(true, "live", "Downloaded " + livePvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download live PV data:\n" + e.getMessage());
+                    reportStatus(false, "live", "Could not download live PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse live PV data:\n" + e.getMessage());
+                    reportStatus(false, "live", "Could not parse live PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -197,12 +197,12 @@ public class PvDataService extends Service {
                     List<MonthlyPvDatum> monthlyPvData = new PvOutputParser().parseMonthly(result);
                     new PvDataOperations(getApplicationContext()).saveMonthly(monthlyPvData);
 
-                    reportStatus(true, "Downloaded " + monthlyPvData.size() + " data points");
+                    reportStatus(true, "month", "Downloaded " + monthlyPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download monthly PV data:\n" + e.getMessage());
+                    reportStatus(false, "month", "Could not download monthly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse monthly PV data:\n" + e.getMessage());
+                    reportStatus(false, "month", "Could not parse monthly PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -222,12 +222,12 @@ public class PvDataService extends Service {
                     StatisticPvDatum statisticPvDatum = new PvOutputParser().parseStatistic(result);
                     new PvDataOperations(getApplicationContext()).saveStatistic(statisticPvDatum);
 
-                    reportStatus(true, "Downloaded statistic PV data");
+                    reportStatus(true, "statistic", "Downloaded statistic PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download statistic PV data:\n" + e.getMessage());
+                    reportStatus(false, "statistic", "Could not download statistic PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse statistic PV data:\n" + e.getMessage());
+                    reportStatus(false, "statistic", "Could not parse statistic PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -247,12 +247,12 @@ public class PvDataService extends Service {
                     SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
                     new PvDataOperations(getApplicationContext()).saveSystem(systemPvDatum);
 
-                    reportStatus(true, "Downloaded system PV data");
+                    reportStatus(true, "system", "Downloaded system PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download system PV data:\n" + e.getMessage());
+                    reportStatus(false, "system", "Could not download system PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse system PV data:\n" + e.getMessage());
+                    reportStatus(false, "system", "Could not parse system PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -272,12 +272,12 @@ public class PvDataService extends Service {
                     List<YearlyPvDatum> yearlyPvData = new PvOutputParser().parseYearly(result);
                     new PvDataOperations(getApplicationContext()).saveYearly(yearlyPvData);
 
-                    reportStatus(true, "Downloaded " + yearlyPvData.size() + " data points");
+                    reportStatus(true, "year", "Downloaded " + yearlyPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "Could not download yearly PV data:\n" + e.getMessage());
+                    reportStatus(false, "year", "Could not download yearly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    reportStatus(false, "Could not parse yearly PV data:\n" + e.getMessage());
+                    reportStatus(false, "year", "Could not parse yearly PV data:\n" + e.getMessage());
                 }
             }
         }).start();
@@ -285,9 +285,10 @@ public class PvDataService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        String type = intent.getStringExtra("type");
         if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
             int year, month, day;
-            switch(intent.getStringExtra("type")) {
+            switch(type) {
                 case "all":
                     year = intent.getIntExtra("year", 0);
                     month = intent.getIntExtra("month", 0);
@@ -325,7 +326,7 @@ public class PvDataService extends Service {
                     break;
             }
         } else {
-            reportStatus(false, "Could not download PV data because\nnetwork is unavailable");
+            reportStatus(false, type, "Could not download PV data because\nnetwork is unavailable");
         }
         return Service.START_NOT_STICKY;
     }
@@ -336,7 +337,7 @@ public class PvDataService extends Service {
         return null;
     }
 
-    private void reportStatus(boolean success, String message) {
+    private void reportStatus(boolean success, String type, String message) {
         if (success) {
             Log.d(TAG, message);
         } else {
@@ -344,6 +345,7 @@ public class PvDataService extends Service {
         }
         Intent intent = new Intent(PvDataService.class.getName());
         intent.putExtra("success", success);
+        intent.putExtra("type", type);
         intent.putExtra("message", message);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
