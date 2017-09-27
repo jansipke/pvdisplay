@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="pvoutput"
+        android:title="PV Output">
+
+        <EditTextPreference
+            android:key="@string/preferences_key_pvoutput_system_id"
+            android:title="@string/preferences_title_pvoutput_system_id"
+            android:summary="@string/preferences_summary_pvoutput_system_id" />
+
+        <EditTextPreference
+            android:key="@string/preferences_key_pvoutput_api_key"
+            android:title="@string/preferences_title_pvoutput_api_key"
+            android:summary="@string/preferences_summary_pvoutput_api_key" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="preferences"
+        android:title="Preferences">
+
+        <CheckBoxPreference
+            android:key="@string/preferences_key_auto_refresh"
+            android:title="@string/preferences_title_auto_refresh"
+            android:summary="@string/preferences_summary_auto_refresh"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="@string/preferences_key_show_previous"
+            android:title="@string/preferences_title_show_previous"
+            android:summary="@string/preferences_summary_show_previous"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
