@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">PV Display</string>
+    <string name="service_name">PV Display Service</string>
+
+    <string name="start_text">"Provide your PV Output settings to start using this application.\n\nYou can find these on the Account Settings page at www.pvoutput.org.\n\nTip: instead of the API Key, you may provide the shorter Read Only Key."</string>
+    <string name="start_button">Continue</string>
+
+    <string name="start_success_text">"You have successfully configured your PV Output settings.\n\nIf you have any questions or feature requests, please visit the PV Display website or leave a comment on the Google Play Store."</string>
+    <string name="start_success_button">Start</string>
+
+    <string name="start_failure_text">"Unfortunately, the PV Output settings you supplied are not correct.\n\nPlease check your settings and try to use the Read Only Key for easier typing on your mobile device."</string>
+    <string name="start_failure_button">Retry</string>
+
+    <string name="fetch_text">"Downloading PV data..."</string>
+    <string name="fetch_button">Cancel</string>
+
+    <string name="graph_legend_power">Power (W)</string>
+    <string name="graph_legend_energy">Energy (kWh)</string>
+
+    <string name="column_time">Time</string>
+    <string name="column_day">Day</string>
+    <string name="column_month">Month</string>
+    <string name="column_year">Year</string>
+    <string name="column_power">Power\n(W)</string>
+    <string name="column_peak">Peak\n(W)</string>
+    <string name="column_energy">Energy\n(kWh)</string>
+
+    <string name="title_yearly">Lifetime</string>
+
+    <string name="preferences_pv_data_file">preferences_pv_data</string>
+    <string name="preferences_object_statistic">statistic</string>
+    <string name="preferences_object_system">system</string>
+    <string name="preferences_object_record">record</string>
+
+    <string name="preferences_key_pvoutput_api_key">pvoutput_api_key</string>
+    <string name="preferences_title_pvoutput_api_key">API Key</string>
+    <string name="preferences_summary_pvoutput_api_key">Your API Key or Read Only Key</string>
+
+    <string name="preferences_key_pvoutput_system_id">pvoutput_system_id</string>
+    <string name="preferences_title_pvoutput_system_id">System Id</string>
+    <string name="preferences_summary_pvoutput_system_id">Your System Id</string>
+
+    <string name="preferences_key_auto_refresh">auto_refresh</string>
+    <string name="preferences_title_auto_refresh">Auto refresh</string>
+    <string name="preferences_summary_auto_refresh">Refresh PV data when app starts</string>
+
+    <string name="preferences_key_show_previous">show_previous</string>
+    <string name="preferences_title_show_previous">Show previous</string>
+    <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs</string>
+
+    <string name="action_previous">Previous</string>
+    <string name="action_next">Next</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
+    <string name="action_date">Select date</string>
+    <string name="action_today">Go to today</string>
+    <string name="action_this_month">Go to this month</string>
+    <string name="action_this_year">Go to this year</string>
+
+    <string name="value_w">%s W</string>
+    <string name="value_kwh">%s kWh</string>
+    <string name="value_days">%d days</string>
+    <string name="value_degrees">%s degrees</string>
+    <string name="value_location">%1$s N, %2$s W</string>
+    <string name="value_panels">%1$d x %2$d W = %3$d W</string>
+    <string name="value_inverter">%d W</string>
+    <string name="value_statistics_total">Total %1$s kWh in %2$d days</string>
+    <string name="value_statistics_average">Average %s kWh per day</string>
+    <string name="value_statistics_record">Record %1$s kWh on %2$s</string>
+
+    <string name="image_condition">Condition</string>
+
+    <string name="fragment_system_name">Name</string>
+    <string name="fragment_system_panels">Panels</string>
+    <string name="fragment_system_inverter">Inverter</string>
+    <string name="fragment_system_statistics">Statistics</string>
+
+</resources>
