@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.22.1'
+        classpath 'io.fabric.tools:gradle:1.24.5'
     }
 }
 apply plugin: 'com.android.application'
@@ -17,7 +17,6 @@ repositories {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.0"
 
     defaultConfig {
         applicationId "nl.jansipke.pvdisplay"
