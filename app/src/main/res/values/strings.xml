@@ -48,6 +48,14 @@
     <string name="preferences_title_show_previous">Show previous</string>
     <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs</string>
 
+    <string name="preferences_key_graph_hour_start">graph_hour_start</string>
+    <string name="preferences_title_graph_hour_start">Starting hour</string>
+    <string name="preferences_summary_graph_hour_start">Live graph x-axis starts at this hour of the day</string>
+
+    <string name="preferences_key_graph_hour_end">graph_hour_end</string>
+    <string name="preferences_title_graph_hour_end">Ending hour</string>
+    <string name="preferences_summary_graph_hour_end">Live graph x-axis ends at this hour of the day</string>
+
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>
     <string name="action_refresh">Refresh</string>

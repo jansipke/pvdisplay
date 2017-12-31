@@ -6,8 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -107,16 +109,19 @@ public class LiveFragment extends Fragment {
     }
 
     private List<LivePvDatum> createFullDay(int year, int month, int day,
+                                            int startHour, int endHour,
                                             List<LivePvDatum> livePvData) {
         List<LivePvDatum> fullDay = new ArrayList<>();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = startHour; hour < endHour; hour++) {
             for (int minute = 0; minute < 60; minute += 5) {
                 fullDay.add(new LivePvDatum(year, month, day, hour, minute, 0, 0));
             }
         }
         for (LivePvDatum livePvDatum : livePvData) {
-            int fullDayIndex = livePvDatum.getHour() * 12 + livePvDatum.getMinute() / 5;
-            fullDay.set(fullDayIndex, livePvDatum);
+            if (livePvDatum.getHour() >= startHour && livePvDatum.getHour() < endHour) {
+                int fullDayIndex = (livePvDatum.getHour() - startHour) * 12 + livePvDatum.getMinute() / 5;
+                fullDay.set(fullDayIndex, livePvDatum);
+            }
         }
         return fullDay;
     }
@@ -291,7 +296,24 @@ public class LiveFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             updateTitle(picked.year, picked.month, picked.day);
-            updateGraph(createFullDay(picked.year, picked.month, picked.day, livePvData));
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            int startHour;
+            try {
+                startHour = Integer.parseInt(sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_graph_hour_start), "0"));
+            } catch (Exception e) {
+                startHour = 0;
+            }
+            int endHour;
+            try {
+                endHour = Integer.parseInt(sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_graph_hour_end), "24"));
+            } catch (Exception e) {
+                endHour = 24;
+            }
+            updateGraph(createFullDay(picked.year, picked.month, picked.day,
+                    startHour, endHour, livePvData));
             updateTable(livePvData);
         }
     }

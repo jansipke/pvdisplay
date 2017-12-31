@@ -33,6 +33,18 @@
             android:summary="@string/preferences_summary_show_previous"
             android:defaultValue="true" />
 
+        <EditTextPreference
+            android:key="@string/preferences_key_graph_hour_start"
+            android:title="@string/preferences_title_graph_hour_start"
+            android:summary="@string/preferences_summary_graph_hour_start"
+            android:defaultValue="0" />
+
+        <EditTextPreference
+            android:key="@string/preferences_key_graph_hour_end"
+            android:title="@string/preferences_title_graph_hour_end"
+            android:summary="@string/preferences_summary_graph_hour_end"
+            android:defaultValue="24" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
