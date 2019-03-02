@@ -31,7 +31,7 @@ import nl.jansipke.pvdisplay.utils.NetworkUtils;
 public class PvDataService extends Service {
 
     private final static String TAG = PvDataService.class.getSimpleName();
-    protected final static String URL_BASE = "http://pvoutput.org/service/r2/";
+    protected final static String URL_BASE = "https://pvoutput.org/service/r2/";
 
     public static void callAll(Context context, int year, int month, int day) {
         Intent intent = new Intent(context, PvDataService.class);

@@ -1,1 +1,1 @@
-curl -H "X-Pvoutput-Apikey: 4054f46dd2c8e71855122e964c8e099cb9394d69" -H "X-Pvoutput-SystemId: 23329" http://pvoutput.org/service/r2/getoutput.jsp
+curl -H "X-Pvoutput-Apikey: 4054f46dd2c8e71855122e964c8e099cb9394d69" -H "X-Pvoutput-SystemId: 23329" https://pvoutput.org/service/r2/getoutput.jsp
