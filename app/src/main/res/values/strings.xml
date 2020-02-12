@@ -2,7 +2,7 @@
     <string name="app_name">PV Display</string>
     <string name="service_name">PV Display Service</string>
 
-    <string name="start_text">"Provide your PV Output settings to start using this application.\n\nYou can find these on the Account Settings page at www.pvoutput.org.\n\nTip: instead of the API Key, you may provide the shorter Read Only Key."</string>
+    <string name="start_text">"Provide your PV Output settings to start using this application.\n\nYou can find these on the Account Settings page on the pvoutput.org website.\n\nTip: instead of the API Key, you may provide the shorter Read Only Key."</string>
     <string name="start_button">Continue</string>
 
     <string name="start_success_text">"You have successfully configured your PV Output settings.\n\nIf you have any questions or feature requests, please visit the PV Display website or leave a comment on the Google Play Store."</string>
@@ -11,7 +11,7 @@
     <string name="start_failure_text">"Unfortunately, the PV Output settings you supplied are not correct.\n\nPlease check your settings and try to use the Read Only Key for easier typing on your mobile device."</string>
     <string name="start_failure_button">Retry</string>
 
-    <string name="fetch_text">"Downloading PV data..."</string>
+    <string name="fetch_text">"Downloading PV data&#8230;"</string>
     <string name="fetch_button">Cancel</string>
 
     <string name="graph_legend_power">Power (W)</string>
@@ -34,27 +34,27 @@
 
     <string name="preferences_key_pvoutput_api_key">pvoutput_api_key</string>
     <string name="preferences_title_pvoutput_api_key">API Key</string>
-    <string name="preferences_summary_pvoutput_api_key">Your API Key or Read Only Key</string>
+    <string name="preferences_summary_pvoutput_api_key">Your API Key or Read Only Key (see pvoutput.org website)</string>
 
     <string name="preferences_key_pvoutput_system_id">pvoutput_system_id</string>
     <string name="preferences_title_pvoutput_system_id">System Id</string>
-    <string name="preferences_summary_pvoutput_system_id">Your System Id</string>
+    <string name="preferences_summary_pvoutput_system_id">Your System Id (see pvoutput.org website)</string>
 
     <string name="preferences_key_auto_refresh">auto_refresh</string>
     <string name="preferences_title_auto_refresh">Auto refresh</string>
-    <string name="preferences_summary_auto_refresh">Refresh PV data when app starts</string>
+    <string name="preferences_summary_auto_refresh">Refresh PV data when app starts (default is on)</string>
 
     <string name="preferences_key_show_previous">show_previous</string>
     <string name="preferences_title_show_previous">Show previous</string>
-    <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs</string>
+    <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs (default is on)</string>
 
     <string name="preferences_key_graph_hour_start">graph_hour_start</string>
     <string name="preferences_title_graph_hour_start">Starting hour</string>
-    <string name="preferences_summary_graph_hour_start">Live graph x-axis starts at this hour of the day</string>
+    <string name="preferences_summary_graph_hour_start">Live graph x-axis starts at this hour of the day (default is 0)</string>
 
     <string name="preferences_key_graph_hour_end">graph_hour_end</string>
     <string name="preferences_title_graph_hour_end">Ending hour</string>
-    <string name="preferences_summary_graph_hour_end">Live graph x-axis ends at this hour of the day</string>
+    <string name="preferences_summary_graph_hour_end">Live graph x-axis ends at this hour of the day (default is 24)</string>
 
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>

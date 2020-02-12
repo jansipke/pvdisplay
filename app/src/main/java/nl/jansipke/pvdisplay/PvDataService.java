@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
-
-import com.crashlytics.android.Crashlytics;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -115,7 +113,6 @@ public class PvDataService extends Service {
                 case "Forbidden 403: Exceeded 300 requests per hour":
                     throw new IOException("Exceeded 300 requests per hour\n(please do not refresh too often)");
             }
-            Crashlytics.logException(e);
             throw e;
         }
     }
@@ -148,7 +145,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "day", "Could not download daily PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "day", "Could not parse daily PV data:\n" + e.getMessage());
                 }
             }
@@ -174,7 +170,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "live", "Could not download live PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "live", "Could not parse live PV data:\n" + e.getMessage());
                 }
             }
@@ -201,7 +196,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "month", "Could not download monthly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "month", "Could not parse monthly PV data:\n" + e.getMessage());
                 }
             }
@@ -226,7 +220,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "statistic", "Could not download statistic PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "statistic", "Could not parse statistic PV data:\n" + e.getMessage());
                 }
             }
@@ -251,7 +244,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "system", "Could not download system PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "system", "Could not parse system PV data:\n" + e.getMessage());
                 }
             }
@@ -276,7 +268,6 @@ public class PvDataService extends Service {
                 } catch (IOException e) {
                     reportStatus(false, "year", "Could not download yearly PV data:\n" + e.getMessage());
                 } catch (ParseException e) {
-                    Crashlytics.logException(e);
                     reportStatus(false, "year", "Could not parse yearly PV data:\n" + e.getMessage());
                 }
             }

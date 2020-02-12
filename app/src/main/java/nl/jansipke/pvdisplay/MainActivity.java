@@ -3,27 +3,21 @@ package nl.jansipke.pvdisplay;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.tabs.TabLayout;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-
-import com.crashlytics.android.Crashlytics;
-
-import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
-    private final static String WEBSITE_URL = "http://www.jansipke.nl/pv-display";
+    private final static String WEBSITE_URL = "https://jansipke.nl/pv-display";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Fabric.with(this, new Crashlytics());
 
         Log.i(TAG, "Creating main activity");
 
