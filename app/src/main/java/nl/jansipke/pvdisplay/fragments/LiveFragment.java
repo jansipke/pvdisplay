@@ -28,7 +28,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
@@ -108,13 +110,44 @@ public class LiveFragment extends Fragment {
         PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
     }
 
-    private List<LivePvDatum> createFullDay(int year, int month, int day,
+    private Map<String, List<Integer>> createColors(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataPrevious) {
+        Map<String, List<Integer>> colors = new HashMap<>();
+        colors.put("power", new ArrayList<Integer>());
+        colors.put("energy", new ArrayList<Integer>());
+        List<LivePvDatum> previousFullDay = createFullDay(new DateTimeUtils.YearMonthDay(), 0, 24, livePvDataPrevious);
+        for (LivePvDatum livePvDatum : livePvDataPicked) {
+            int fullDayIndex = livePvDatum.getHour() * 12 + livePvDatum.getMinute() / 5;
+
+            final double powerPicked = livePvDatum.getPowerGeneration();
+            final double powerPrevious = previousFullDay.get(fullDayIndex).getPowerGeneration();
+            if (powerPicked == powerPrevious) {
+                colors.get("power").add(Color.rgb(61, 61, 61));
+            } else if (powerPicked > powerPrevious) {
+                colors.get("power").add(Color.rgb(61, 153, 61));
+            } else {
+                colors.get("power").add(Color.rgb(153, 61, 61));
+            }
+
+            final double energyPicked = livePvDatum.getEnergyGeneration();
+            final double energyPrevious = previousFullDay.get(fullDayIndex).getEnergyGeneration();
+            if (energyPicked == energyPrevious) {
+                colors.get("energy").add(Color.rgb(61, 61, 61));
+            } else if (energyPicked > energyPrevious) {
+                colors.get("energy").add(Color.rgb(61, 153, 61));
+            } else {
+                colors.get("energy").add(Color.rgb(153, 61, 61));
+            }
+        }
+        return colors;
+    }
+
+    private List<LivePvDatum> createFullDay(DateTimeUtils.YearMonthDay date,
                                             int startHour, int endHour,
                                             List<LivePvDatum> livePvData) {
         List<LivePvDatum> fullDay = new ArrayList<>();
         for (int hour = startHour; hour < endHour; hour++) {
             for (int minute = 0; minute < 60; minute += 5) {
-                fullDay.add(new LivePvDatum(year, month, day, hour, minute, 0, 0));
+                fullDay.add(new LivePvDatum(date.year, date.month, date.day, hour, minute, 0, 0));
             }
         }
         for (LivePvDatum livePvDatum : livePvData) {
@@ -210,7 +243,7 @@ public class LiveFragment extends Fragment {
         outState.putInt(STATE_KEY_DAY, picked.day);
     }
 
-    private void updateGraph(List<LivePvDatum> livePvData) {
+    private void updateGraph(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataPrevious, boolean showPrevious) {
         LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -219,21 +252,40 @@ public class LiveFragment extends Fragment {
             LineChartView lineChartView = new LineChartView(context);
             graphLinearLayout.addView(lineChartView);
 
-            List<PointValue> powerPointValues = new ArrayList<>();
-            for (int i = 0; i < livePvData.size(); i++) {
-                LivePvDatum livePvDatum = livePvData.get(i);
+            List<Line> lines = new ArrayList<>();
+
+            List<PointValue> powerPointValuesPicked = new ArrayList<>();
+            for (int i = 0; i < livePvDataPicked.size(); i++) {
+                LivePvDatum livePvDatum = livePvDataPicked.get(i);
 
                 float x = (float) i;
                 float y = (float) livePvDatum.getPowerGeneration();
-                powerPointValues.add(new PointValue(x, y));
+                powerPointValuesPicked.add(new PointValue(x, y));
             }
-            List<Line> lines = new ArrayList<>();
-            Line powerLine = new Line(powerPointValues)
+            Line powerLinePicked = new Line(powerPointValuesPicked)
                     .setColor(ChartUtils.COLORS[0])
                     .setHasPoints(false)
                     .setCubic(true)
                     .setFilled(true);
-            lines.add(powerLine);
+
+            if (showPrevious) {
+                List<PointValue> powerPointValuesPrevious = new ArrayList<>();
+                for (int i = 0; i < livePvDataPrevious.size(); i++) {
+                    LivePvDatum livePvDatum = livePvDataPrevious.get(i);
+
+                    float x = (float) i;
+                    float y = (float) livePvDatum.getPowerGeneration();
+                    powerPointValuesPrevious.add(new PointValue(x, y));
+                }
+                Line powerLinePrevious = new Line(powerPointValuesPrevious)
+                        .setColor(Color.rgb(223, 223, 223))
+                        .setHasPoints(false)
+                        .setCubic(true)
+                        .setFilled(false);
+                lines.add(powerLinePrevious);
+            }
+
+            lines.add(powerLinePicked);
             LineChartData lineChartData = new LineChartData();
             lineChartData.setLines(lines);
 
@@ -251,13 +303,13 @@ public class LiveFragment extends Fragment {
             lineChartView.setLineChartData(lineChartData);
 
             lineChartView.setViewportCalculationEnabled(false);
-            Viewport viewport = new Viewport(-1, axisLabelValues.getView(), livePvData.size(), 0);
+            Viewport viewport = new Viewport(-1, axisLabelValues.getView(), livePvDataPicked.size(), 0);
             lineChartView.setMaximumViewport(viewport);
             lineChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<LivePvDatum> livePvData) {
+    private void updateTable(List<LivePvDatum> livePvData, Map<String, List<Integer>> colors, boolean showPrevious) {
         LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
@@ -270,8 +322,14 @@ public class LiveFragment extends Fragment {
                     true));
             ((TextView) row.findViewById(R.id.power)).setText(
                     FormatUtils.POWER_FORMAT.format(livePvDatum.getPowerGeneration()));
+            if (showPrevious) {
+                ((TextView) row.findViewById(R.id.power)).setTextColor(colors.get("power").get(i));
+            }
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(livePvDatum.getEnergyGeneration() / 1000.0));
+            if (showPrevious) {
+                ((TextView) row.findViewById(R.id.energy)).setTextColor(colors.get("energy").get(i));
+            }
             linearLayout.addView(row);
         }
     }
@@ -286,16 +344,19 @@ public class LiveFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with live PV data");
 
-        List<LivePvDatum> livePvData = pvDataOperations.loadLive(
+        List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
-        if (livePvData.size() == 0) {
+        if (livePvDataPicked.size() == 0) {
             Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
                     picked.year, picked.month, picked.day, true));
             callPvDataService();
         }
 
+        DateTimeUtils.YearMonthDay previous = DateTimeUtils.addDays(picked, -1, false);
+        List<LivePvDatum> livePvDataPrevious = pvDataOperations.loadLive(
+                previous.year, previous.month, previous.day);
+
         if (isAdded() && getActivity() != null) {
-            updateTitle(picked.year, picked.month, picked.day);
             final SharedPreferences sharedPreferences = PreferenceManager.
                     getDefaultSharedPreferences(getContext());
             int startHour;
@@ -312,9 +373,16 @@ public class LiveFragment extends Fragment {
             } catch (Exception e) {
                 endHour = 24;
             }
-            updateGraph(createFullDay(picked.year, picked.month, picked.day,
-                    startHour, endHour, livePvData));
-            updateTable(livePvData);
+            boolean showPrevious = sharedPreferences.getBoolean(getResources().
+                    getString(R.string.preferences_key_show_previous), true);
+
+            updateTitle(picked.year, picked.month, picked.day);
+            updateGraph(createFullDay(picked, startHour, endHour, livePvDataPicked),
+                        createFullDay(previous, startHour, endHour, livePvDataPrevious),
+                        showPrevious);
+            updateTable(livePvDataPicked,
+                        createColors(livePvDataPicked, livePvDataPrevious),
+                        showPrevious);
         }
     }
 }

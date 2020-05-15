@@ -46,7 +46,7 @@
 
     <string name="preferences_key_show_previous">show_previous</string>
     <string name="preferences_title_show_previous">Show previous</string>
-    <string name="preferences_summary_show_previous">Show values of previous year in daily and monthly graphs (default is on)</string>
+    <string name="preferences_summary_show_previous">Show comparison with previous day in live graph, and previous year in daily and monthly graphs (default is on)</string>
 
     <string name="preferences_key_graph_hour_start">graph_hour_start</string>
     <string name="preferences_title_graph_hour_start">Starting hour</string>
