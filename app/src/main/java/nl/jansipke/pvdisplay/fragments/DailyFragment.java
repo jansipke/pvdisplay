@@ -87,7 +87,8 @@ public class DailyFragment extends Fragment {
     private List<DailyPvDatum> createFullMonth(int year, int month,
                                                List<DailyPvDatum> dayPvData) {
         List<DailyPvDatum> fullMonth = new ArrayList<>();
-        for (int day = 1; day <= DateTimeUtils.getLastDayOfMonth(year, month); day++) {
+        int lastDayOfMonth = new DateTimeUtils.YearMonth(year, month).getLastDayOfMonth();
+        for (int day = 1; day <= lastDayOfMonth; day++) {
             fullMonth.add(new DailyPvDatum(year, month, day, 0, 0, ""));
         }
         for (DailyPvDatum dailyPvDatum : dayPvData) {
@@ -133,7 +134,7 @@ public class DailyFragment extends Fragment {
             Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonth(savedInstanceState.getInt(STATE_KEY_YEAR), savedInstanceState.getInt(STATE_KEY_MONTH));
         } else {
-            picked = DateTimeUtils.getTodaysYearMonth();
+            picked = DateTimeUtils.YearMonth.getToday();
         }
     }
 
@@ -162,17 +163,17 @@ public class DailyFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                picked = DateTimeUtils.addMonths(picked, -1, true);
+                picked = picked.createCopy(0, -1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                picked = DateTimeUtils.addMonths(picked, 1, false);
+                picked = picked.createCopy(0, 1, false);
                 updateScreen();
                 break;
             case R.id.action_this_month:
                 Log.d(TAG, "Clicked this month");
-                picked = DateTimeUtils.getTodaysYearMonth();
+                picked = DateTimeUtils.YearMonth.getToday();
                 updateScreen();
                 break;
             case R.id.action_refresh:
@@ -257,10 +258,10 @@ public class DailyFragment extends Fragment {
             DailyPvDatum dailyPvDatum = dailyPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_day, null);
             ((TextView) row.findViewById(R.id.day)).setText(
-                    DateTimeUtils.getDayOfWeek(
+                    new DateTimeUtils.YearMonthDay(
                             dailyPvDatum.getYear(),
                             dailyPvDatum.getMonth(),
-                            dailyPvDatum.getDay()) + " " +
+                            dailyPvDatum.getDay()).getDayOfWeek() + " " +
                     dailyPvDatum.getDay());
             final Drawable drawable = getDrawable(dailyPvDatum.getCondition());
             if (drawable != null) {
@@ -277,22 +278,20 @@ public class DailyFragment extends Fragment {
 
     private void updateTitle(int year, int month) {
         TextView textView = (TextView) fragmentView.findViewById(R.id.title);
-        textView.setText(DateTimeUtils.formatYearMonth(year, month, true));
+        textView.setText(new DateTimeUtils.YearMonth(year, month).asString(true));
     }
 
     public void updateScreen() {
         Log.d(TAG, "Updating screen with daily PV data");
 
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
-        List<DailyPvDatum> previousYearDailyPvData = new ArrayList<>();
-        previousYearDailyPvData = createFullMonth(
+        List<DailyPvDatum> previousYearDailyPvData = createFullMonth(
                 picked.year - 1,
                 picked.month,
                 pvDataOperations.loadDaily(picked.year - 1, picked.month));
 
         if (dailyPvData.size() == 0) {
-            Log.d(TAG, "No daily PV data for " +
-                    DateTimeUtils.formatYearMonth(picked.year, picked.month, true));
+            Log.d(TAG, "No daily PV data for " + picked);
             callPvDataService();
         }
 

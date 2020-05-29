@@ -70,7 +70,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + DateTimeUtils.formatYearMonth(year, month, true) + " from database");
+        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + new DateTimeUtils.YearMonth(year, month) + " from database");
 
         return dailyPvData;
     }
@@ -115,7 +115,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true) + " from database");
+        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + new DateTimeUtils.YearMonthDay(year, month, day) + " from database");
 
         return livePvData;
     }

@@ -118,24 +118,23 @@ public class PvDataService extends Service {
     }
 
     private void downloadDay(final int year, final int month) {
-        Log.d(TAG, "Downloading daily PV data for " +
-                DateTimeUtils.formatYearMonth(year, month, true) + " and previous year");
+        Log.d(TAG, "Downloading daily PV data for " + new DateTimeUtils.YearMonth(year, month) + " and previous year");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
                     // Download, parse and save data
-                    String fromDate = DateTimeUtils.formatYearMonthDay(year, month, 1, false);
-                    String toDate = DateTimeUtils.formatYearMonthDay(year, month, 31, false);
+                    String fromDate = new DateTimeUtils.YearMonthDay(year, month, 1).asString(false);
+                    String toDate = new DateTimeUtils.YearMonthDay(year, month, 31).asString(false);
                     String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
                     List<DailyPvDatum> dailyPvData = new PvOutputParser().parseDaily(result);
                     pvDataOperations.saveDaily(dailyPvData);
 
                     // Download, parse and save data for previous year
-                    fromDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 1, false);
-                    toDate = DateTimeUtils.formatYearMonthDay(year - 1, month, 31, false);
+                    fromDate = new DateTimeUtils.YearMonthDay(year - 1, month, 1).asString(false);;
+                    toDate = new DateTimeUtils.YearMonthDay(year - 1, month, 31).asString(false);
                     urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     result = download(urlPath);
                     List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
@@ -152,13 +151,13 @@ public class PvDataService extends Service {
     }
 
     private void downloadLive(final int year, final int month, final int day) {
-        Log.d(TAG, "Downloading live PV data for " + DateTimeUtils.formatYearMonthDay(year, month, day, true));
+        Log.d(TAG, "Downloading live PV data for " + new DateTimeUtils.YearMonthDay(year, month, day));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     // Download data
-                    String date = DateTimeUtils.formatYearMonthDay(year, month, day, false);
+                    String date = new DateTimeUtils.YearMonthDay(year, month, day).asString(false);
                     String urlPath = "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
                     String result = download(urlPath);
 
@@ -183,8 +182,8 @@ public class PvDataService extends Service {
             public void run() {
                 try {
                     // Download data
-                    String fromDate = DateTimeUtils.formatYearMonthDay(year - 1, 1, 1, false);
-                    String toDate = DateTimeUtils.formatYearMonthDay(year, 12, 31, false);
+                    String fromDate = new DateTimeUtils.YearMonthDay(year - 1, 1, 1).asString(false);
+                    String toDate = new DateTimeUtils.YearMonthDay(year, 12, 31).asString(false);
                     String urlPath = "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
 

@@ -82,7 +82,7 @@ public class LiveFragment extends Fragment {
             picked.year = year;
             picked.month = month + 1;
             picked.day = day;
-            DateTimeUtils.YearMonthDay today = DateTimeUtils.getTodaysYearMonthDay();
+            DateTimeUtils.YearMonthDay today = DateTimeUtils.YearMonthDay.getToday();
             if (picked.isLaterThan(today)) {
                 picked = today;
             }
@@ -114,11 +114,11 @@ public class LiveFragment extends Fragment {
         DateTimeUtils.YearMonthDay comparison;
         switch (liveComparison) {
             case "day":
-                comparison = DateTimeUtils.add(picked, 0, 0, -1, false);
+                comparison = picked.createCopy(0, 0, -1, false);
                 PvDataService.callLive(getContext(), comparison.year, comparison.month, comparison.day);
                 break;
             case "year":
-                comparison = DateTimeUtils.add(picked, -1, 0, 0, false);
+                comparison = picked.createCopy(-1, 0, 0, false);
                 PvDataService.callLive(getContext(), comparison.year, comparison.month, comparison.day);
                 break;
         }
@@ -184,7 +184,7 @@ public class LiveFragment extends Fragment {
             Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonthDay(savedInstanceState.getInt(STATE_KEY_YEAR), savedInstanceState.getInt(STATE_KEY_MONTH), savedInstanceState.getInt(STATE_KEY_DAY));
         } else {
-            picked = DateTimeUtils.getTodaysYearMonthDay();
+            picked = DateTimeUtils.YearMonthDay.getToday();
         }
     }
 
@@ -239,12 +239,12 @@ public class LiveFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                picked = DateTimeUtils.add(picked, 0, 0, -1, true);
+                picked = picked.createCopy(0, 0, -1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                picked = DateTimeUtils.add(picked, 0, 0, 1, false);
+                picked = picked.createCopy(0, 0, 1, false);
                 updateScreen();
                 break;
             case R.id.action_refresh:
@@ -258,7 +258,7 @@ public class LiveFragment extends Fragment {
                 break;
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
-                picked = DateTimeUtils.getTodaysYearMonthDay();
+                picked = DateTimeUtils.YearMonthDay.getToday();
                 updateScreen();
                 break;
         }
@@ -352,10 +352,8 @@ public class LiveFragment extends Fragment {
         for (int i = livePvData.size() - 1; i >= 0; i--) {
             livePvDatum = livePvData.get(i);
             row = layoutInflater.inflate(R.layout.row_live, null);
-            ((TextView) row.findViewById(R.id.time)).setText(DateTimeUtils.formatTime(
-                    livePvDatum.getHour(),
-                    livePvDatum.getMinute(),
-                    true));
+            ((TextView) row.findViewById(R.id.time)).setText(new DateTimeUtils.HourMinute(
+                    livePvDatum.getHour(), livePvDatum.getMinute()).asString(true));
             ((TextView) row.findViewById(R.id.power)).setText(
                     FormatUtils.POWER_FORMAT.format(livePvDatum.getPowerGeneration()));
             ((TextView) row.findViewById(R.id.energy)).setText(
@@ -380,8 +378,8 @@ public class LiveFragment extends Fragment {
     }
 
     private void updateTitle(int year, int month, int day) {
-        String title = DateTimeUtils.getDayOfWeek(year, month, day) + "  " +
-                DateTimeUtils.formatYearMonthDay(year, month, day, true);
+        DateTimeUtils.YearMonthDay picked = new DateTimeUtils.YearMonthDay(year, month, day);
+        String title = picked.getDayOfWeek() + "  " + picked.asString(true);
         TextView textView = (TextView) fragmentView.findViewById(R.id.title);
         textView.setText(title);
     }
@@ -392,8 +390,7 @@ public class LiveFragment extends Fragment {
         List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(
                 picked.year, picked.month, picked.day);
         if (livePvDataPicked.size() == 0) {
-            Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
-                    picked.year, picked.month, picked.day, true));
+            Log.d(TAG, "No live PV data for " + picked);
             callPvDataService();
         }
 
@@ -426,24 +423,22 @@ public class LiveFragment extends Fragment {
             switch (liveComparison) {
                 case "day":
                     showComparison = true;
-                    comparison = DateTimeUtils.add(picked, 0, 0, -1, false);
+                    comparison = picked.createCopy(0, 0, -1, false);
                     livePvDataComparison = pvDataOperations.loadLive(
                             comparison.year, comparison.month, comparison.day);
                     if (livePvDataComparison.size() == 0) {
-                        Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
-                                comparison.year, comparison.month, comparison.day, true));
+                        Log.d(TAG, "No live PV data for " + comparison);
                         callPvDataService();
                     }
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;
                 case "year":
                     showComparison = true;
-                    comparison = DateTimeUtils.add(picked, -1,0,0, false);
+                    comparison = picked.createCopy(-1,0,0, false);
                     livePvDataComparison = pvDataOperations.loadLive(
                             comparison.year, comparison.month, comparison.day);
                     if (livePvDataComparison.size() == 0) {
-                        Log.d(TAG, "No live PV data for " + DateTimeUtils.formatYearMonthDay(
-                                comparison.year, comparison.month, comparison.day, true));
+                        Log.d(TAG, "No live PV data for " + comparison);
                         callPvDataService();
                     }
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);

@@ -103,7 +103,7 @@ public class MonthlyFragment extends Fragment {
             Log.d(TAG, "Loading fragment state");
             picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
         } else {
-            picked = DateTimeUtils.getTodaysYear();
+            picked = DateTimeUtils.Year.getToday();
         }
     }
 
@@ -132,17 +132,17 @@ public class MonthlyFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_previous:
                 Log.d(TAG, "Clicked previous");
-                picked = DateTimeUtils.addYears(picked, -1, true);
+                picked = picked.createCopy(-1, true);
                 updateScreen();
                 break;
             case R.id.action_next:
                 Log.d(TAG, "Clicked next");
-                picked = DateTimeUtils.addYears(picked, 1, false);
+                picked = picked.createCopy(1, false);
                 updateScreen();
                 break;
             case R.id.action_this_year:
                 Log.d(TAG, "Clicked this year");
-                picked = DateTimeUtils.getTodaysYear();
+                picked = DateTimeUtils.Year.getToday();
                 updateScreen();
                 break;
             case R.id.action_refresh:

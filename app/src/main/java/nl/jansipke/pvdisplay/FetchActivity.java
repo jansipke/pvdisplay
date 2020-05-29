@@ -25,7 +25,7 @@ public class FetchActivity extends AppCompatActivity {
         new Thread() {
             public void run() {
                 Context context = getApplicationContext();
-                DateTimeUtils.YearMonthDay now = DateTimeUtils.getTodaysYearMonthDay();
+                DateTimeUtils.YearMonthDay today = DateTimeUtils.YearMonthDay.getToday();
 
                 BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
                     int downloadsFinished = 0;
@@ -49,7 +49,7 @@ public class FetchActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(context)
                         .registerReceiver(broadcastReceiver, intentFilter);
 
-                PvDataService.callAll(context, now.year, now.month, now.day);
+                PvDataService.callAll(context, today.year, today.month, today.day);
             }
         }.start();
     }

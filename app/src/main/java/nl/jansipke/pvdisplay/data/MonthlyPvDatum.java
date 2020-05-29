@@ -27,7 +27,7 @@ public class MonthlyPvDatum {
     }
 
     public String toString() {
-        return "MonthlyPvDatum[" + DateTimeUtils.formatYearMonth(year, month, true) +
+        return "MonthlyPvDatum[" + new DateTimeUtils.YearMonth(year, month) +
                 ", energyGenerated=" + energyGenerated +
                 "]";
     }

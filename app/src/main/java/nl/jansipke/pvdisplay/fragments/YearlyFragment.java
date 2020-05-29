@@ -160,7 +160,7 @@ public class YearlyFragment extends Fragment {
             YearlyPvDatum yearlyPvDatum = yearlyPvData.get(i);
             View row = layoutInflater.inflate(R.layout.row_year, null);
             ((TextView) row.findViewById(R.id.year)).setText(
-                    DateTimeUtils.formatYear(yearlyPvDatum.getYear()));
+                    new DateTimeUtils.Year(yearlyPvDatum.getYear()).toString());
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(yearlyPvDatum.getEnergyGenerated() / 1000));
             linearLayout.addView(row);

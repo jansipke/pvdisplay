@@ -46,7 +46,7 @@ public class DailyPvDatum {
     }
 
     public String toString() {
-        return "DailyPvDatum[" + DateTimeUtils.formatYearMonthDay(year, month, day, true) +
+        return "DailyPvDatum[" + new DateTimeUtils.YearMonthDay(year, month, day) +
                 ", energyGenerated=" + energyGenerated +
                 ", peakPower=" + peakPower +
                 ", condition=" + condition +

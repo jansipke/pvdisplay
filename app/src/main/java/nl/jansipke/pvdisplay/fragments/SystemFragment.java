@@ -166,10 +166,10 @@ public class SystemFragment extends Fragment {
                             getResources().getString(R.string.value_statistics_record,
                                     FormatUtils.ENERGY_FORMAT.format(
                                             statisticPvDatum.getMaximumGeneration() / 1000),
-                                    DateTimeUtils.formatYearMonthDay(
+                                    new DateTimeUtils.YearMonthDay(
                                             statisticPvDatum.getRecordDateYear(),
                                             statisticPvDatum.getRecordDateMonth(),
-                                            statisticPvDatum.getRecordDateDay(), true)) + "\n");
+                                            statisticPvDatum.getRecordDateDay()).asString(true)) + "\n");
             statisticsTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
