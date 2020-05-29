@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
+import java.util.Objects;
 
 public class NetworkUtils {
 
@@ -43,7 +44,7 @@ public class NetworkUtils {
                 }
             }
         } catch (Exception e) {
-            Log.w(TAG, e.getMessage());
+            Log.w(TAG, Objects.requireNonNull(e.getMessage()));
             throw e;
         } finally {
             if (is != null) {
@@ -69,6 +70,9 @@ public class NetworkUtils {
 
     public static boolean isNetworkConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return false;
+        }
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
     }

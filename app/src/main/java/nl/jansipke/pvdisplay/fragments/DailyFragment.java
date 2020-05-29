@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -197,7 +195,7 @@ public class DailyFragment extends Fragment {
 
     private void updateGraph(List<DailyPvDatum> dailyPvData,
                              List<DailyPvDatum> previousYearDailyPvData) {
-        LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
+        LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
@@ -251,7 +249,7 @@ public class DailyFragment extends Fragment {
     }
 
     private void updateTable(List<DailyPvDatum> dailyPvData) {
-        LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
+        LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
         for (int i = dailyPvData.size() - 1; i >= 0; i--) {
@@ -277,7 +275,7 @@ public class DailyFragment extends Fragment {
     }
 
     private void updateTitle(int year, int month) {
-        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
+        TextView textView = fragmentView.findViewById(R.id.title);
         textView.setText(new DateTimeUtils.YearMonth(year, month).asString(true));
     }
 

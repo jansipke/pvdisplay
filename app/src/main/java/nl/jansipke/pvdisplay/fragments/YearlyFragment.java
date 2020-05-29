@@ -111,7 +111,7 @@ public class YearlyFragment extends Fragment {
     }
 
     private void updateGraph(List<YearlyPvDatum> yearlyPvData) {
-        LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
+        LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
@@ -153,7 +153,7 @@ public class YearlyFragment extends Fragment {
     }
 
     private void updateTable(List<YearlyPvDatum> yearlyPvData) {
-        LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
+        LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
         for (int i = yearlyPvData.size() - 1; i >= 0; i--) {
@@ -168,7 +168,7 @@ public class YearlyFragment extends Fragment {
     }
 
     private void updateTitle() {
-        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
+        TextView textView = fragmentView.findViewById(R.id.title);
         textView.setText(getResources().getString(R.string.title_yearly));
     }
 

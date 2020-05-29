@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 public class StartSuccessActivity extends AppCompatActivity {
 
-    private final static String TAG = StartSuccessActivity.class.getSimpleName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +27,7 @@ public class StartSuccessActivity extends AppCompatActivity {
                 .putString(getResources().getString(R.string.preferences_key_pvoutput_api_key), intent.getStringExtra("apiKey"))
                 .apply();
 
-        Button button = (Button) findViewById(R.id.start_button);
+        Button button = findViewById(R.id.start_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(StartSuccessActivity.this, FetchActivity.class);

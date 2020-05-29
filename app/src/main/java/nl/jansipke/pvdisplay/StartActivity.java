@@ -17,8 +17,6 @@ import nl.jansipke.pvdisplay.utils.NetworkUtils;
 
 public class StartActivity extends AppCompatActivity {
 
-    private final static String TAG = StartActivity.class.getSimpleName();
-
     private void getInitialSystemPvDatum(final String systemId, final String apiKey) {
         new Thread() {
             public void run() {
@@ -56,7 +54,7 @@ public class StartActivity extends AppCompatActivity {
         String apiKey = sharedPreferences.getString(getResources().
                 getString(R.string.preferences_key_pvoutput_api_key), "");
         if (systemId.equals("") || (apiKey.equals(""))) {
-            Button button = (Button) findViewById(R.id.continue_button);
+            Button button = findViewById(R.id.continue_button);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     String systemId = ((EditText) findViewById(R.id.system_id)).getText().toString();

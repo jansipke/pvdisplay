@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -165,7 +163,7 @@ public class MonthlyFragment extends Fragment {
 
     private void updateGraph(List<MonthlyPvDatum> monthlyPvData,
                              List<MonthlyPvDatum> previousYearMonthlyPvData) {
-        LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
+        LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
@@ -219,7 +217,7 @@ public class MonthlyFragment extends Fragment {
     }
 
     private void updateTable(List<MonthlyPvDatum> monthlyPvData) {
-        LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
+        LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
         for (int i = monthlyPvData.size() - 1; i >= 0; i--) {
@@ -234,16 +232,15 @@ public class MonthlyFragment extends Fragment {
     }
 
     private void updateTitle(int year) {
-        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
-        textView.setText("" + year);
+        TextView textView = fragmentView.findViewById(R.id.title);
+        textView.setText(new DateTimeUtils.Year(year).toString());
     }
 
     public void updateScreen() {
         Log.d(TAG, "Updating screen with monthly PV data");
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked.year);
-        List<MonthlyPvDatum> previousYearMonthlyPvData = new ArrayList<>();
-        previousYearMonthlyPvData = createFullYear(
+        List<MonthlyPvDatum> previousYearMonthlyPvData = createFullYear(
                 picked.year - 1,
                 pvDataOperations.loadMonthly(picked.year - 1));
 

@@ -210,7 +210,7 @@ public class LiveFragment extends Fragment {
         String liveComparison = sharedPreferences.getString(getResources().
                 getString(R.string.preferences_key_live_comparison), "day");
 
-        Button comparisonButton = (Button) fragmentView.findViewById(R.id.comparison_button);
+        Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
         comparisonButton.setText(liveComparison);
         comparisonButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -278,7 +278,7 @@ public class LiveFragment extends Fragment {
     }
 
     private void updateGraph(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataComparison, boolean showComparison) {
-        LinearLayout graphLinearLayout = (LinearLayout) fragmentView.findViewById(graph);
+        LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
         final Context context = getContext();
@@ -344,7 +344,7 @@ public class LiveFragment extends Fragment {
     }
 
     private void updateTable(List<LivePvDatum> livePvData, List<Double> differences, boolean showComparison) {
-        LinearLayout linearLayout = (LinearLayout) fragmentView.findViewById(R.id.table);
+        LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
         LivePvDatum livePvDatum;
@@ -380,7 +380,7 @@ public class LiveFragment extends Fragment {
     private void updateTitle(int year, int month, int day) {
         DateTimeUtils.YearMonthDay picked = new DateTimeUtils.YearMonthDay(year, month, day);
         String title = picked.getDayOfWeek() + "  " + picked.asString(true);
-        TextView textView = (TextView) fragmentView.findViewById(R.id.title);
+        TextView textView = fragmentView.findViewById(R.id.title);
         textView.setText(title);
     }
 

@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
@@ -99,7 +100,7 @@ public class PvDataService extends Service {
         try {
             return NetworkUtils.httpGet(url, headers);
         } catch (Exception e) {
-            switch (e.getMessage()) {
+            switch (Objects.requireNonNull(e.getMessage())) {
                 case "Bad request 400: No status found":
                     throw new IOException("No PV data found\n(please select other time range)");
                 case "Unauthorized 401: Invalid System ID":
@@ -133,7 +134,7 @@ public class PvDataService extends Service {
                     pvDataOperations.saveDaily(dailyPvData);
 
                     // Download, parse and save data for previous year
-                    fromDate = new DateTimeUtils.YearMonthDay(year - 1, month, 1).asString(false);;
+                    fromDate = new DateTimeUtils.YearMonthDay(year - 1, month, 1).asString(false);
                     toDate = new DateTimeUtils.YearMonthDay(year - 1, month, 31).asString(false);
                     urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     result = download(urlPath);
@@ -278,6 +279,7 @@ public class PvDataService extends Service {
         String type = intent.getStringExtra("type");
         if (NetworkUtils.isNetworkConnected(getApplicationContext())) {
             int year, month, day;
+            assert type != null;
             switch(type) {
                 case "all":
                     year = intent.getIntExtra("year", 0);

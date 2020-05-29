@@ -107,7 +107,7 @@ public class SystemFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            TextView nameTextView = (TextView) fragmentView.findViewById(R.id.system);
+            TextView nameTextView = fragmentView.findViewById(R.id.system);
             nameTextView.setText(systemPvDatum.getSystemName());
             nameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,7 +122,7 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView panelsTextView = (TextView) fragmentView.findViewById(R.id.panels);
+            TextView panelsTextView = fragmentView.findViewById(R.id.panels);
             panelsTextView.setText(
                     systemPvDatum.getPanelBrand() + "\n" +
                             getResources().getString(R.string.value_panels,
@@ -139,7 +139,7 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView inverterTextView = (TextView) fragmentView.findViewById(R.id.inverter);
+            TextView inverterTextView = fragmentView.findViewById(R.id.inverter);
             inverterTextView.setText(
                     systemPvDatum.getInverterBrand() + "\n" +
                             getResources().getString(R.string.value_inverter,
@@ -154,7 +154,7 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView statisticsTextView = (TextView) fragmentView.findViewById(R.id.statistics);
+            TextView statisticsTextView = fragmentView.findViewById(R.id.statistics);
             statisticsTextView.setText(
                     getResources().getString(R.string.value_statistics_total,
                             FormatUtils.ENERGY_FORMAT.format(
