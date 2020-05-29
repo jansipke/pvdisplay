@@ -25,6 +25,10 @@
     <string name="column_peak">Peak\n(W)</string>
     <string name="column_energy">Energy\n(kWh)</string>
 
+    <string name="comparison_off">Off</string>
+    <string name="comparison_day">Day</string>
+    <string name="comparison_year">Year</string>
+
     <string name="title_yearly">Lifetime</string>
 
     <string name="preferences_pv_data_file">preferences_pv_data</string>
@@ -44,9 +48,7 @@
     <string name="preferences_title_auto_refresh">Auto refresh</string>
     <string name="preferences_summary_auto_refresh">Refresh PV data when app starts (default is on)</string>
 
-    <string name="preferences_key_show_previous">show_previous</string>
-    <string name="preferences_title_show_previous">Show previous</string>
-    <string name="preferences_summary_show_previous">Show comparison with previous day in live graph, and previous year in daily and monthly graphs (default is on)</string>
+    <string name="preferences_key_live_comparison">live_comparison</string>
 
     <string name="preferences_key_graph_hour_start">graph_hour_start</string>
     <string name="preferences_title_graph_hour_start">Starting hour</string>

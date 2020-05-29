@@ -27,12 +27,6 @@
             android:summary="@string/preferences_summary_auto_refresh"
             android:defaultValue="true"/>
 
-        <CheckBoxPreference
-            android:key="@string/preferences_key_show_previous"
-            android:title="@string/preferences_title_show_previous"
-            android:summary="@string/preferences_summary_show_previous"
-            android:defaultValue="true" />
-
         <EditTextPreference
             android:key="@string/preferences_key_graph_hour_start"
             android:title="@string/preferences_title_graph_hour_start"

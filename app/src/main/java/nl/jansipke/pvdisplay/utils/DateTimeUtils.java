@@ -7,6 +7,9 @@ public class DateTimeUtils {
 
     public static class Year {
         public int year;
+        public Year(int year) {
+            this.year = year;
+        }
         boolean isLaterThan(Year other) {
             return year > other.year;
         }
@@ -15,6 +18,10 @@ public class DateTimeUtils {
     public static class YearMonth {
         public int year;
         public int month;
+        public YearMonth(int year, int month) {
+            this.year = year;
+            this.month = month;
+        }
         boolean isLaterThan(YearMonth other) {
             return (year > other.year) || (year == other.year && month > other.month);
         }
@@ -24,20 +31,24 @@ public class DateTimeUtils {
         public int year;
         public int month;
         public int day;
+        public YearMonthDay(int year, int month, int day) {
+            this.year = year;
+            this.month = month;
+            this.day = day;
+        }
         public boolean isLaterThan(YearMonthDay other) {
             return (year > other.year) || (year == other.year && month > other.month) ||
                     (year == other.year && month == other.month && day > other.day);
         }
     }
 
-    public static YearMonthDay addDays(YearMonthDay picked, int daysToAdd, boolean allowFuture) {
+    public static YearMonthDay add(YearMonthDay picked, int yearsToAdd, int monthsToAdd, int daysToAdd, boolean allowFuture) {
         Calendar calendar = new GregorianCalendar();
         calendar.set(picked.year, picked.month - 1, picked.day);
+        calendar.add(Calendar.YEAR, yearsToAdd);
+        calendar.add(Calendar.MONTH, monthsToAdd);
         calendar.add(Calendar.DATE, daysToAdd);
-        YearMonthDay yearMonthDay = new YearMonthDay();
-        yearMonthDay.year = calendar.get(Calendar.YEAR);
-        yearMonthDay.month = calendar.get(Calendar.MONTH) + 1;
-        yearMonthDay.day = calendar.get(Calendar.DAY_OF_MONTH);
+        YearMonthDay yearMonthDay = new YearMonthDay(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
         if (!allowFuture) {
             YearMonthDay todaysYearMonthDay = getTodaysYearMonthDay();
             if (yearMonthDay.isLaterThan(todaysYearMonthDay)) {
@@ -51,9 +62,7 @@ public class DateTimeUtils {
         Calendar calendar = new GregorianCalendar();
         calendar.set(picked.year, picked.month - 1, 1);
         calendar.add(Calendar.MONTH, monthsToAdd);
-        YearMonth yearMonth = new YearMonth();
-        yearMonth.year = calendar.get(Calendar.YEAR);
-        yearMonth.month = calendar.get(Calendar.MONTH) + 1;
+        YearMonth yearMonth = new YearMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
         if (!allowFuture) {
             YearMonth todaysYearMonth = getTodaysYearMonth();
             if (yearMonth.isLaterThan(todaysYearMonth)) {
@@ -64,8 +73,7 @@ public class DateTimeUtils {
     }
 
     public static Year addYears(Year picked, int yearsToAdd, boolean allowFuture) {
-        Year year = new Year();
-        year.year = picked.year + yearsToAdd;
+        Year year = new Year(picked.year + yearsToAdd);
         if (!allowFuture) {
             Year todaysYear = getTodaysYear();
             if (year.isLaterThan(todaysYear)) {
@@ -133,26 +141,17 @@ public class DateTimeUtils {
 
     public static Year getTodaysYear() {
         YearMonthDay yearMonthDay = getTodaysYearMonthDay();
-        Year year = new Year();
-        year.year = yearMonthDay.year;
-        return year;
+        return new Year(yearMonthDay.year);
     }
 
     public static YearMonth getTodaysYearMonth() {
         YearMonthDay yearMonthDay = getTodaysYearMonthDay();
-        YearMonth yearMonth = new YearMonth();
-        yearMonth.year = yearMonthDay.year;
-        yearMonth.month = yearMonthDay.month;
-        return yearMonth;
+        return new YearMonth(yearMonthDay.year, yearMonthDay.month);
     }
 
     public static YearMonthDay getTodaysYearMonthDay() {
         Calendar calendar = new GregorianCalendar();
-        YearMonthDay yearMonthDay = new YearMonthDay();
-        yearMonthDay.year = calendar.get(Calendar.YEAR);
-        yearMonthDay.month = calendar.get(Calendar.MONTH) + 1;
-        yearMonthDay.day = calendar.get(Calendar.DAY_OF_MONTH);
-        return yearMonthDay;
+        return new YearMonthDay(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
     }
 
     public static String getDayOfWeek(int year, int month, int day) {

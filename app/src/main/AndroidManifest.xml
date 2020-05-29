@@ -26,10 +26,6 @@
         <service
             android:name=".PvDataService"
             android:label="@string/service_name" />
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="f684bbafff0c5fc4d2202f5c5e558c72ed79c5a4" />
     </application>
 
 </manifest>

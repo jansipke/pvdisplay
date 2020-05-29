@@ -103,6 +103,33 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="70dp"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/compare_disbalance_512" />
+            <Button
+                android:id="@+id/comparison_button"
+                android:layout_width="46dp"
+                android:layout_height="32dp"
+                android:gravity="center_vertical|center_horizontal"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:text="@string/comparison_off" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="20dp"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="3"/>
 
     </LinearLayout>

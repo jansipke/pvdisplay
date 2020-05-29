@@ -131,9 +131,7 @@ public class DailyFragment extends Fragment {
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
-            picked = new DateTimeUtils.YearMonth();
-            picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
-            picked.month = savedInstanceState.getInt(STATE_KEY_MONTH);
+            picked = new DateTimeUtils.YearMonth(savedInstanceState.getInt(STATE_KEY_YEAR), savedInstanceState.getInt(STATE_KEY_MONTH));
         } else {
             picked = DateTimeUtils.getTodaysYearMonth();
         }
@@ -287,16 +285,10 @@ public class DailyFragment extends Fragment {
 
         List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
         List<DailyPvDatum> previousYearDailyPvData = new ArrayList<>();
-        SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        boolean showPrevious = sharedPreferences.getBoolean(getResources().
-                getString(R.string.preferences_key_show_previous), true);
-        if (showPrevious) {
-            previousYearDailyPvData = createFullMonth(
-                    picked.year - 1,
-                    picked.month,
-                    pvDataOperations.loadDaily(picked.year - 1, picked.month));
-        }
+        previousYearDailyPvData = createFullMonth(
+                picked.year - 1,
+                picked.month,
+                pvDataOperations.loadDaily(picked.year - 1, picked.month));
 
         if (dailyPvData.size() == 0) {
             Log.d(TAG, "No daily PV data for " +

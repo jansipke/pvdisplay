@@ -243,15 +243,10 @@ public class MonthlyFragment extends Fragment {
 
         List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked.year);
         List<MonthlyPvDatum> previousYearMonthlyPvData = new ArrayList<>();
-        SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        boolean showPrevious = sharedPreferences.getBoolean(getResources().
-                getString(R.string.preferences_key_show_previous), true);
-        if (showPrevious) {
-            previousYearMonthlyPvData = createFullYear(
-                    picked.year - 1,
-                    pvDataOperations.loadMonthly(picked.year - 1));
-        }
+        previousYearMonthlyPvData = createFullYear(
+                picked.year - 1,
+                pvDataOperations.loadMonthly(picked.year - 1));
+
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + picked.year);
             callPvDataService();
