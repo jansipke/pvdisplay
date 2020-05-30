@@ -31,7 +31,7 @@ public class PvDataOperations {
         this.pvDataHelper = new PvDataHelper(context);
     }
 
-    public List<DailyPvDatum> loadDaily(int year, int month) {
+    public List<DailyPvDatum> loadDaily(DateTimeUtils.YearMonth ym) {
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -46,8 +46,8 @@ public class PvDataOperations {
                 PvDataContract.DailyPvData.COLUMN_NAME_YEAR + "=? AND " +
                 PvDataContract.DailyPvData.COLUMN_NAME_MONTH + "=?";
         String[] selectionArgs = {
-                "" + year,
-                "" + month
+                "" + ym.year,
+                "" + ym.month
         };
 
         List<DailyPvDatum> dailyPvData = new ArrayList<>();
@@ -56,8 +56,8 @@ public class PvDataOperations {
             if (cursor.moveToFirst()) {
                 do {
                     dailyPvData.add(new DailyPvDatum(
-                            year,
-                            month,
+                            ym.year,
+                            ym.month,
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_DAY)),
                             cursor.getDouble(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_ENERGY_GENERATED)),
                             cursor.getDouble(cursor.getColumnIndex(PvDataContract.DailyPvData.COLUMN_NAME_PEAK_POWER)),
@@ -67,12 +67,12 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + new DateTimeUtils.YearMonth(year, month) + " from database");
+        Log.d(TAG, "Loaded " + dailyPvData.size() + " rows of daily PV data for " + ym + " from database");
 
         return dailyPvData;
     }
 
-    public List<LivePvDatum> loadLive(int year, int month, int day) {
+    public List<LivePvDatum> loadLive(DateTimeUtils.YearMonthDay ymd) {
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -90,9 +90,9 @@ public class PvDataOperations {
                 PvDataContract.LivePvData.COLUMN_NAME_MONTH + "=? AND " +
                 PvDataContract.LivePvData.COLUMN_NAME_DAY + "=?";
         String[] selectionArgs = {
-                "" + year,
-                "" + month,
-                "" + day
+                "" + ymd.year,
+                "" + ymd.month,
+                "" + ymd.day
         };
 
         Cursor cursor = db.query(PvDataContract.LivePvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
@@ -100,9 +100,9 @@ public class PvDataOperations {
             if (cursor.moveToFirst()) {
                 do {
                     livePvData.add(new LivePvDatum(
-                            year,
-                            month,
-                            day,
+                            ymd.year,
+                            ymd.month,
+                            ymd.day,
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_HOUR)),
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_MINUTE)),
                             cursor.getDouble(cursor.getColumnIndex(PvDataContract.LivePvData.COLUMN_NAME_ENERGY_GENERATION)),
@@ -112,12 +112,12 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + new DateTimeUtils.YearMonthDay(year, month, day) + " from database");
+        Log.d(TAG, "Loaded " + livePvData.size() + " rows of live PV data for " + ymd + " from database");
 
         return livePvData;
     }
 
-    public List<MonthlyPvDatum> loadMonthly(int year) {
+    public List<MonthlyPvDatum> loadMonthly(DateTimeUtils.Year y) {
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
         String[] projection = {
@@ -129,7 +129,7 @@ public class PvDataOperations {
         String selection =
                 PvDataContract.MonthlyPvData.COLUMN_NAME_YEAR + "=?";
         String[] selectionArgs = {
-                "" + year
+                "" + y.year
         };
 
         List<MonthlyPvDatum> monthlyPvData = new ArrayList<>();
@@ -138,7 +138,7 @@ public class PvDataOperations {
             if (cursor.moveToFirst()) {
                 do {
                     monthlyPvData.add(new MonthlyPvDatum(
-                            year,
+                            y.year,
                             cursor.getInt(cursor.getColumnIndex(PvDataContract.MonthlyPvData.COLUMN_NAME_MONTH)),
                             cursor.getDouble(cursor.getColumnIndex(PvDataContract.MonthlyPvData.COLUMN_NAME_ENERGY_GENERATED))));
                 } while (cursor.moveToNext());
@@ -146,7 +146,7 @@ public class PvDataOperations {
             cursor.close();
         }
         db.close();
-        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows of monthly PV data for " + year + " from database");
+        Log.d(TAG, "Loaded " + monthlyPvData.size() + " rows of monthly PV data for " + y + " from database");
 
         return monthlyPvData;
     }

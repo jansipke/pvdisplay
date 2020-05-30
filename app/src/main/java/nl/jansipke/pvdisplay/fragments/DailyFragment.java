@@ -282,11 +282,11 @@ public class DailyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with daily PV data");
 
-        List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked.year, picked.month);
+        List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked);
         List<DailyPvDatum> previousYearDailyPvData = createFullMonth(
                 picked.year - 1,
                 picked.month,
-                pvDataOperations.loadDaily(picked.year - 1, picked.month));
+                pvDataOperations.loadDaily(picked.createCopy(-1, 0, false)));
 
         if (dailyPvData.size() == 0) {
             Log.d(TAG, "No daily PV data for " + picked);

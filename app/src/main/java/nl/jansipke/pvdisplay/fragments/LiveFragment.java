@@ -386,8 +386,7 @@ public class LiveFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with live PV data");
 
-        List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(
-                picked.year, picked.month, picked.day);
+        List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(picked);
         if (livePvDataPicked.size() == 0) {
             Log.d(TAG, "No live PV data for " + picked);
             callPvDataService();
@@ -423,8 +422,7 @@ public class LiveFragment extends Fragment {
                 case "day":
                     showComparison = true;
                     comparison = picked.createCopy(0, 0, -1, false);
-                    livePvDataComparison = pvDataOperations.loadLive(
-                            comparison.year, comparison.month, comparison.day);
+                    livePvDataComparison = pvDataOperations.loadLive(comparison);
                     if (livePvDataComparison.size() == 0) {
                         Log.d(TAG, "No live PV data for " + comparison);
                         callPvDataService();
@@ -434,8 +432,7 @@ public class LiveFragment extends Fragment {
                 case "year":
                     showComparison = true;
                     comparison = picked.createCopy(-1,0,0, false);
-                    livePvDataComparison = pvDataOperations.loadLive(
-                            comparison.year, comparison.month, comparison.day);
+                    livePvDataComparison = pvDataOperations.loadLive(comparison);
                     if (livePvDataComparison.size() == 0) {
                         Log.d(TAG, "No live PV data for " + comparison);
                         callPvDataService();

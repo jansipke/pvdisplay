@@ -239,10 +239,10 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with monthly PV data");
 
-        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked.year);
+        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked);
         List<MonthlyPvDatum> previousYearMonthlyPvData = createFullYear(
                 picked.year - 1,
-                pvDataOperations.loadMonthly(picked.year - 1));
+                pvDataOperations.loadMonthly(picked.createCopy(-1, false)));
 
         if (monthlyPvData.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + picked.year);
