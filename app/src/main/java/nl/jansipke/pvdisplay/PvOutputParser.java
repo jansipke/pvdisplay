@@ -3,7 +3,6 @@ package nl.jansipke.pvdisplay;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.MonthlyPvDatum;

@@ -1,5 +1,6 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class MonthlyPvDatum {
@@ -26,6 +27,7 @@ public class MonthlyPvDatum {
         return year;
     }
 
+    @NonNull
     public String toString() {
         return "MonthlyPvDatum[" + new DateTimeUtils.YearMonth(year, month) +
                 ", energyGenerated=" + energyGenerated +

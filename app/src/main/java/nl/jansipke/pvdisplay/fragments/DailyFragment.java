@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -23,10 +24,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -76,7 +76,7 @@ public class DailyFragment extends Fragment {
             }
         };
         IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
         PvDataService.callDay(getContext(), picked.year, picked.month);
@@ -137,7 +137,7 @@ public class DailyFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.menu_daily, menu);
@@ -145,7 +145,7 @@ public class DailyFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -184,7 +184,7 @@ public class DailyFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         Log.d(TAG, "Saving fragment state");
@@ -254,13 +254,13 @@ public class DailyFragment extends Fragment {
 
         for (int i = dailyPvData.size() - 1; i >= 0; i--) {
             DailyPvDatum dailyPvDatum = dailyPvData.get(i);
-            View row = layoutInflater.inflate(R.layout.row_day, null);
-            ((TextView) row.findViewById(R.id.day)).setText(
-                    new DateTimeUtils.YearMonthDay(
-                            dailyPvDatum.getYear(),
-                            dailyPvDatum.getMonth(),
-                            dailyPvDatum.getDay()).getDayOfWeek() + " " +
-                    dailyPvDatum.getDay());
+            View row = layoutInflater.inflate(R.layout.row_day, linearLayout, false);
+            final String dayOfWeek = new DateTimeUtils.YearMonthDay(
+                    dailyPvDatum.getYear(),
+                    dailyPvDatum.getMonth(),
+                    dailyPvDatum.getDay()).getDayOfWeek();
+            final String day = dayOfWeek + " " + dailyPvDatum.getDay();
+            ((TextView) row.findViewById(R.id.day)).setText(day);
             final Drawable drawable = getDrawable(dailyPvDatum.getCondition());
             if (drawable != null) {
                 ((ImageView) row.findViewById(R.id.condition)).setImageDrawable(

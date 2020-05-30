@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -19,10 +20,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Objects;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -71,7 +71,7 @@ public class MonthlyFragment extends Fragment {
             }
         };
         IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
         PvDataService.callMonth(getContext(), picked.year);
@@ -106,7 +106,7 @@ public class MonthlyFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.menu_monthly, menu);
@@ -114,7 +114,7 @@ public class MonthlyFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
@@ -153,7 +153,7 @@ public class MonthlyFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         Log.d(TAG, "Saving fragment state");
@@ -222,7 +222,7 @@ public class MonthlyFragment extends Fragment {
 
         for (int i = monthlyPvData.size() - 1; i >= 0; i--) {
             MonthlyPvDatum monthlyPvDatum = monthlyPvData.get(i);
-            View row = layoutInflater.inflate(R.layout.row_month, null);
+            View row = layoutInflater.inflate(R.layout.row_month, linearLayout, false);
             ((TextView) row.findViewById(R.id.month)).setText(
                     DateTimeUtils.getMonthName(monthlyPvDatum.getMonth()));
             ((TextView) row.findViewById(R.id.energy)).setText(

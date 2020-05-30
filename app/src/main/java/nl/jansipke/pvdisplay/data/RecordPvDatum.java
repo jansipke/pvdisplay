@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
+
 public class RecordPvDatum {
 
     private double livePowerGeneration;
@@ -47,7 +49,7 @@ public class RecordPvDatum {
         this.yearlyEnergyGenerated = yearlyEnergyGenerated;
     }
 
-    @Override
+    @NonNull
     public String toString() {
         return "RecordPvDatum[" +
                 "livePowerGeneration=" + livePowerGeneration +

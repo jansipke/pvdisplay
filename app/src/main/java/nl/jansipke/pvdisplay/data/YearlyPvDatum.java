@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
+
 public class YearlyPvDatum {
 
     private final int year;
@@ -18,6 +20,7 @@ public class YearlyPvDatum {
         return year;
     }
 
+    @NonNull
     public String toString() {
         return "YearlyPvDatum[" + year +
                 ", energyGenerated=" + energyGenerated +

@@ -1,5 +1,6 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class LivePvDatum {
@@ -50,6 +51,7 @@ public class LivePvDatum {
         return year;
     }
 
+    @NonNull
     public String toString() {
         return "LivePvDatum[" + DateTimeUtils.formatDateTime(year, month, day, hour, minute) +
                 " powerGeneration=" + powerGeneration +

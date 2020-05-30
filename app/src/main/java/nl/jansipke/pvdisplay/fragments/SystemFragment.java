@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.util.Objects;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
@@ -50,7 +50,7 @@ public class SystemFragment extends Fragment {
             }
         };
         IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(getContext())
+        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
         PvDataService.callStatistic(getContext());
@@ -67,7 +67,7 @@ public class SystemFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_system, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -85,11 +85,9 @@ public class SystemFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                Log.d(TAG, "Clicked refresh");
-                callPvDataService();
-                break;
+        if (item.getItemId() == R.id.action_refresh) {
+            Log.d(TAG, "Clicked refresh");
+            callPvDataService();
         }
 
         return super.onOptionsItemSelected(item);
@@ -123,12 +121,12 @@ public class SystemFragment extends Fragment {
             });
 
             TextView panelsTextView = fragmentView.findViewById(R.id.panels);
-            panelsTextView.setText(
-                    systemPvDatum.getPanelBrand() + "\n" +
-                            getResources().getString(R.string.value_panels,
-                                    systemPvDatum.getNumberOfPanels(),
-                                    systemPvDatum.getPanelPower(),
-                                    systemPvDatum.getSystemSize()));
+            final String panels = systemPvDatum.getPanelBrand() + "\n" +
+                    getResources().getString(R.string.value_panels,
+                            systemPvDatum.getNumberOfPanels(),
+                            systemPvDatum.getPanelPower(),
+                            systemPvDatum.getSystemSize());
+            panelsTextView.setText(panels);
             panelsTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -140,10 +138,10 @@ public class SystemFragment extends Fragment {
             });
 
             TextView inverterTextView = fragmentView.findViewById(R.id.inverter);
-            inverterTextView.setText(
-                    systemPvDatum.getInverterBrand() + "\n" +
-                            getResources().getString(R.string.value_inverter,
-                                    systemPvDatum.getInverterPower()));
+            final String inverter = systemPvDatum.getInverterBrand() + "\n" +
+                    getResources().getString(R.string.value_inverter,
+                            systemPvDatum.getInverterPower());
+            inverterTextView.setText(inverter);
             inverterTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -155,21 +153,21 @@ public class SystemFragment extends Fragment {
             });
 
             TextView statisticsTextView = fragmentView.findViewById(R.id.statistics);
-            statisticsTextView.setText(
-                    getResources().getString(R.string.value_statistics_total,
+            final String statistics = getResources().getString(R.string.value_statistics_total,
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getEnergyGenerated() / 1000),
+                    statisticPvDatum.getOutputs()) + "\n" +
+                    getResources().getString(R.string.value_statistics_average,
                             FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getEnergyGenerated() / 1000),
-                            statisticPvDatum.getOutputs()) + "\n" +
-                            getResources().getString(R.string.value_statistics_average,
-                                    FormatUtils.ENERGY_FORMAT.format(
-                                            statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
-                            getResources().getString(R.string.value_statistics_record,
-                                    FormatUtils.ENERGY_FORMAT.format(
-                                            statisticPvDatum.getMaximumGeneration() / 1000),
-                                    new DateTimeUtils.YearMonthDay(
-                                            statisticPvDatum.getRecordDateYear(),
-                                            statisticPvDatum.getRecordDateMonth(),
-                                            statisticPvDatum.getRecordDateDay()).asString(true)) + "\n");
+                                    statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
+                    getResources().getString(R.string.value_statistics_record,
+                            FormatUtils.ENERGY_FORMAT.format(
+                                    statisticPvDatum.getMaximumGeneration() / 1000),
+                            new DateTimeUtils.YearMonthDay(
+                                    statisticPvDatum.getRecordDateYear(),
+                                    statisticPvDatum.getRecordDateMonth(),
+                                    statisticPvDatum.getRecordDateDay()).asString(true)) + "\n";
+            statisticsTextView.setText(statistics);
             statisticsTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

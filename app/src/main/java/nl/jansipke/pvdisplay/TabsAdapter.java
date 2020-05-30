@@ -1,11 +1,11 @@
 package nl.jansipke.pvdisplay;
 
 import android.content.Context;
+import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import android.util.Log;
-
 import nl.jansipke.pvdisplay.fragments.DailyFragment;
 import nl.jansipke.pvdisplay.fragments.LiveFragment;
 import nl.jansipke.pvdisplay.fragments.MonthlyFragment;
@@ -38,6 +38,7 @@ class TabsAdapter extends FragmentPagerAdapter {
         return tabTitles.length;
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
         Log.d(TAG, "Returning fragment for tab " + position);
@@ -53,9 +54,8 @@ class TabsAdapter extends FragmentPagerAdapter {
                 return yearlyFragment;
             case 4:
                 return systemFragment;
-            default:
-                return null;
         }
+        return liveFragment;
     }
 
     @Override

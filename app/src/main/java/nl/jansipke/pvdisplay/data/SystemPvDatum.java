@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
+
 public class SystemPvDatum {
 
     private final String systemName;
@@ -62,7 +64,7 @@ public class SystemPvDatum {
         return longitude;
     }
 
-    @Override
+    @NonNull
     public String toString() {
         return "SystemPvDatum[" +
                 "systemName='" + systemName + '\'' +

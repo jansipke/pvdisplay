@@ -1,12 +1,10 @@
 package nl.jansipke.pvdisplay.utils;
 
+import androidx.annotation.NonNull;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class DateTimeUtils {
-
-    // TODO: Use class HourMinute
-    // TODO: Use formatting in data classes
 
     public static class HourMinute {
         public int hour;
@@ -33,6 +31,7 @@ public class DateTimeUtils {
             return sb.toString();
         }
 
+        @NonNull
         public String toString() {
             return this.asString(true);
         }
@@ -65,6 +64,7 @@ public class DateTimeUtils {
             return year > other.year;
         }
 
+        @NonNull
         public String toString() {
             return "" + year;
         }
@@ -95,6 +95,7 @@ public class DateTimeUtils {
         public YearMonth createCopy(int yearsToAdd, int monthsToAdd, boolean allowFuture) {
             Calendar calendar = new GregorianCalendar();
             calendar.set(year, month - 1, 1);
+            calendar.add(Calendar.YEAR, yearsToAdd);
             calendar.add(Calendar.MONTH, monthsToAdd);
             YearMonth copy = new YearMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
             if (!allowFuture) {
@@ -121,6 +122,7 @@ public class DateTimeUtils {
             return (year > other.year) || (year == other.year && month > other.month);
         }
 
+        @NonNull
         public String toString() {
             return this.asString(true);
         }
@@ -191,6 +193,7 @@ public class DateTimeUtils {
                     (year == other.year && month == other.month && day > other.day);
         }
 
+        @NonNull
         public String toString() {
             return this.asString(true);
         }

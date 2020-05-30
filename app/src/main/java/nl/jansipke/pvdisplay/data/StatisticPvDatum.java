@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.data;
 
+import androidx.annotation.NonNull;
+
 public class StatisticPvDatum {
 
     private final double energyGenerated;
@@ -94,7 +96,7 @@ public class StatisticPvDatum {
         return recordDateDay;
     }
 
-    @Override
+    @NonNull
     public String toString() {
         return "StatisticPvDatum[" +
                 "energyGenerated=" + energyGenerated +

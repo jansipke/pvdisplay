@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class FetchActivity extends AppCompatActivity {
