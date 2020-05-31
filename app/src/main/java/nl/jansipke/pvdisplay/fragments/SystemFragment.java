@@ -4,12 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,10 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.Objects;
 import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
-import nl.jansipke.pvdisplay.data.RecordPvDatum;
+import nl.jansipke.pvdisplay.SettingsActivity;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.database.PvDataOperations;
@@ -105,9 +107,9 @@ public class SystemFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            TextView nameTextView = fragmentView.findViewById(R.id.system);
+            TextView nameTextView = fragmentView.findViewById(R.id.system_name_text);
             nameTextView.setText(systemPvDatum.getSystemName());
-            nameTextView.setOnClickListener(new View.OnClickListener() {
+            fragmentView.findViewById(R.id.system_name_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri uri = Uri.parse("geo:" +
@@ -120,14 +122,14 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView panelsTextView = fragmentView.findViewById(R.id.panels);
+            TextView panelsTextView = fragmentView.findViewById(R.id.system_panels_text);
             final String panels = systemPvDatum.getPanelBrand() + "\n" +
                     getResources().getString(R.string.value_panels,
                             systemPvDatum.getNumberOfPanels(),
                             systemPvDatum.getPanelPower(),
                             systemPvDatum.getSystemSize());
             panelsTextView.setText(panels);
-            panelsTextView.setOnClickListener(new View.OnClickListener() {
+            fragmentView.findViewById(R.id.system_panels_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -137,12 +139,12 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView inverterTextView = fragmentView.findViewById(R.id.inverter);
+            TextView inverterTextView = fragmentView.findViewById(R.id.system_inverter_text);
             final String inverter = systemPvDatum.getInverterBrand() + "\n" +
                     getResources().getString(R.string.value_inverter,
                             systemPvDatum.getInverterPower());
             inverterTextView.setText(inverter);
-            inverterTextView.setOnClickListener(new View.OnClickListener() {
+            fragmentView.findViewById(R.id.system_inverter_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -152,7 +154,26 @@ public class SystemFragment extends Fragment {
                 }
             });
 
-            TextView statisticsTextView = fragmentView.findViewById(R.id.statistics);
+            TextView statisticsTextView = fragmentView.findViewById(R.id.system_statistics_text);
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            final String currency = sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_savings_currency), "EUR");
+            double per_kwh;
+            try {
+                per_kwh = Double.parseDouble(sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_savings_per_kwh), "0.20"));
+            } catch (Exception e) {
+                per_kwh = 0.20;
+            }
+            double adjustment;
+            try {
+                adjustment = Double.parseDouble(sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_savings_adjustment), "0"));
+            } catch (Exception e) {
+                adjustment = 0;
+            }
+            final String savings = currency + " " + FormatUtils.SAVINGS_FORMAT.format(statisticPvDatum.getEnergyGenerated() * per_kwh / 1000.0 + adjustment);
             final String statistics = getResources().getString(R.string.value_statistics_total,
                     FormatUtils.ENERGY_FORMAT.format(
                             statisticPvDatum.getEnergyGenerated() / 1000),
@@ -166,32 +187,14 @@ public class SystemFragment extends Fragment {
                             new DateTimeUtils.YearMonthDay(
                                     statisticPvDatum.getRecordDateYear(),
                                     statisticPvDatum.getRecordDateMonth(),
-                                    statisticPvDatum.getRecordDateDay()).asString(true)) + "\n";
+                                    statisticPvDatum.getRecordDateDay()).asString(true)) + "\n" +
+                    "Savings: " + savings;
             statisticsTextView.setText(statistics);
-            statisticsTextView.setOnClickListener(new View.OnClickListener() {
+            fragmentView.findViewById(R.id.system_statistics_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Context context = getContext();
-                    if (context != null) {
-                        PvDataOperations pvDataOperations = new PvDataOperations(context);
-                        RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-                        String text =
-                                "Live power: " + getResources().getString(R.string.value_w,
-                                        FormatUtils.POWER_FORMAT.format(
-                                                recordPvDatum.getLivePowerGeneration())) +
-                                "\nDaily energy: " + getResources().getString(R.string.value_kwh,
-                                        FormatUtils.ENERGY_FORMAT.format(
-                                                recordPvDatum.getDailyEnergyGenerated() / 1000)) +
-                                "\nMonthly energy: " + getResources().getString(R.string.value_kwh,
-                                        FormatUtils.ENERGY_FORMAT.format(
-                                                recordPvDatum.getMonthlyEnergyGenerated() / 1000)) +
-                                "\nYearly energy: " + getResources().getString(R.string.value_kwh,
-                                        FormatUtils.ENERGY_FORMAT.format(
-                                                recordPvDatum.getYearlyEnergyGenerated() / 1000));
-
-                        Toast.makeText(context, text,
-                                Toast.LENGTH_LONG).show();
-                    }
+                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                    startActivity(intent);
                 }
             });
         }

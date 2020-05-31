@@ -6,7 +6,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_height="20dp"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,7 +15,8 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center">
 
             <TextView
                 android:orientation="vertical"
@@ -26,19 +27,28 @@
                 android:text="@string/fragment_system_name"/>
 
             <TextView
+                android:id="@+id/system_name_text"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:id="@+id/system"/>
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/system_name_button"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorButtonBackground"
+                android:textSize="10sp"
+                android:text="@string/fragment_system_location"/>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:background="@color/row_divider"
+                android:background="@color/colorRowDivider"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"/>
 
             <TextView
                 android:orientation="vertical"
@@ -49,19 +59,28 @@
                 android:text="@string/fragment_system_panels"/>
 
             <TextView
+                android:id="@+id/system_panels_text"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:id="@+id/panels"/>
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/system_panels_button"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorButtonBackground"
+                android:textSize="10sp"
+                android:text="@string/fragment_system_search"/>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:background="@color/row_divider"
+                android:background="@color/colorRowDivider"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"/>
 
             <TextView
                 android:orientation="vertical"
@@ -72,19 +91,28 @@
                 android:text="@string/fragment_system_inverter"/>
 
             <TextView
+                android:id="@+id/system_inverter_text"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:id="@+id/inverter"/>
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/system_inverter_button"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorButtonBackground"
+                android:textSize="10sp"
+                android:text="@string/fragment_system_search"/>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:background="@color/row_divider"
+                android:background="@color/colorRowDivider"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"/>
 
             <TextView
                 android:orientation="vertical"
@@ -95,11 +123,20 @@
                 android:text="@string/fragment_system_statistics"/>
 
             <TextView
+                android:id="@+id/system_statistics_text"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:id="@+id/statistics"/>
+                android:textAlignment="center"/>
+
+            <Button
+                android:id="@+id/system_statistics_button"
+                android:layout_width="60dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorButtonBackground"
+                android:textSize="10sp"
+                android:text="@string/fragment_system_settings"/>
 
         </LinearLayout>
 

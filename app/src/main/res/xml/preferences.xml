@@ -8,12 +8,12 @@
         <EditTextPreference
             android:key="@string/preferences_key_pvoutput_system_id"
             android:title="@string/preferences_title_pvoutput_system_id"
-            android:summary="@string/preferences_summary_pvoutput_system_id" />
+            android:summary="@string/preferences_summary_pvoutput_system_id"/>
 
         <EditTextPreference
             android:key="@string/preferences_key_pvoutput_api_key"
             android:title="@string/preferences_title_pvoutput_api_key"
-            android:summary="@string/preferences_summary_pvoutput_api_key" />
+            android:summary="@string/preferences_summary_pvoutput_api_key"/>
 
     </PreferenceCategory>
 
@@ -31,13 +31,31 @@
             android:key="@string/preferences_key_graph_hour_start"
             android:title="@string/preferences_title_graph_hour_start"
             android:summary="@string/preferences_summary_graph_hour_start"
-            android:defaultValue="0" />
+            android:defaultValue="0"/>
 
         <EditTextPreference
             android:key="@string/preferences_key_graph_hour_end"
             android:title="@string/preferences_title_graph_hour_end"
             android:summary="@string/preferences_summary_graph_hour_end"
-            android:defaultValue="24" />
+            android:defaultValue="24"/>
+
+        <EditTextPreference
+            android:key="@string/preferences_key_savings_currency"
+            android:title="@string/preferences_title_savings_currency"
+            android:summary="@string/preferences_summary_savings_currency"
+            android:defaultValue="EUR"/>
+
+        <EditTextPreference
+            android:key="@string/preferences_key_savings_per_kwh"
+            android:title="@string/preferences_title_savings_per_kwh"
+            android:summary="@string/preferences_summary_savings_per_kwh"
+            android:defaultValue="0.20"/>
+
+        <EditTextPreference
+            android:key="@string/preferences_key_savings_adjustment"
+            android:title="@string/preferences_title_savings_adjustment"
+            android:summary="@string/preferences_summary_savings_adjustment"
+            android:defaultValue="0"/>
 
     </PreferenceCategory>
 

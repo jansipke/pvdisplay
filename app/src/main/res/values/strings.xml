@@ -58,6 +58,18 @@
     <string name="preferences_title_graph_hour_end">Ending hour</string>
     <string name="preferences_summary_graph_hour_end">Live graph x-axis ends at this hour of the day (default is 24)</string>
 
+    <string name="preferences_key_savings_currency">savings_currency</string>
+    <string name="preferences_title_savings_currency">Savings currency</string>
+    <string name="preferences_summary_savings_currency">Currency to use for the savings amount (default is EUR)</string>
+
+    <string name="preferences_key_savings_per_kwh">savings_per_kwh</string>
+    <string name="preferences_title_savings_per_kwh">Savings per kWh</string>
+    <string name="preferences_summary_savings_per_kwh">Amount of money saved per kWh (default is 0.20)</string>
+
+    <string name="preferences_key_savings_adjustment">savings_adjustment</string>
+    <string name="preferences_title_savings_adjustment">Savings adjustment</string>
+    <string name="preferences_summary_savings_adjustment">Adjustment for amount of money saved, e.g. to compensate for missed measurements (default is 0)</string>
+
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>
     <string name="action_refresh">Refresh</string>
@@ -85,5 +97,9 @@
     <string name="fragment_system_panels">Panels</string>
     <string name="fragment_system_inverter">Inverter</string>
     <string name="fragment_system_statistics">Statistics</string>
+    <string name="fragment_system_savings">Savings</string>
+    <string name="fragment_system_location">Location</string>
+    <string name="fragment_system_search">Search</string>
+    <string name="fragment_system_settings">Settings</string>
 
 </resources>

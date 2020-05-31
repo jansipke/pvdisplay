@@ -18,7 +18,7 @@ public class StartSuccessActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        ((TextView) findViewById(R.id.system)).setText(intent.getStringExtra("systemName"));
+        ((TextView) findViewById(R.id.system_name_text)).setText(intent.getStringExtra("systemName"));
 
         final SharedPreferences sharedPreferences = PreferenceManager.
                 getDefaultSharedPreferences(getApplicationContext());

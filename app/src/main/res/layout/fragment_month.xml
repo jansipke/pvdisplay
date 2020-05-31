@@ -5,7 +5,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_height="20dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:padding="2dp"
         android:textAlignment="center"
         android:textStyle="bold"
-        android:id="@+id/title" />
+        android:id="@+id/title"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -27,13 +27,13 @@
             android:layout_height="match_parent"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:id="@+id/graph" />
+            android:id="@+id/graph"/>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp" />
+        android:layout_height="20dp"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -43,7 +43,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="3" />
+            android:layout_weight="3"/>
 
         <TextView
             android:layout_width="80dp"
@@ -54,11 +54,11 @@
             android:paddingEnd="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/column_month" />
+            android:text="@string/column_month"/>
 
         <LinearLayout
             android:layout_width="20dp"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -74,11 +74,11 @@
             android:paddingEnd="5dp"
             android:textAlignment="textEnd"
             android:textStyle="bold"
-            android:text="@string/column_energy" />
+            android:text="@string/column_energy"/>
 
         <LinearLayout
             android:layout_width="20dp"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -96,7 +96,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/table" />
+            android:id="@+id/table"/>
 
     </ScrollView>
 
