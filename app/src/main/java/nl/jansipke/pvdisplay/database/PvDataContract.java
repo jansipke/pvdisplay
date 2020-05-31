@@ -3,7 +3,6 @@ package nl.jansipke.pvdisplay.database;
 import android.provider.BaseColumns;
 
 final class PvDataContract {
-    public PvDataContract() {}
 
     static abstract class LivePvData implements BaseColumns {
         static final String TABLE_NAME = "live";

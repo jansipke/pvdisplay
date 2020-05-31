@@ -77,9 +77,7 @@ public class LiveFragment extends Fragment {
 
         @Override
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            picked.year = year;
-            picked.month = month + 1;
-            picked.day = day;
+            picked = new DateTimeUtils.YearMonthDay(year, month + 1, day);
             DateTimeUtils.YearMonthDay today = DateTimeUtils.YearMonthDay.getToday();
             if (picked.isLaterThan(today)) {
                 picked = today;

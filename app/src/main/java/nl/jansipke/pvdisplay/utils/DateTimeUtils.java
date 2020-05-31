@@ -7,8 +7,8 @@ import java.util.GregorianCalendar;
 public class DateTimeUtils {
 
     public static class HourMinute {
-        public int hour;
-        public int minute;
+        public final int hour;
+        public final int minute;
 
         public HourMinute(int hour, int minute) {
             this.hour = hour;
@@ -38,7 +38,7 @@ public class DateTimeUtils {
     }
 
     public static class Year {
-        public int year;
+        public final int year;
 
         public Year(int year) {
             this.year = year;
@@ -71,8 +71,8 @@ public class DateTimeUtils {
     }
 
     public static class YearMonth {
-        public int year;
-        public int month;
+        public final int year;
+        public final int month;
 
         public YearMonth(int year, int month) {
             this.year = year;
@@ -129,9 +129,9 @@ public class DateTimeUtils {
     }
 
     public static class YearMonthDay {
-        public int year;
-        public int month;
-        public int day;
+        public final int year;
+        public final int month;
+        public final int day;
 
         public YearMonthDay(int year, int month, int day) {
             this.year = year;

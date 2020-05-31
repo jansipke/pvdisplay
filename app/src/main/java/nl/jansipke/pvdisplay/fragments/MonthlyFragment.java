@@ -99,7 +99,7 @@ public class MonthlyFragment extends Fragment {
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
-            picked.year = savedInstanceState.getInt(STATE_KEY_YEAR);
+            picked = new DateTimeUtils.Year(savedInstanceState.getInt(STATE_KEY_YEAR));
         } else {
             picked = DateTimeUtils.Year.getToday();
         }

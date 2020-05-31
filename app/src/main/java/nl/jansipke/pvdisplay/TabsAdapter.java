@@ -1,6 +1,5 @@
 package nl.jansipke.pvdisplay;
 
-import android.content.Context;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,7 +22,7 @@ class TabsAdapter extends FragmentPagerAdapter {
     private final YearlyFragment yearlyFragment;
     private final SystemFragment systemFragment;
 
-    TabsAdapter(FragmentManager fragmentManager, Context context) {
+    TabsAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
 
         liveFragment = new LiveFragment();

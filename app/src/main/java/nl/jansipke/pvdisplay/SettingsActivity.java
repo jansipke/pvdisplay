@@ -2,8 +2,8 @@ package nl.jansipke.pvdisplay;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
 

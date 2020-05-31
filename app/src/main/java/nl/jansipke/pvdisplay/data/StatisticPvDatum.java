@@ -2,6 +2,7 @@ package nl.jansipke.pvdisplay.data;
 
 import androidx.annotation.NonNull;
 
+@SuppressWarnings("unused")
 public class StatisticPvDatum {
 
     private final double energyGenerated;
