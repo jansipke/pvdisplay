@@ -1,256 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"/>
+        android:layout_height="wrap_content">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/system_name_title"
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:text="@string/fragment_system_name"
+            app:layout_constraintBottom_toTopOf="@id/system_name_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_name_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/system_name_text"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@id/system_name_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_name_button"
+            app:layout_constraintStart_toEndOf="@id/system_name_title"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <Button
+            android:id="@+id/system_name_button"
+            android:layout_width="72dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorButtonBackground"
+            android:textSize="12sp"
+            android:text="@string/fragment_system_location"
+            app:layout_constraintBottom_toTopOf="@id/system_name_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/system_name_text"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
+            android:id="@+id/system_name_divider"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:background="@color/colorRowDivider"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_name_title"/>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/system_panels_title"
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:text="@string/fragment_system_panels"
+            app:layout_constraintBottom_toTopOf="@id/system_panels_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_panels_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_name_divider"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
+        <TextView
+            android:id="@+id/system_panels_text"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@id/system_panels_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_panels_button"
+            app:layout_constraintStart_toEndOf="@id/system_panels_title"
+            app:layout_constraintTop_toBottomOf="@id/system_name_divider"/>
 
-                <TextView
-                    android:orientation="vertical"
-                    android:layout_width="80dp"
-                    android:layout_height="25dp"
-                    android:textStyle="bold"
-                    android:text="@string/fragment_system_name"/>
+        <Button
+            android:id="@+id/system_panels_button"
+            android:layout_width="72dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorButtonBackground"
+            android:textSize="12sp"
+            android:text="@string/fragment_system_search"
+            app:layout_constraintBottom_toTopOf="@id/system_panels_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/system_panels_text"
+            app:layout_constraintTop_toBottomOf="@id/system_name_divider"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+        <LinearLayout
+            android:id="@+id/system_panels_divider"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:background="@color/colorRowDivider"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_panels_title"/>
 
-                <TextView
-                    android:id="@+id/system_name_text"
-                    android:orientation="vertical"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/system_inverter_title"
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:text="@string/fragment_system_inverter"
+            app:layout_constraintBottom_toTopOf="@id/system_inverter_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_inverter_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_panels_divider"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/system_inverter_text"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@id/system_inverter_divider"
+            app:layout_constraintEnd_toStartOf="@id/system_inverter_button"
+            app:layout_constraintStart_toEndOf="@id/system_inverter_title"
+            app:layout_constraintTop_toBottomOf="@id/system_panels_divider"/>
 
-                <Button
-                    android:id="@+id/system_name_button"
-                    android:layout_width="60dp"
-                    android:layout_height="20dp"
-                    android:background="@color/colorButtonBackground"
-                    android:textSize="10sp"
-                    android:text="@string/fragment_system_location"/>
+        <Button
+            android:id="@+id/system_inverter_button"
+            android:layout_width="72dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorButtonBackground"
+            android:textSize="12sp"
+            android:text="@string/fragment_system_search"
+            app:layout_constraintBottom_toTopOf="@id/system_inverter_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/system_inverter_text"
+            app:layout_constraintTop_toBottomOf="@id/system_panels_divider"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
+        <LinearLayout
+            android:id="@+id/system_inverter_divider"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:background="@color/colorRowDivider"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_height="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_inverter_title"/>
 
-            </LinearLayout>
+        <TextView
+            android:id="@+id/system_statistics_title"
+            android:layout_width="80dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:text="@string/fragment_system_statistics"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/system_statistics_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/system_inverter_divider"/>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:background="@color/colorRowDivider"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_height="1dp"/>
+        <TextView
+            android:id="@+id/system_statistics_text"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/system_statistics_button"
+            app:layout_constraintStart_toEndOf="@id/system_statistics_title"
+            app:layout_constraintTop_toBottomOf="@id/system_inverter_divider"/>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/system_statistics_button"
+            android:layout_width="72dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorButtonBackground"
+            android:textSize="12sp"
+            android:text="@string/fragment_system_settings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/system_statistics_text"
+            app:layout_constraintTop_toBottomOf="@id/system_inverter_divider"/>
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:orientation="vertical"
-                    android:layout_width="80dp"
-                    android:layout_height="25dp"
-                    android:textStyle="bold"
-                    android:text="@string/fragment_system_panels"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/system_panels_text"
-                    android:orientation="vertical"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/system_panels_button"
-                    android:layout_width="60dp"
-                    android:layout_height="20dp"
-                    android:background="@color/colorButtonBackground"
-                    android:textSize="10sp"
-                    android:text="@string/fragment_system_search"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:background="@color/colorRowDivider"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_height="1dp"/>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
-
-                <TextView
-                    android:orientation="vertical"
-                    android:layout_width="80dp"
-                    android:layout_height="25dp"
-                    android:textStyle="bold"
-                    android:text="@string/fragment_system_inverter"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/system_inverter_text"
-                    android:orientation="vertical"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/system_inverter_button"
-                    android:layout_width="60dp"
-                    android:layout_height="20dp"
-                    android:background="@color/colorButtonBackground"
-                    android:textSize="10sp"
-                    android:text="@string/fragment_system_search"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:background="@color/colorRowDivider"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_height="1dp"/>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
-
-                <TextView
-                    android:orientation="vertical"
-                    android:layout_width="80dp"
-                    android:layout_height="25dp"
-                    android:textStyle="bold"
-                    android:text="@string/fragment_system_statistics"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <TextView
-                    android:id="@+id/system_statistics_text"
-                    android:orientation="vertical"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/system_statistics_button"
-                    android:layout_width="60dp"
-                    android:layout_height="20dp"
-                    android:background="@color/colorButtonBackground"
-                    android:textSize="10sp"
-                    android:text="@string/fragment_system_settings"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-</LinearLayout>
+</ScrollView>

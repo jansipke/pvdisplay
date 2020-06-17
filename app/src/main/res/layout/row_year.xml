@@ -1,56 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/divider"
+        android:background="@color/colorRowDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorRowDivider">
-    </LinearLayout>
-
-    <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"/>
+    <TextView
+        android:id="@+id/year"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toStartOf="@id/energy"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider"/>
 
-        <TextView
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:textAlignment="textEnd"
-            android:id="@+id/year"/>
+    <TextView
+        android:id="@+id/energy"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/year"
+        app:layout_constraintTop_toBottomOf="@id/divider"/>
 
-        <LinearLayout
-            android:layout_width="20dp"
-            android:layout_height="match_parent"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:layout_width="70dp"
-            android:layout_height="match_parent"
-            android:padding="5dp"
-            android:textAlignment="textEnd"
-            android:id="@+id/energy"/>
-
-        <LinearLayout
-            android:layout_width="20dp"
-            android:layout_height="match_parent"/>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="3"/>
-
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

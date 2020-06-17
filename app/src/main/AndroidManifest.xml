@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="nl.jansipke.pvdisplay">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -13,19 +13,19 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".StartActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".StartSuccessActivity" />
-        <activity android:name=".StartFailureActivity" />
-        <activity android:name=".FetchActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".StartSuccessActivity"/>
+        <activity android:name=".StartFailureActivity"/>
+        <activity android:name=".FetchActivity"/>
+        <activity android:name=".MainActivity"/>
+        <activity android:name=".SettingsActivity"/>
 
         <service
             android:name=".PvDataService"
-            android:label="@string/service_name" />
+            android:label="@string/service_name"/>
     </application>
 
 </manifest>

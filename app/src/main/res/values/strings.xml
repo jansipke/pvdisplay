@@ -92,6 +92,7 @@
     <string name="value_statistics_record">Record %1$s kWh on %2$s</string>
 
     <string name="image_condition">Condition</string>
+    <string name="image_comparison">Comparison</string>
 
     <string name="fragment_system_name">Name</string>
     <string name="fragment_system_panels">Panels</string>

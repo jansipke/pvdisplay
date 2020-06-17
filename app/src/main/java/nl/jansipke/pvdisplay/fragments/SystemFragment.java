@@ -188,7 +188,7 @@ public class SystemFragment extends Fragment {
                                     statisticPvDatum.getRecordDateYear(),
                                     statisticPvDatum.getRecordDateMonth(),
                                     statisticPvDatum.getRecordDateDay()).asString(true)) + "\n" +
-                    "Savings: " + savings;
+                    "Saved " + savings + " in total";
             statisticsTextView.setText(statistics);
             fragmentView.findViewById(R.id.system_statistics_button).setOnClickListener(new View.OnClickListener() {
                 @Override
