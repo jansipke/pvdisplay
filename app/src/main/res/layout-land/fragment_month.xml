@@ -63,9 +63,40 @@
         android:text="@string/column_energy"
         android:textAlignment="textEnd"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_comparison"
         app:layout_constraintStart_toEndOf="@id/column_month"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/column_comparison"
+        android:layout_width="72dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/column_energy"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:contentDescription="@string/image_comparison"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/compare_disbalance_512"/>
+
+        <Button
+            android:id="@+id/comparison_button"
+            android:layout_width="40dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:background="@color/colorButtonBackground"
+            android:textSize="12sp"
+            android:text="@string/comparison_off"/>
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/table_scroll"

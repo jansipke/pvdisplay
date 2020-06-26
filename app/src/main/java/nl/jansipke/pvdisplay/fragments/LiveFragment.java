@@ -178,7 +178,10 @@ public class LiveFragment extends Fragment {
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
-            picked = new DateTimeUtils.YearMonthDay(savedInstanceState.getInt(STATE_KEY_YEAR), savedInstanceState.getInt(STATE_KEY_MONTH), savedInstanceState.getInt(STATE_KEY_DAY));
+            picked = new DateTimeUtils.YearMonthDay(
+                    savedInstanceState.getInt(STATE_KEY_YEAR),
+                    savedInstanceState.getInt(STATE_KEY_MONTH),
+                    savedInstanceState.getInt(STATE_KEY_DAY));
         } else {
             picked = DateTimeUtils.YearMonthDay.getToday();
         }
@@ -274,7 +277,9 @@ public class LiveFragment extends Fragment {
         outState.putInt(STATE_KEY_DAY, picked.day);
     }
 
-    private void updateGraph(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataComparison, boolean showComparison) {
+    private void updateGraph(List<LivePvDatum> livePvDataPicked,
+                             List<LivePvDatum> livePvDataComparison,
+                             boolean showComparison) {
         LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -340,7 +345,9 @@ public class LiveFragment extends Fragment {
         }
     }
 
-    private void updateTable(List<LivePvDatum> livePvData, List<Double> differences, boolean showComparison) {
+    private void updateTable(List<LivePvDatum> livePvData,
+                             List<Double> differences,
+                             boolean showComparison) {
         LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
@@ -355,6 +362,7 @@ public class LiveFragment extends Fragment {
                     FormatUtils.POWER_FORMAT.format(livePvDatum.getPowerGeneration()));
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(livePvDatum.getEnergyGeneration() / 1000.0));
+
             if (showComparison) {
                 double difference = differences.get(i) / 1000.0;
                 String differenceText = "0.000";
@@ -370,12 +378,12 @@ public class LiveFragment extends Fragment {
                 ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
                 ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
             }
+
             linearLayout.addView(row);
         }
     }
 
-    private void updateTitle(int year, int month, int day) {
-        DateTimeUtils.YearMonthDay picked = new DateTimeUtils.YearMonthDay(year, month, day);
+    private void updateTitle(DateTimeUtils.YearMonthDay picked) {
         String title = picked.getDayOfWeek() + "  " + picked.asString(true);
         TextView textView = fragmentView.findViewById(R.id.title);
         textView.setText(title);
@@ -408,8 +416,6 @@ public class LiveFragment extends Fragment {
                 endHour = 24;
             }
 
-            updateTitle(picked.year, picked.month, picked.day);
-
             String liveComparison = sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_live_comparison), "day");
             DateTimeUtils.YearMonthDay comparison;
@@ -438,10 +444,14 @@ public class LiveFragment extends Fragment {
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;
             }
-            updateGraph(createFullDay(picked, startHour, endHour, livePvDataPicked),
+
+            updateTitle(picked);
+            updateGraph(
+                    createFullDay(picked, startHour, endHour, livePvDataPicked),
                     livePvDataComparisonFullDay,
                     showComparison);
-            updateTable(livePvDataPicked,
+            updateTable(
+                    livePvDataPicked,
                     createDifferences(livePvDataPicked, livePvDataComparison),
                     showComparison);
         }

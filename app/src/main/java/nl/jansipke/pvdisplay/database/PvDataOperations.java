@@ -51,7 +51,9 @@ public class PvDataOperations {
         };
 
         List<DailyPvDatum> dailyPvData = new ArrayList<>();
-        Cursor cursor = db.query(PvDataContract.DailyPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(
+                PvDataContract.DailyPvData.TABLE_NAME,
+                projection, selection, selectionArgs,null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -95,7 +97,9 @@ public class PvDataOperations {
                 "" + ymd.day
         };
 
-        Cursor cursor = db.query(PvDataContract.LivePvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(
+                PvDataContract.LivePvData.TABLE_NAME,
+                projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -133,7 +137,9 @@ public class PvDataOperations {
         };
 
         List<MonthlyPvDatum> monthlyPvData = new ArrayList<>();
-        Cursor cursor = db.query(PvDataContract.MonthlyPvData.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(
+                PvDataContract.MonthlyPvData.TABLE_NAME,
+                projection, selection, selectionArgs, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -204,7 +210,9 @@ public class PvDataOperations {
                 PvDataContract.YearlyPvData.COLUMN_NAME_YEAR + " ASC";
 
         List<YearlyPvDatum> yearlyPvData = new ArrayList<>();
-        Cursor cursor = db.query(PvDataContract.YearlyPvData.TABLE_NAME, projection, null, null, null, null, sortOrder);
+        Cursor cursor = db.query(
+                PvDataContract.YearlyPvData.TABLE_NAME,
+                projection, null, null, null, null, sortOrder);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

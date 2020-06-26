@@ -55,8 +55,19 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:textAlignment="textEnd"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/comparison"
         app:layout_constraintStart_toEndOf="@id/peak"
+        app:layout_constraintTop_toBottomOf="@id/divider"/>
+
+    <TextView
+        android:id="@+id/comparison"
+        android:layout_width="72dp"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/energy"
         app:layout_constraintTop_toBottomOf="@id/divider"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

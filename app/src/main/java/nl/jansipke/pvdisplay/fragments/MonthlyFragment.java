@@ -4,12 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,9 +15,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,13 +77,35 @@ public class MonthlyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        String monthlyComparison = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_monthly_comparison), "year");
+        DateTimeUtils.Year comparison;
+        if ("year".equals(monthlyComparison)) {
+            comparison = picked.createCopy(-1, false);
+            PvDataService.callMonth(getContext(), comparison.year);
+        }
+
         PvDataService.callMonth(getContext(), picked.year);
     }
 
-    private List<MonthlyPvDatum> createFullYear(int year, List<MonthlyPvDatum> monthPvData) {
+    private List<Double> createDifferences(List<MonthlyPvDatum> monthlyPvDataPicked,
+                                           List<MonthlyPvDatum> monthlyPvDataComparison) {
+        List<Double> differences = new ArrayList<>();
+        List<MonthlyPvDatum> comparisonFullYear = createFullYear(new DateTimeUtils.Year(0), monthlyPvDataComparison);
+        for (MonthlyPvDatum monthlyPvDatum : monthlyPvDataPicked) {
+            final double energyPicked = monthlyPvDatum.getEnergyGenerated();
+            final double energyComparison = comparisonFullYear.get(monthlyPvDatum.getMonth() - 1).getEnergyGenerated();
+            differences.add(energyPicked - energyComparison);
+        }
+        return differences;
+    }
+
+    private List<MonthlyPvDatum> createFullYear(DateTimeUtils.Year y, List<MonthlyPvDatum> monthPvData) {
         List<MonthlyPvDatum> fullYear = new ArrayList<>();
         for (int month = 1; month <= 12; month++) {
-            fullYear.add(new MonthlyPvDatum(year, month, 0));
+            fullYear.add(new MonthlyPvDatum(y.year, month, 0));
         }
         for (MonthlyPvDatum monthlyPvDatum : monthPvData) {
             int fullYearIndex = monthlyPvDatum.getMonth() - 1;
@@ -121,6 +146,31 @@ public class MonthlyFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_month, container, false);
+
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        String monthlyComparison = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_monthly_comparison), "year");
+
+        Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
+        comparisonButton.setText(monthlyComparison);
+        comparisonButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                final SharedPreferences sharedPreferences = PreferenceManager.
+                        getDefaultSharedPreferences(getContext());
+                String monthlyComparison = sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_monthly_comparison), "year");
+                switch (monthlyComparison) {
+                    case "off": monthlyComparison = "year"; break;
+                    case "year": monthlyComparison = "off"; break;
+                }
+                sharedPreferences.edit().putString(getResources().
+                        getString(R.string.preferences_key_monthly_comparison), monthlyComparison).apply();
+                ((Button) view).setText(monthlyComparison);
+                updateScreen();
+            }
+        });
+
         updateScreen();
         return fragmentView;
     }
@@ -161,8 +211,9 @@ public class MonthlyFragment extends Fragment {
         outState.putInt(STATE_KEY_YEAR, picked.year);
     }
 
-    private void updateGraph(List<MonthlyPvDatum> monthlyPvData,
-                             List<MonthlyPvDatum> previousYearMonthlyPvData) {
+    private void updateGraph(List<MonthlyPvDatum> monthlyPvDataPicked,
+                             List<MonthlyPvDatum> monthlyPvDataComparison,
+                             boolean showComparison) {
         LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -173,8 +224,8 @@ public class MonthlyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            for (int i = 0; i < monthlyPvData.size(); i++) {
-                MonthlyPvDatum monthlyPvDatum = monthlyPvData.get(i);
+            for (int i = 0; i < monthlyPvDataPicked.size(); i++) {
+                MonthlyPvDatum monthlyPvDatum = monthlyPvDataPicked.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
                         ((float) monthlyPvDatum.getEnergyGenerated()) / 1000,
@@ -183,10 +234,12 @@ public class MonthlyFragment extends Fragment {
             }
             List<Line> lines = new ArrayList<>();
             List<PointValue> lineValues = new ArrayList<>();
-            for (int i = 0; i < previousYearMonthlyPvData.size(); i++) {
-                MonthlyPvDatum previousYearMonthlyPvDatum = previousYearMonthlyPvData.get(i);
-                lineValues.add(new PointValue(i,
-                        ((float) previousYearMonthlyPvDatum.getEnergyGenerated()) / 1000));
+            if (showComparison) {
+                for (int i = 0; i < monthlyPvDataComparison.size(); i++) {
+                    MonthlyPvDatum previousYearMonthlyPvDatum = monthlyPvDataComparison.get(i);
+                    lineValues.add(new PointValue(i,
+                            ((float) previousYearMonthlyPvDatum.getEnergyGenerated()) / 1000));
+                }
             }
             Line line = new Line(lineValues);
             line.setPointRadius(3);
@@ -210,13 +263,15 @@ public class MonthlyFragment extends Fragment {
 
             comboLineColumnChartView.setViewportCalculationEnabled(false);
             Viewport viewport = new Viewport(
-                    -1, axisLabelValues.getView(), monthlyPvData.size() + 1, 0);
+                    -1, axisLabelValues.getView(), monthlyPvDataPicked.size() + 1, 0);
             comboLineColumnChartView.setMaximumViewport(viewport);
             comboLineColumnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<MonthlyPvDatum> monthlyPvData) {
+    private void updateTable(List<MonthlyPvDatum> monthlyPvData,
+                             List<Double> differences,
+                             boolean showComparison) {
         LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
@@ -227,32 +282,68 @@ public class MonthlyFragment extends Fragment {
                     DateTimeUtils.getMonthName(monthlyPvDatum.getMonth()));
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(monthlyPvDatum.getEnergyGenerated() / 1000.0));
+
+            if (showComparison) {
+                double difference = differences.get(i) / 1000.0;
+                String differenceText = "0.000";
+                int differenceColor = Color.rgb(61, 61, 61);
+                if (difference < 0) {
+                    differenceText = FormatUtils.ENERGY_FORMAT.format(difference);
+                    differenceColor = Color.rgb(153, 61, 61);
+                }
+                if (difference > 0) {
+                    differenceText = "+" + FormatUtils.ENERGY_FORMAT.format(difference);
+                    differenceColor = Color.rgb(61, 153, 61);
+                }
+                ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
+                ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
+            }
+
             linearLayout.addView(row);
         }
     }
 
-    private void updateTitle(int year) {
+    private void updateTitle(DateTimeUtils.Year picked) {
         TextView textView = fragmentView.findViewById(R.id.title);
-        textView.setText(new DateTimeUtils.Year(year).toString());
+        textView.setText(picked.toString());
     }
 
     public void updateScreen() {
         Log.d(TAG, "Updating screen with monthly PV data");
 
-        List<MonthlyPvDatum> monthlyPvData = pvDataOperations.loadMonthly(picked);
-        List<MonthlyPvDatum> previousYearMonthlyPvData = createFullYear(
-                picked.year - 1,
-                pvDataOperations.loadMonthly(picked.createCopy(-1, false)));
-
-        if (monthlyPvData.size() == 0) {
+        List<MonthlyPvDatum> monthlyPvDataPicked = pvDataOperations.loadMonthly(picked);
+        if (monthlyPvDataPicked.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + picked.year);
             callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {
-            updateTitle(picked.year);
-            updateGraph(createFullYear(picked.year, monthlyPvData), previousYearMonthlyPvData);
-            updateTable(monthlyPvData);
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            String monthlyComparison = sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_monthly_comparison), "year");
+            DateTimeUtils.Year comparison;
+            boolean showComparison = false;
+            List<MonthlyPvDatum> monthlyPvDataComparison = new ArrayList<>();
+            if ("year".equals(monthlyComparison)) {
+                showComparison = true;
+                comparison = picked.createCopy(-1, false);
+                monthlyPvDataComparison = pvDataOperations.loadMonthly(comparison);
+                if (monthlyPvDataComparison.size() == 0) {
+                    Log.d(TAG, "No daily PV data for " + comparison);
+                    callPvDataService();
+                }
+            }
+
+            updateTitle(picked);
+            updateGraph(
+                    createFullYear(picked, monthlyPvDataPicked),
+                    monthlyPvDataComparison,
+                    showComparison);
+            updateTable(
+                    monthlyPvDataPicked,
+                    createDifferences(monthlyPvDataPicked, monthlyPvDataComparison),
+                    showComparison);
         }
     }
 }

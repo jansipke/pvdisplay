@@ -173,7 +173,8 @@ public class SystemFragment extends Fragment {
             } catch (Exception e) {
                 adjustment = 0;
             }
-            final String savings = currency + " " + FormatUtils.SAVINGS_FORMAT.format(statisticPvDatum.getEnergyGenerated() * per_kwh / 1000.0 + adjustment);
+            final String savings = currency + " " + FormatUtils.SAVINGS_FORMAT.format(
+                    statisticPvDatum.getEnergyGenerated() * per_kwh / 1000.0 + adjustment);
             final String statistics = getResources().getString(R.string.value_statistics_total,
                     FormatUtils.ENERGY_FORMAT.format(
                             statisticPvDatum.getEnergyGenerated() / 1000),

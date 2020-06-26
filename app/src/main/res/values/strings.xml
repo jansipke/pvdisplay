@@ -49,6 +49,8 @@
     <string name="preferences_summary_auto_refresh">Refresh PV data when app starts (default is on)</string>
 
     <string name="preferences_key_live_comparison">live_comparison</string>
+    <string name="preferences_key_daily_comparison">daily_comparison</string>
+    <string name="preferences_key_monthly_comparison">monthly_comparison</string>
 
     <string name="preferences_key_graph_hour_start">graph_hour_start</string>
     <string name="preferences_title_graph_hour_start">Starting hour</string>

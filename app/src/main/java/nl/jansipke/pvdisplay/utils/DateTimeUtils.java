@@ -165,7 +165,10 @@ public class DateTimeUtils {
             calendar.add(Calendar.YEAR, yearsToAdd);
             calendar.add(Calendar.MONTH, monthsToAdd);
             calendar.add(Calendar.DATE, daysToAdd);
-            YearMonthDay copy = new YearMonthDay(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+            YearMonthDay copy = new YearMonthDay(
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH) + 1,
+                    calendar.get(Calendar.DAY_OF_MONTH));
             if (!allowFuture) {
                 YearMonthDay today = YearMonthDay.getToday();
                 if (copy.isLaterThan(today)) {
@@ -185,7 +188,10 @@ public class DateTimeUtils {
 
         public static YearMonthDay getToday() {
             Calendar calendar = new GregorianCalendar();
-            return new YearMonthDay(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+            return new YearMonthDay(
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH) + 1,
+                    calendar.get(Calendar.DAY_OF_MONTH));
         }
 
         public boolean isLaterThan(YearMonthDay other) {

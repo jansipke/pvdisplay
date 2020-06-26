@@ -4,15 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +16,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -79,15 +82,37 @@ public class DailyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        String dailyComparison = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_daily_comparison), "year");
+        DateTimeUtils.YearMonth comparison;
+        if ("year".equals(dailyComparison)) {
+            comparison = picked.createCopy(-1, 0, false);
+            PvDataService.callDay(getContext(), comparison.year, comparison.month);
+        }
+
         PvDataService.callDay(getContext(), picked.year, picked.month);
     }
 
-    private List<DailyPvDatum> createFullMonth(int year, int month,
+    private List<Double> createDifferences(List<DailyPvDatum> dailyPvDataPicked,
+                                           List<DailyPvDatum> dailyPvDataComparison) {
+        List<Double> differences = new ArrayList<>();
+        List<DailyPvDatum> comparisonFullMonth = createFullMonth(new DateTimeUtils.YearMonth(0, 0), dailyPvDataComparison);
+        for (DailyPvDatum dailyPvDatum : dailyPvDataPicked) {
+            final double energyPicked = dailyPvDatum.getEnergyGenerated();
+            final double energyComparison = comparisonFullMonth.get(dailyPvDatum.getDay() - 1).getEnergyGenerated();
+            differences.add(energyPicked - energyComparison);
+        }
+        return differences;
+    }
+
+    private List<DailyPvDatum> createFullMonth(DateTimeUtils.YearMonth ym,
                                                List<DailyPvDatum> dayPvData) {
         List<DailyPvDatum> fullMonth = new ArrayList<>();
-        int lastDayOfMonth = new DateTimeUtils.YearMonth(year, month).getLastDayOfMonth();
+        int lastDayOfMonth = ym.getLastDayOfMonth();
         for (int day = 1; day <= lastDayOfMonth; day++) {
-            fullMonth.add(new DailyPvDatum(year, month, day, 0, 0, ""));
+            fullMonth.add(new DailyPvDatum(ym.year, ym.month, day, 0, 0, ""));
         }
         for (DailyPvDatum dailyPvDatum : dayPvData) {
             int fullMonthIndex = dailyPvDatum.getDay() - 1;
@@ -130,7 +155,9 @@ public class DailyFragment extends Fragment {
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
-            picked = new DateTimeUtils.YearMonth(savedInstanceState.getInt(STATE_KEY_YEAR), savedInstanceState.getInt(STATE_KEY_MONTH));
+            picked = new DateTimeUtils.YearMonth(
+                    savedInstanceState.getInt(STATE_KEY_YEAR),
+                    savedInstanceState.getInt(STATE_KEY_MONTH));
         } else {
             picked = DateTimeUtils.YearMonth.getToday();
         }
@@ -152,6 +179,31 @@ public class DailyFragment extends Fragment {
 
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_day, container, false);
+
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        String dailyComparison = sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_daily_comparison), "year");
+
+        Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
+        comparisonButton.setText(dailyComparison);
+        comparisonButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                final SharedPreferences sharedPreferences = PreferenceManager.
+                        getDefaultSharedPreferences(getContext());
+                String dailyComparison = sharedPreferences.getString(getResources().
+                        getString(R.string.preferences_key_daily_comparison), "year");
+                switch (dailyComparison) {
+                    case "off": dailyComparison = "year"; break;
+                    case "year": dailyComparison = "off"; break;
+                }
+                sharedPreferences.edit().putString(getResources().
+                        getString(R.string.preferences_key_daily_comparison), dailyComparison).apply();
+                ((Button) view).setText(dailyComparison);
+                updateScreen();
+            }
+        });
+
         updateScreen();
         return fragmentView;
     }
@@ -193,8 +245,9 @@ public class DailyFragment extends Fragment {
         outState.putInt(STATE_KEY_MONTH, picked.month);
     }
 
-    private void updateGraph(List<DailyPvDatum> dailyPvData,
-                             List<DailyPvDatum> previousYearDailyPvData) {
+    private void updateGraph(List<DailyPvDatum> dailyPvDataPicked,
+                             List<DailyPvDatum> dailyPvDataComparison,
+                             boolean showComparison) {
         LinearLayout graphLinearLayout = fragmentView.findViewById(graph);
         graphLinearLayout.removeAllViews();
 
@@ -205,20 +258,23 @@ public class DailyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
-            for (int i = 0; i < dailyPvData.size(); i++) {
-                DailyPvDatum dailyPvDatum = dailyPvData.get(i);
+            for (int i = 0; i < dailyPvDataPicked.size(); i++) {
+                DailyPvDatum dailyPvDatum = dailyPvDataPicked.get(i);
                 subcolumnValues = new ArrayList<>();
                 subcolumnValues.add(new SubcolumnValue(
                         ((float) dailyPvDatum.getEnergyGenerated()) / 1000,
                         ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
+
             List<Line> lines = new ArrayList<>();
             List<PointValue> lineValues = new ArrayList<>();
-            for (int i = 0; i < previousYearDailyPvData.size(); i++) {
-                DailyPvDatum previousYearDailyPvDatum = previousYearDailyPvData.get(i);
-                lineValues.add(new PointValue(i,
-                        ((float) previousYearDailyPvDatum.getEnergyGenerated()) / 1000));
+            if (showComparison) {
+                for (int i = 0; i < dailyPvDataComparison.size(); i++) {
+                    DailyPvDatum dailyPvDatum = dailyPvDataComparison.get(i);
+                    lineValues.add(new PointValue(i,
+                            ((float) dailyPvDatum.getEnergyGenerated()) / 1000));
+                }
             }
             Line line = new Line(lineValues);
             line.setPointRadius(3);
@@ -242,13 +298,15 @@ public class DailyFragment extends Fragment {
 
             comboLineColumnChartView.setViewportCalculationEnabled(false);
             Viewport viewport = new Viewport(
-                    -1, axisLabelValues.getView(), dailyPvData.size() + 1, 0);
+                    -1, axisLabelValues.getView(), dailyPvDataPicked.size() + 1, 0);
             comboLineColumnChartView.setMaximumViewport(viewport);
             comboLineColumnChartView.setCurrentViewport(viewport);
         }
     }
 
-    private void updateTable(List<DailyPvDatum> dailyPvData) {
+    private void updateTable(List<DailyPvDatum> dailyPvData,
+                             List<Double> differences,
+                             boolean showComparison) {
         LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
@@ -270,34 +328,68 @@ public class DailyFragment extends Fragment {
                     FormatUtils.POWER_FORMAT.format(dailyPvDatum.getPeakPower()));
             ((TextView) row.findViewById(R.id.energy)).setText(
                     FormatUtils.ENERGY_FORMAT.format(dailyPvDatum.getEnergyGenerated() / 1000.0));
+
+            if (showComparison) {
+                double difference = differences.get(i) / 1000.0;
+                String differenceText = "0.000";
+                int differenceColor = Color.rgb(61, 61, 61);
+                if (difference < 0) {
+                    differenceText = FormatUtils.ENERGY_FORMAT.format(difference);
+                    differenceColor = Color.rgb(153, 61, 61);
+                }
+                if (difference > 0) {
+                    differenceText = "+" + FormatUtils.ENERGY_FORMAT.format(difference);
+                    differenceColor = Color.rgb(61, 153, 61);
+                }
+                ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
+                ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
+            }
+
             linearLayout.addView(row);
         }
     }
 
-    private void updateTitle(int year, int month) {
+    private void updateTitle(DateTimeUtils.YearMonth picked) {
         TextView textView = fragmentView.findViewById(R.id.title);
-        textView.setText(new DateTimeUtils.YearMonth(year, month).asString(true));
+        textView.setText(picked.asString(true));
     }
 
     public void updateScreen() {
         Log.d(TAG, "Updating screen with daily PV data");
 
-        List<DailyPvDatum> dailyPvData = pvDataOperations.loadDaily(picked);
-        List<DailyPvDatum> previousYearDailyPvData = createFullMonth(
-                picked.year - 1,
-                picked.month,
-                pvDataOperations.loadDaily(picked.createCopy(-1, 0, false)));
-
-        if (dailyPvData.size() == 0) {
+        List<DailyPvDatum> dailyPvDataPicked = pvDataOperations.loadDaily(picked);
+        if (dailyPvDataPicked.size() == 0) {
             Log.d(TAG, "No daily PV data for " + picked);
             callPvDataService();
         }
 
         if (isAdded() && getActivity() != null) {
-            updateTitle(picked.year, picked.month);
-            updateGraph(createFullMonth(picked.year, picked.month, dailyPvData),
-                    previousYearDailyPvData);
-            updateTable(dailyPvData);
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            String dailyComparison = sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_daily_comparison), "year");
+            DateTimeUtils.YearMonth comparison;
+            boolean showComparison = false;
+            List<DailyPvDatum> dailyPvDataComparison = new ArrayList<>();
+            if ("year".equals(dailyComparison)) {
+                showComparison = true;
+                comparison = picked.createCopy(-1, 0, false);
+                dailyPvDataComparison = pvDataOperations.loadDaily(comparison);
+                if (dailyPvDataComparison.size() == 0) {
+                    Log.d(TAG, "No daily PV data for " + comparison);
+                    callPvDataService();
+                }
+            }
+
+            updateTitle(picked);
+            updateGraph(
+                    createFullMonth(picked, dailyPvDataPicked),
+                    dailyPvDataComparison,
+                    showComparison);
+            updateTable(
+                    dailyPvDataPicked,
+                    createDifferences(dailyPvDataPicked, dailyPvDataComparison),
+                    showComparison);
         }
     }
 }
