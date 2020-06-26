@@ -15,6 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -36,6 +38,7 @@ public class SystemFragment extends Fragment {
     private final static String TAG = SystemFragment.class.getSimpleName();
 
     private View fragmentView;
+    private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
     private void callPvDataService() {
@@ -80,6 +83,7 @@ public class SystemFragment extends Fragment {
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
+        layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_system, container, false);
         updateScreen();
         return fragmentView;
@@ -107,29 +111,40 @@ public class SystemFragment extends Fragment {
         }
 
         if (isAdded() && getActivity() != null) {
-            TextView nameTextView = fragmentView.findViewById(R.id.system_name_text);
-            nameTextView.setText(systemPvDatum.getSystemName());
-            fragmentView.findViewById(R.id.system_name_button).setOnClickListener(new View.OnClickListener() {
+            LinearLayout linearLayout = fragmentView.findViewById(R.id.system);
+            linearLayout.removeAllViews();
+
+            // Name
+            View nameCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) nameCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.name);
+            ((TextView) nameCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_name));
+            final String name = systemPvDatum.getSystemName();
+            ((TextView) nameCard.findViewById(R.id.card_text)).setText(name);
+            nameCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Uri uri = Uri.parse("geo:" +
-                            systemPvDatum.getLatitude() + "," +
-                            systemPvDatum.getLongitude() + "?z=14");
+                                    systemPvDatum.getLatitude() + "," +
+                                    systemPvDatum.getLongitude() + "?z=14");
                     Log.d(TAG, "Opening Google Maps for URI: " + uri);
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     intent.setPackage("com.google.android.apps.maps");
                     startActivity(intent);
                 }
             });
+            linearLayout.addView(nameCard);
 
-            TextView panelsTextView = fragmentView.findViewById(R.id.system_panels_text);
+            // Panels
+            View panelsCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) panelsCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.panels);
+            ((TextView) panelsCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_panels));
             final String panels = systemPvDatum.getPanelBrand() + "\n" +
                     getResources().getString(R.string.value_panels,
                             systemPvDatum.getNumberOfPanels(),
                             systemPvDatum.getPanelPower(),
                             systemPvDatum.getSystemSize());
-            panelsTextView.setText(panels);
-            fragmentView.findViewById(R.id.system_panels_button).setOnClickListener(new View.OnClickListener() {
+            ((TextView) panelsCard.findViewById(R.id.card_text)).setText(panels);
+            panelsCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -138,13 +153,17 @@ public class SystemFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            linearLayout.addView(panelsCard);
 
-            TextView inverterTextView = fragmentView.findViewById(R.id.system_inverter_text);
+            // Inverter
+            View inverterCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) inverterCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.inverter);
+            ((TextView) inverterCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_inverter));
             final String inverter = systemPvDatum.getInverterBrand() + "\n" +
                     getResources().getString(R.string.value_inverter,
                             systemPvDatum.getInverterPower());
-            inverterTextView.setText(inverter);
-            fragmentView.findViewById(R.id.system_inverter_button).setOnClickListener(new View.OnClickListener() {
+            ((TextView) inverterCard.findViewById(R.id.card_text)).setText(inverter);
+            inverterCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -153,8 +172,12 @@ public class SystemFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            linearLayout.addView(inverterCard);
 
-            TextView statisticsTextView = fragmentView.findViewById(R.id.system_statistics_text);
+            // Savings
+            View savingsCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) savingsCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.savings);
+            ((TextView) savingsCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_savings));
             final SharedPreferences sharedPreferences = PreferenceManager.
                     getDefaultSharedPreferences(getContext());
             final String currency = sharedPreferences.getString(getResources().
@@ -175,6 +198,21 @@ public class SystemFragment extends Fragment {
             }
             final String savings = currency + " " + FormatUtils.SAVINGS_FORMAT.format(
                     statisticPvDatum.getEnergyGenerated() * per_kwh / 1000.0 + adjustment);
+            ((TextView) savingsCard.findViewById(R.id.card_text)).setText(savings);
+            savingsCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                    startActivity(intent);
+                }
+            });
+            linearLayout.addView(savingsCard);
+
+            // Statistics
+            View statisticsCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) statisticsCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.statistics);
+            ((ImageView) statisticsCard.findViewById(R.id.card_right_image)).setImageDrawable(null);
+            ((TextView) statisticsCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_statistics));
             final String statistics = getResources().getString(R.string.value_statistics_total,
                     FormatUtils.ENERGY_FORMAT.format(
                             statisticPvDatum.getEnergyGenerated() / 1000),
@@ -188,16 +226,9 @@ public class SystemFragment extends Fragment {
                             new DateTimeUtils.YearMonthDay(
                                     statisticPvDatum.getRecordDateYear(),
                                     statisticPvDatum.getRecordDateMonth(),
-                                    statisticPvDatum.getRecordDateDay()).asString(true)) + "\n" +
-                    "Saved " + savings + " in total";
-            statisticsTextView.setText(statistics);
-            fragmentView.findViewById(R.id.system_statistics_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                    startActivity(intent);
-                }
-            });
+                                    statisticPvDatum.getRecordDateDay()).asString(true));
+            ((TextView) statisticsCard.findViewById(R.id.card_text)).setText(statistics);
+            linearLayout.addView(statisticsCard);
         }
     }
 }

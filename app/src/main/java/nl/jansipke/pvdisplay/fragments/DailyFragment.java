@@ -126,19 +126,19 @@ public class DailyFragment extends Fragment {
         if (activity != null) {
             switch (condition) {
                 case "Cloudy":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_cloudy);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_cloudy);
                 case "Fine":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_fine);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_fine);
                 case "Mostly Cloudy":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_mostly_cloudy);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_mostly_cloudy);
                 case "Partly Cloudy":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_partly_cloudy);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_partly_cloudy);
                 case "Showers":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_showers);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_showers);
                 case "Snow":
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_snow);
+                    return ContextCompat.getDrawable(activity, R.drawable.weather_snow);
                 default:
-                    return ContextCompat.getDrawable(activity, R.drawable.ic_help_black_48dp);
+                    return ContextCompat.getDrawable(activity, R.drawable.help);
             }
         } else {
             return null;

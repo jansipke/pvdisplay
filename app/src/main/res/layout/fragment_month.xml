@@ -86,7 +86,7 @@
             android:layout_height="24dp"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:background="@drawable/compare_disbalance_512"/>
+            android:background="@drawable/compare"/>
 
         <Button
             android:id="@+id/comparison_button"
