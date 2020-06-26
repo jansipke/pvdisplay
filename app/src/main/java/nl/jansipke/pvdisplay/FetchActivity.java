@@ -33,7 +33,7 @@ public class FetchActivity extends AppCompatActivity {
                         String type = intent.getStringExtra("type");
                         Log.d(TAG, "Fetched " + type);
                         downloadsFinished += 1;
-                        ProgressBar progressBar = findViewById(R.id.progressBar);
+                        ProgressBar progressBar = findViewById(R.id.progress_bar);
                         progressBar.setProgress(downloadsFinished);
                         if (downloadsFinished == NR_DOWNLOADS) {
                             LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
@@ -58,7 +58,7 @@ public class FetchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fetch);
 
-        ProgressBar progressBar = findViewById(R.id.progressBar);
+        ProgressBar progressBar = findViewById(R.id.progress_bar);
         progressBar.setMax(NR_DOWNLOADS);
 
         Button button = findViewById(R.id.cancel_button);

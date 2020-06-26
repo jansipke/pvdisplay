@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorBlackOverlay">#66000000</color>
+    <color name="colorWhiteBackground">#CCFFFFFF</color>
     <color name="colorRowDivider">#EEEEEE</color>
     <color name="colorButtonBackground">#EEEEEE</color>
     <color name="colorChart">#32B5E5</color>
