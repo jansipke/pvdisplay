@@ -325,6 +325,7 @@ public class MonthlyFragment extends Fragment {
             DateTimeUtils.Year comparison;
             boolean showComparison = false;
             List<MonthlyPvDatum> monthlyPvDataComparison = new ArrayList<>();
+            List<MonthlyPvDatum> monthlyPvDataComparisonFullYear = new ArrayList<>();
             if ("year".equals(monthlyComparison)) {
                 showComparison = true;
                 comparison = picked.createCopy(-1, false);
@@ -333,12 +334,13 @@ public class MonthlyFragment extends Fragment {
                     Log.d(TAG, "No daily PV data for " + comparison);
                     callPvDataService();
                 }
+                monthlyPvDataComparisonFullYear = createFullYear(comparison, monthlyPvDataComparison);
             }
 
             updateTitle(picked);
             updateGraph(
                     createFullYear(picked, monthlyPvDataPicked),
-                    monthlyPvDataComparison,
+                    monthlyPvDataComparisonFullYear,
                     showComparison);
             updateTable(
                     monthlyPvDataPicked,
