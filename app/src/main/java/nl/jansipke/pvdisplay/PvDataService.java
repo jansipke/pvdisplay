@@ -117,33 +117,28 @@ public class PvDataService extends Service {
     }
 
     private void downloadDay(final int year, final int month) {
-        Log.d(TAG, "Downloading daily PV data for " + new DateTimeUtils.YearMonth(year, month) + " and previous year");
+        Log.d(TAG, "Downloading daily PV data for " + new DateTimeUtils.YearMonth(year, month));
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    PvDataOperations pvDataOperations = new PvDataOperations(getApplicationContext());
-                    // Download, parse and save data
+                    // Download data
                     String fromDate = new DateTimeUtils.YearMonthDay(year, month, 1).asString(false);
                     String toDate = new DateTimeUtils.YearMonthDay(year, month, 31).asString(false);
                     String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
+
+                    // Parse and save data
                     List<DailyPvDatum> dailyPvData = new PvOutputParser().parseDaily(result);
-                    pvDataOperations.saveDaily(dailyPvData);
+                    new PvDataOperations(getApplicationContext()).saveDaily(dailyPvData);
 
-                    // Download, parse and save data for previous year
-                    fromDate = new DateTimeUtils.YearMonthDay(year - 1, month, 1).asString(false);
-                    toDate = new DateTimeUtils.YearMonthDay(year - 1, month, 31).asString(false);
-                    urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
-                    result = download(urlPath);
-                    List<DailyPvDatum> previousYearDailyPvData = new PvOutputParser().parseDaily(result);
-                    pvDataOperations.saveDaily(previousYearDailyPvData);
-
-                    reportStatus(true, "day", "Downloaded " + (previousYearDailyPvData.size() + dailyPvData.size()) + " data points");
+                    reportStatus(true, "day", "Downloaded " + dailyPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "day", "Could not download daily PV data:\n" + e.getMessage());
+                    reportStatus(false, "day", "Could not download daily PV data for " +
+                            new DateTimeUtils.YearMonth(year, month) + ": " + e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "day", "Could not parse daily PV data:\n" + e.getMessage());
+                    reportStatus(false, "day", "Could not parse daily PV data for " +
+                            new DateTimeUtils.YearMonth(year, month) + ": " + e.getMessage());
                 }
             }
         }).start();
@@ -166,22 +161,24 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "live", "Downloaded " + livePvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "live", "Could not download live PV data:\n" + e.getMessage());
+                    reportStatus(false, "live", "Could not download live PV data for " +
+                            new DateTimeUtils.YearMonthDay(year, month, day) + ": " + e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "live", "Could not parse live PV data:\n" + e.getMessage());
+                    reportStatus(false, "live", "Could not parse live PV data for " +
+                            new DateTimeUtils.YearMonthDay(year, month, day) + ": " + e.getMessage());
                 }
             }
         }).start();
     }
 
     private void downloadMonth(final int year) {
-        Log.d(TAG, "Downloading monthly PV data for " + year + " and previous year");
+        Log.d(TAG, "Downloading monthly PV data for " + year);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     // Download data
-                    String fromDate = new DateTimeUtils.YearMonthDay(year - 1, 1, 1).asString(false);
+                    String fromDate = new DateTimeUtils.YearMonthDay(year, 1, 1).asString(false);
                     String toDate = new DateTimeUtils.YearMonthDay(year, 12, 31).asString(false);
                     String urlPath = "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
                     String result = download(urlPath);
@@ -192,9 +189,11 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "month", "Downloaded " + monthlyPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "month", "Could not download monthly PV data:\n" + e.getMessage());
+                    reportStatus(false, "month", "Could not download monthly PV data for " +
+                            year + ": " + e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "month", "Could not parse monthly PV data:\n" + e.getMessage());
+                    reportStatus(false, "month", "Could not parse monthly PV data for " +
+                            year + ": " + e.getMessage());
                 }
             }
         }).start();
@@ -216,9 +215,11 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "statistic", "Downloaded statistic PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "statistic", "Could not download statistic PV data:\n" + e.getMessage());
+                    reportStatus(false, "statistic", "Could not download statistic PV data: " +
+                            e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "statistic", "Could not parse statistic PV data:\n" + e.getMessage());
+                    reportStatus(false, "statistic", "Could not parse statistic PV data: " +
+                            e.getMessage());
                 }
             }
         }).start();
@@ -240,9 +241,11 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "system", "Downloaded system PV data");
                 } catch (IOException e) {
-                    reportStatus(false, "system", "Could not download system PV data:\n" + e.getMessage());
+                    reportStatus(false, "system", "Could not download system PV data: " +
+                            e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "system", "Could not parse system PV data:\n" + e.getMessage());
+                    reportStatus(false, "system", "Could not parse system PV data: " +
+                            e.getMessage());
                 }
             }
         }).start();
@@ -264,9 +267,11 @@ public class PvDataService extends Service {
 
                     reportStatus(true, "year", "Downloaded " + yearlyPvData.size() + " data points");
                 } catch (IOException e) {
-                    reportStatus(false, "year", "Could not download yearly PV data:\n" + e.getMessage());
+                    reportStatus(false, "year", "Could not download yearly PV data: " +
+                            e.getMessage());
                 } catch (ParseException e) {
-                    reportStatus(false, "year", "Could not parse yearly PV data:\n" + e.getMessage());
+                    reportStatus(false, "year", "Could not parse yearly PV data: " +
+                            e.getMessage());
                 }
             }
         }).start();

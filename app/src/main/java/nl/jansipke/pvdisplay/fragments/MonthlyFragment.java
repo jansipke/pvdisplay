@@ -60,7 +60,7 @@ public class MonthlyFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
-    private void callPvDataService() {
+    private void callPvDataService(DateTimeUtils.Year y) {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -77,17 +77,7 @@ public class MonthlyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String monthlyComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_monthly_comparison), "year");
-        DateTimeUtils.Year comparison;
-        if ("year".equals(monthlyComparison)) {
-            comparison = picked.createCopy(-1, false);
-            PvDataService.callMonth(getContext(), comparison.year);
-        }
-
-        PvDataService.callMonth(getContext(), picked.year);
+        PvDataService.callMonth(getContext(), y.year);
     }
 
     private List<Double> createDifferences(List<MonthlyPvDatum> monthlyPvDataPicked,
@@ -195,7 +185,7 @@ public class MonthlyFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService();
+                callPvDataService(picked);
                 break;
         }
 
@@ -314,7 +304,7 @@ public class MonthlyFragment extends Fragment {
         List<MonthlyPvDatum> monthlyPvDataPicked = pvDataOperations.loadMonthly(picked);
         if (monthlyPvDataPicked.size() == 0) {
             Log.d(TAG, "No monthly PV data for " + picked.year);
-            callPvDataService();
+            callPvDataService(picked);
         }
 
         if (isAdded() && getActivity() != null) {
@@ -332,7 +322,7 @@ public class MonthlyFragment extends Fragment {
                 monthlyPvDataComparison = pvDataOperations.loadMonthly(comparison);
                 if (monthlyPvDataComparison.size() == 0) {
                     Log.d(TAG, "No daily PV data for " + comparison);
-                    callPvDataService();
+                    callPvDataService(comparison);
                 }
                 monthlyPvDataComparisonFullYear = createFullYear(comparison, monthlyPvDataComparison);
             }

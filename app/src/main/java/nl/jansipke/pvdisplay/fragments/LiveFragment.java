@@ -86,7 +86,7 @@ public class LiveFragment extends Fragment {
         }
     }
 
-    private void callPvDataService() {
+    private void callPvDataService(DateTimeUtils.YearMonthDay ymd) {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -103,23 +103,7 @@ public class LiveFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String liveComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_live_comparison), "day");
-        DateTimeUtils.YearMonthDay comparison;
-        switch (liveComparison) {
-            case "day":
-                comparison = picked.createCopy(0, 0, -1, false);
-                PvDataService.callLive(getContext(), comparison.year, comparison.month, comparison.day);
-                break;
-            case "year":
-                comparison = picked.createCopy(-1, 0, 0, false);
-                PvDataService.callLive(getContext(), comparison.year, comparison.month, comparison.day);
-                break;
-        }
-
-        PvDataService.callLive(getContext(), picked.year, picked.month, picked.day);
+        PvDataService.callLive(getContext(), ymd.year, ymd.month, ymd.day);
     }
 
     private List<Double> createDifferences(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataComparison) {
@@ -248,7 +232,7 @@ public class LiveFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService();
+                callPvDataService(picked);
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
@@ -395,7 +379,7 @@ public class LiveFragment extends Fragment {
         List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(picked);
         if (livePvDataPicked.size() == 0) {
             Log.d(TAG, "No live PV data for " + picked);
-            callPvDataService();
+            callPvDataService(picked);
         }
 
         if (isAdded() && getActivity() != null) {
@@ -429,7 +413,7 @@ public class LiveFragment extends Fragment {
                     livePvDataComparison = pvDataOperations.loadLive(comparison);
                     if (livePvDataComparison.size() == 0) {
                         Log.d(TAG, "No live PV data for " + comparison);
-                        callPvDataService();
+                        callPvDataService(comparison);
                     }
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;
@@ -439,7 +423,7 @@ public class LiveFragment extends Fragment {
                     livePvDataComparison = pvDataOperations.loadLive(comparison);
                     if (livePvDataComparison.size() == 0) {
                         Log.d(TAG, "No live PV data for " + comparison);
-                        callPvDataService();
+                        callPvDataService(comparison);
                     }
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;

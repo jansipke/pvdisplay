@@ -65,7 +65,7 @@ public class DailyFragment extends Fragment {
     private LayoutInflater layoutInflater;
     private PvDataOperations pvDataOperations;
 
-    private void callPvDataService() {
+    private void callPvDataService(DateTimeUtils.YearMonth ym) {
         BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -82,17 +82,7 @@ public class DailyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String dailyComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_daily_comparison), "year");
-        DateTimeUtils.YearMonth comparison;
-        if ("year".equals(dailyComparison)) {
-            comparison = picked.createCopy(-1, 0, false);
-            PvDataService.callDay(getContext(), comparison.year, comparison.month);
-        }
-
-        PvDataService.callDay(getContext(), picked.year, picked.month);
+        PvDataService.callDay(getContext(), ym.year, ym.month);
     }
 
     private List<Double> createDifferences(List<DailyPvDatum> dailyPvDataPicked,
@@ -228,7 +218,7 @@ public class DailyFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService();
+                callPvDataService(picked);
                 break;
         }
 
@@ -360,7 +350,7 @@ public class DailyFragment extends Fragment {
         List<DailyPvDatum> dailyPvDataPicked = pvDataOperations.loadDaily(picked);
         if (dailyPvDataPicked.size() == 0) {
             Log.d(TAG, "No daily PV data for " + picked);
-            callPvDataService();
+            callPvDataService(picked);
         }
 
         if (isAdded() && getActivity() != null) {
@@ -378,7 +368,7 @@ public class DailyFragment extends Fragment {
                 dailyPvDataComparison = pvDataOperations.loadDaily(comparison);
                 if (dailyPvDataComparison.size() == 0) {
                     Log.d(TAG, "No daily PV data for " + comparison);
-                    callPvDataService();
+                    callPvDataService(comparison);
                 }
                 dailyPvDataComparisonFullMonth = createFullMonth(comparison, dailyPvDataComparison);
             }
