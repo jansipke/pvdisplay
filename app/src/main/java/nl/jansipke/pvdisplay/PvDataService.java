@@ -30,36 +30,36 @@ public class PvDataService extends Service {
     private final static String TAG = PvDataService.class.getSimpleName();
     protected final static String URL_BASE = "https://pvoutput.org/service/r2/";
 
-    public static void callAll(Context context, int year, int month, int day) {
+    public static void callAll(Context context, DateTimeUtils.YearMonthDay ymd) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "all");
-        intent.putExtra("year", year);
-        intent.putExtra("month", month);
-        intent.putExtra("day", day);
+        intent.putExtra("year", ymd.year);
+        intent.putExtra("month", ymd.month);
+        intent.putExtra("day", ymd.day);
         context.startService(intent);
     }
 
-    public static void callDay(Context context, int year, int month) {
+    public static void callDay(Context context, DateTimeUtils.YearMonth ym) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "day");
-        intent.putExtra("year", year);
-        intent.putExtra("month", month);
+        intent.putExtra("year", ym.year);
+        intent.putExtra("month", ym.month);
         context.startService(intent);
     }
 
-    public static void callLive(Context context, int year, int month, int day) {
+    public static void callLive(Context context, DateTimeUtils.YearMonthDay ymd) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "live");
-        intent.putExtra("year", year);
-        intent.putExtra("month", month);
-        intent.putExtra("day", day);
+        intent.putExtra("year", ymd.year);
+        intent.putExtra("month", ymd.month);
+        intent.putExtra("day", ymd.day);
         context.startService(intent);
     }
 
-    public static void callMonth(Context context, int year) {
+    public static void callMonth(Context context, DateTimeUtils.Year y) {
         Intent intent = new Intent(context, PvDataService.class);
         intent.putExtra("type", "month");
-        intent.putExtra("year", year);
+        intent.putExtra("year", y.year);
         context.startService(intent);
     }
 

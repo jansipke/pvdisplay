@@ -103,7 +103,18 @@ public class LiveFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        PvDataService.callLive(getContext(), ymd.year, ymd.month, ymd.day);
+        PvDataService.callLive(getContext(), ymd);
+        DateTimeUtils.YearMonthDay comparison;
+        switch (getLiveComparison()) {
+            case "day":
+                comparison = ymd.createCopy(0, 0, -1, false);
+                PvDataService.callLive(getContext(), comparison);
+                break;
+            case "year":
+                comparison = ymd.createCopy(-1, 0, 0, false);
+                PvDataService.callLive(getContext(), comparison);
+                break;
+        }
     }
 
     private List<Double> createDifferences(List<LivePvDatum> livePvDataPicked, List<LivePvDatum> livePvDataComparison) {
@@ -150,6 +161,13 @@ public class LiveFragment extends Fragment {
         return fullDay;
     }
 
+    private String getLiveComparison() {
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        return sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_live_comparison), "day");
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,24 +206,19 @@ public class LiveFragment extends Fragment {
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_live, container, false);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String liveComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_live_comparison), "day");
-
+        String liveComparison = getLiveComparison();
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
         comparisonButton.setText(liveComparison);
         comparisonButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                final SharedPreferences sharedPreferences = PreferenceManager.
-                        getDefaultSharedPreferences(getContext());
-                String liveComparison = sharedPreferences.getString(getResources().
-                        getString(R.string.preferences_key_live_comparison), "day");
+                String liveComparison = getLiveComparison();
                 switch (liveComparison) {
                     case "off": liveComparison = "day"; break;
                     case "day": liveComparison = "year"; break;
                     case "year": liveComparison = "off"; break;
                 }
+                final SharedPreferences sharedPreferences = PreferenceManager.
+                        getDefaultSharedPreferences(getContext());
                 sharedPreferences.edit().putString(getResources().
                         getString(R.string.preferences_key_live_comparison), liveComparison).apply();
                 ((Button) view).setText(liveComparison);
@@ -400,8 +413,7 @@ public class LiveFragment extends Fragment {
                 endHour = 24;
             }
 
-            String liveComparison = sharedPreferences.getString(getResources().
-                    getString(R.string.preferences_key_live_comparison), "day");
+            String liveComparison = getLiveComparison();
             DateTimeUtils.YearMonthDay comparison;
             boolean showComparison = false;
             List<LivePvDatum> livePvDataComparison = new ArrayList<>();

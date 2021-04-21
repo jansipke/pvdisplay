@@ -77,7 +77,7 @@ public class MonthlyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        PvDataService.callMonth(getContext(), y.year);
+        PvDataService.callMonth(getContext(), y);
     }
 
     private List<Double> createDifferences(List<MonthlyPvDatum> monthlyPvDataPicked,

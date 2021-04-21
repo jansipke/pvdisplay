@@ -82,7 +82,7 @@ public class DailyFragment extends Fragment {
         LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
                 .registerReceiver(broadcastReceiver, intentFilter);
 
-        PvDataService.callDay(getContext(), ym.year, ym.month);
+        PvDataService.callDay(getContext(), ym);
     }
 
     private List<Double> createDifferences(List<DailyPvDatum> dailyPvDataPicked,

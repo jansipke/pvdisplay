@@ -48,7 +48,7 @@ public class FetchActivity extends AppCompatActivity {
                 LocalBroadcastManager.getInstance(context)
                         .registerReceiver(broadcastReceiver, intentFilter);
 
-                PvDataService.callAll(context, today.year, today.month, today.day);
+                PvDataService.callAll(context, today);
             }
         }.start();
     }
