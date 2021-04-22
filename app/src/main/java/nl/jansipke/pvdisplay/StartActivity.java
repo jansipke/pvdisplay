@@ -4,13 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.appcompat.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
+import nl.jansipke.pvdisplay.download.PvDownloader;
+import nl.jansipke.pvdisplay.download.PvOutputParser;
 import nl.jansipke.pvdisplay.utils.NetworkUtils;
 
 public class StartActivity extends AppCompatActivity {
@@ -21,7 +24,7 @@ public class StartActivity extends AppCompatActivity {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("X-Pvoutput-Apikey", apiKey);
                 headers.put("X-Pvoutput-SystemId", systemId);
-                String url = PvDataService.URL_BASE + "getsystem.jsp";
+                String url = PvDownloader.URL_BASE + "getsystem.jsp";
                 Intent intent = null;
                 try {
                     String result = NetworkUtils.httpGet(url, headers);
@@ -53,12 +56,10 @@ public class StartActivity extends AppCompatActivity {
                 getString(R.string.preferences_key_pvoutput_api_key), "");
         if (systemId.equals("") || (apiKey.equals(""))) {
             Button button = findViewById(R.id.continue_button);
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    String systemId = ((EditText) findViewById(R.id.system_id)).getText().toString();
-                    String apiKey = ((EditText) findViewById(R.id.api_key)).getText().toString();
-                    getInitialSystemPvDatum(systemId, apiKey);
-                }
+            button.setOnClickListener(view -> {
+                String systemId1 = ((EditText) findViewById(R.id.system_id)).getText().toString();
+                String apiKey1 = ((EditText) findViewById(R.id.api_key)).getText().toString();
+                getInitialSystemPvDatum(systemId1, apiKey1);
             });
         } else {
             Intent intent = new Intent(StartActivity.this, FetchActivity.class);

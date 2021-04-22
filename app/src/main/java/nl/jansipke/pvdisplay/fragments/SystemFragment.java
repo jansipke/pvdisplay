@@ -1,9 +1,6 @@
 package nl.jansipke.pvdisplay.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,17 +16,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import java.util.Objects;
-import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.SettingsActivity;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.database.PvDatabase;
+import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
@@ -39,27 +35,26 @@ public class SystemFragment extends Fragment {
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
-    private PvDataOperations pvDataOperations;
 
-    private void callPvDataService() {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-                if (intent.getBooleanExtra("success", true)) {
-                    updateScreen();
-                } else {
-                    Toast.makeText(context, intent.getStringExtra("message"),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
-                .registerReceiver(broadcastReceiver, intentFilter);
+    private PvDatabase pvDatabase;
+    private PvDownloader pvDownloader;
 
-        PvDataService.callStatistic(getContext());
-        PvDataService.callSystem(getContext());
+    private StatisticPvDatum databaseOrDownloadStatistic() {
+        StatisticPvDatum datum = pvDatabase.loadStatistic();
+        if (datum == null) {
+            pvDownloader.downloadStatistic();
+            datum = new StatisticPvDatum(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+        return datum;
+    }
+
+    private SystemPvDatum databaseOrDownloadSystem() {
+        SystemPvDatum datum = pvDatabase.loadSystem();
+        if (datum == null) {
+            pvDownloader.downloadSystem();
+            datum = new SystemPvDatum("Unknown system name", 0, 0, 0, "Unknown panel brand", 0, "Unknown inverter brand", 0, 0);
+        }
+        return datum;
     }
 
     @Override
@@ -68,7 +63,11 @@ public class SystemFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        pvDataOperations = new PvDataOperations(getContext());
+        pvDatabase = new PvDatabase(getContext());
+
+        pvDownloader = new PvDownloader(getContext());
+        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+        pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
     @Override
@@ -93,7 +92,8 @@ public class SystemFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
             Log.d(TAG, "Clicked refresh");
-            callPvDataService();
+            pvDownloader.downloadStatistic();
+            pvDownloader.downloadSystem();
         }
 
         return super.onOptionsItemSelected(item);
@@ -102,13 +102,8 @@ public class SystemFragment extends Fragment {
     private void updateScreen() {
         Log.d(TAG, "Updating screen with statistic and system PV data");
 
-        StatisticPvDatum statisticPvDatum = pvDataOperations.loadStatistic();
-        final SystemPvDatum systemPvDatum = pvDataOperations.loadSystem();
-        if (statisticPvDatum == null || systemPvDatum == null) {
-            Log.d(TAG, "No statistic or system PV data");
-            callPvDataService();
-            return;
-        }
+        final StatisticPvDatum statisticPvDatum = databaseOrDownloadStatistic();
+        final SystemPvDatum systemPvDatum = databaseOrDownloadSystem();
 
         if (isAdded() && getActivity() != null) {
             LinearLayout linearLayout = fragmentView.findViewById(R.id.system);
@@ -120,17 +115,14 @@ public class SystemFragment extends Fragment {
             ((TextView) nameCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_name));
             final String name = systemPvDatum.getSystemName();
             ((TextView) nameCard.findViewById(R.id.card_text)).setText(name);
-            nameCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Uri uri = Uri.parse("geo:" +
-                                    systemPvDatum.getLatitude() + "," +
-                                    systemPvDatum.getLongitude() + "?z=14");
-                    Log.d(TAG, "Opening Google Maps for URI: " + uri);
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    intent.setPackage("com.google.android.apps.maps");
-                    startActivity(intent);
-                }
+            nameCard.findViewById(R.id.card).setOnClickListener(view -> {
+                Uri uri = Uri.parse("geo:" +
+                                systemPvDatum.getLatitude() + "," +
+                                systemPvDatum.getLongitude() + "?z=14");
+                Log.d(TAG, "Opening Google Maps for URI: " + uri);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.setPackage("com.google.android.apps.maps");
+                startActivity(intent);
             });
             linearLayout.addView(nameCard);
 
@@ -144,14 +136,11 @@ public class SystemFragment extends Fragment {
                             systemPvDatum.getPanelPower(),
                             systemPvDatum.getSystemSize());
             ((TextView) panelsCard.findViewById(R.id.card_text)).setText(panels);
-            panelsCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    String uri = "http://www.google.com/#q=" + systemPvDatum.getPanelBrand();
-                    intent.setData(Uri.parse(uri));
-                    startActivity(intent);
-                }
+            panelsCard.findViewById(R.id.card).setOnClickListener(view -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                String uri = "http://www.google.com/#q=" + systemPvDatum.getPanelBrand();
+                intent.setData(Uri.parse(uri));
+                startActivity(intent);
             });
             linearLayout.addView(panelsCard);
 
@@ -163,14 +152,11 @@ public class SystemFragment extends Fragment {
                     getResources().getString(R.string.value_inverter,
                             systemPvDatum.getInverterPower());
             ((TextView) inverterCard.findViewById(R.id.card_text)).setText(inverter);
-            inverterCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    String uri = "http://www.google.com/#q=" + systemPvDatum.getInverterBrand();
-                    intent.setData(Uri.parse(uri));
-                    startActivity(intent);
-                }
+            inverterCard.findViewById(R.id.card).setOnClickListener(view -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                String uri = "http://www.google.com/#q=" + systemPvDatum.getInverterBrand();
+                intent.setData(Uri.parse(uri));
+                startActivity(intent);
             });
             linearLayout.addView(inverterCard);
 
@@ -199,12 +185,9 @@ public class SystemFragment extends Fragment {
             final String savings = currency + " " + FormatUtils.SAVINGS_FORMAT.format(
                     statisticPvDatum.getEnergyGenerated() * per_kwh / 1000.0 + adjustment);
             ((TextView) savingsCard.findViewById(R.id.card_text)).setText(savings);
-            savingsCard.findViewById(R.id.card).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                    startActivity(intent);
-                }
+            savingsCard.findViewById(R.id.card).setOnClickListener(view -> {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
             });
             linearLayout.addView(savingsCard);
 

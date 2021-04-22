@@ -6,9 +6,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+
 import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
@@ -19,14 +22,14 @@ import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
-public class PvDataOperations {
+public class PvDatabase {
 
-    private final static String TAG = PvDataOperations.class.getSimpleName();
+    private final static String TAG = PvDatabase.class.getSimpleName();
 
     private final Context context;
     private final PvDataHelper pvDataHelper;
 
-    public PvDataOperations(Context context) {
+    public PvDatabase(Context context) {
         this.context = context;
         this.pvDataHelper = new PvDataHelper(context);
     }

@@ -1,8 +1,9 @@
 package nl.jansipke.pvdisplay.utils;
 
-import androidx.annotation.NonNull;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import androidx.annotation.NonNull;
 
 public class DateTimeUtils {
 

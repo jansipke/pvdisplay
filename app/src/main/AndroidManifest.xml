@@ -22,10 +22,6 @@
         <activity android:name=".FetchActivity"/>
         <activity android:name=".MainActivity"/>
         <activity android:name=".SettingsActivity"/>
-
-        <service
-            android:name=".PvDataService"
-            android:label="@string/service_name"/>
     </application>
 
 </manifest>

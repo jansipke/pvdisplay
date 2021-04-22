@@ -1,20 +1,13 @@
 package nl.jansipke.pvdisplay.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,9 +20,15 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -37,12 +36,12 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
-import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.database.PvDatabase;
+import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
@@ -61,7 +60,9 @@ public class LiveFragment extends Fragment {
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
-    private PvDataOperations pvDataOperations;
+
+    private PvDatabase pvDatabase;
+    private PvDownloader pvDownloader;
 
     public static class DatePickerFragment extends DialogFragment {
 
@@ -83,37 +84,6 @@ public class LiveFragment extends Fragment {
                 picked = today;
             }
             LiveFragment.this.updateScreen();
-        }
-    }
-
-    private void callPvDataService(DateTimeUtils.YearMonthDay ymd) {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-                if (intent.getBooleanExtra("success", true)) {
-                    updateScreen();
-                } else {
-                    Toast.makeText(context, intent.getStringExtra("message"),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
-                .registerReceiver(broadcastReceiver, intentFilter);
-
-        PvDataService.callLive(getContext(), ymd);
-        DateTimeUtils.YearMonthDay comparison;
-        switch (getLiveComparison()) {
-            case "day":
-                comparison = ymd.createCopy(0, 0, -1, false);
-                PvDataService.callLive(getContext(), comparison);
-                break;
-            case "year":
-                comparison = ymd.createCopy(-1, 0, 0, false);
-                PvDataService.callLive(getContext(), comparison);
-                break;
         }
     }
 
@@ -161,6 +131,14 @@ public class LiveFragment extends Fragment {
         return fullDay;
     }
 
+    private List<LivePvDatum> databaseOrDownload(DateTimeUtils.YearMonthDay ymd) {
+        List<LivePvDatum> data = pvDatabase.loadLive(ymd);
+        if (data.size() == 0) {
+            pvDownloader.downloadLive(ymd);
+        }
+        return data;
+    }
+
     private String getLiveComparison() {
         final SharedPreferences sharedPreferences = PreferenceManager.
                 getDefaultSharedPreferences(getContext());
@@ -174,10 +152,6 @@ public class LiveFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        datePickerListener = new DatePickerListener();
-
-        pvDataOperations = new PvDataOperations(getContext());
-
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonthDay(
@@ -187,6 +161,14 @@ public class LiveFragment extends Fragment {
         } else {
             picked = DateTimeUtils.YearMonthDay.getToday();
         }
+
+        datePickerListener = new DatePickerListener();
+
+        pvDatabase = new PvDatabase(getContext());
+
+        pvDownloader = new PvDownloader(getContext());
+        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+        pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
     @Override
@@ -209,27 +191,26 @@ public class LiveFragment extends Fragment {
         String liveComparison = getLiveComparison();
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
         comparisonButton.setText(liveComparison);
-        comparisonButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                String liveComparison = getLiveComparison();
-                switch (liveComparison) {
-                    case "off": liveComparison = "day"; break;
-                    case "day": liveComparison = "year"; break;
-                    case "year": liveComparison = "off"; break;
-                }
-                final SharedPreferences sharedPreferences = PreferenceManager.
-                        getDefaultSharedPreferences(getContext());
-                sharedPreferences.edit().putString(getResources().
-                        getString(R.string.preferences_key_live_comparison), liveComparison).apply();
-                ((Button) view).setText(liveComparison);
-                updateScreen();
+        comparisonButton.setOnClickListener(view -> {
+            String liveComparison1 = getLiveComparison();
+            switch (liveComparison1) {
+                case "off": liveComparison1 = "day"; break;
+                case "day": liveComparison1 = "year"; break;
+                case "year": liveComparison1 = "off"; break;
             }
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            sharedPreferences.edit().putString(getResources().
+                    getString(R.string.preferences_key_live_comparison), liveComparison1).apply();
+            ((Button) view).setText(liveComparison1);
+            updateScreen();
         });
 
         updateScreen();
         return fragmentView;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -245,13 +226,20 @@ public class LiveFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService(picked);
+                pvDownloader.downloadLive(picked);
+                switch (getLiveComparison()) {
+                    case "day":
+                        pvDownloader.downloadLive(picked.createCopy(0, 0, -1, false));
+                        break;
+                    case "year":
+                        pvDownloader.downloadLive(picked.createCopy(-1, 0, 0, false));
+                        break;
+                }
                 break;
             case R.id.action_date:
                 Log.d(TAG, "Clicked date");
                 DialogFragment dialogFragment = new DatePickerFragment();
-                assert getFragmentManager() != null;
-                dialogFragment.show(getFragmentManager(), "datePicker");
+                dialogFragment.show(getParentFragmentManager(), "datePicker");
                 break;
             case R.id.action_today:
                 Log.d(TAG, "Clicked today");
@@ -288,11 +276,12 @@ public class LiveFragment extends Fragment {
             List<Line> lines = new ArrayList<>();
 
             List<PointValue> powerPointValuesPicked = new ArrayList<>();
+            float maxPowerGeneration = 5;
             for (int i = 0; i < livePvDataPicked.size(); i++) {
                 LivePvDatum livePvDatum = livePvDataPicked.get(i);
-
                 float x = (float) i;
                 float y = (float) livePvDatum.getPowerGeneration();
+                maxPowerGeneration = Math.max(maxPowerGeneration, y);
                 powerPointValuesPicked.add(new PointValue(x, y));
             }
             Line powerLinePicked = new Line(powerPointValuesPicked)
@@ -305,9 +294,9 @@ public class LiveFragment extends Fragment {
                 List<PointValue> powerPointValuesComparison = new ArrayList<>();
                 for (int i = 0; i < livePvDataComparison.size(); i++) {
                     LivePvDatum livePvDatum = livePvDataComparison.get(i);
-
                     float x = (float) i;
                     float y = (float) livePvDatum.getPowerGeneration();
+                    maxPowerGeneration = Math.max(maxPowerGeneration, y);
                     powerPointValuesComparison.add(new PointValue(x, y));
                 }
                 Line powerLineComparison = new Line(powerPointValuesComparison)
@@ -322,8 +311,9 @@ public class LiveFragment extends Fragment {
             LineChartData lineChartData = new LineChartData();
             lineChartData.setLines(lines);
 
-            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            double yAxisMax = Math.max(recordPvDatum.getLivePowerGeneration(), 1.0);
+            RecordPvDatum recordPvDatum = pvDatabase.loadRecord();
+            assert recordPvDatum != null;
+            double yAxisMax = Math.max(recordPvDatum.getLivePowerGeneration(), maxPowerGeneration);
             AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
@@ -389,11 +379,7 @@ public class LiveFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with live PV data");
 
-        List<LivePvDatum> livePvDataPicked = pvDataOperations.loadLive(picked);
-        if (livePvDataPicked.size() == 0) {
-            Log.d(TAG, "No live PV data for " + picked);
-            callPvDataService(picked);
-        }
+        List<LivePvDatum> livePvDataPicked = databaseOrDownload(picked);
 
         if (isAdded() && getActivity() != null) {
             final SharedPreferences sharedPreferences = PreferenceManager.
@@ -413,30 +399,21 @@ public class LiveFragment extends Fragment {
                 endHour = 24;
             }
 
-            String liveComparison = getLiveComparison();
             DateTimeUtils.YearMonthDay comparison;
             boolean showComparison = false;
             List<LivePvDatum> livePvDataComparison = new ArrayList<>();
             List<LivePvDatum> livePvDataComparisonFullDay = new ArrayList<>();
-            switch (liveComparison) {
+            switch (getLiveComparison()) {
                 case "day":
                     showComparison = true;
                     comparison = picked.createCopy(0, 0, -1, false);
-                    livePvDataComparison = pvDataOperations.loadLive(comparison);
-                    if (livePvDataComparison.size() == 0) {
-                        Log.d(TAG, "No live PV data for " + comparison);
-                        callPvDataService(comparison);
-                    }
+                    livePvDataComparison = databaseOrDownload(comparison);
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;
                 case "year":
                     showComparison = true;
                     comparison = picked.createCopy(-1,0,0, false);
-                    livePvDataComparison = pvDataOperations.loadLive(comparison);
-                    if (livePvDataComparison.size() == 0) {
-                        Log.d(TAG, "No live PV data for " + comparison);
-                        callPvDataService(comparison);
-                    }
+                    livePvDataComparison = databaseOrDownload(comparison);
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
                     break;
             }

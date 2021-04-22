@@ -1,8 +1,9 @@
-package nl.jansipke.pvdisplay;
+package nl.jansipke.pvdisplay.download;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
@@ -10,16 +11,16 @@ import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.data.YearlyPvDatum;
 
-class PvOutputParser {
+public class PvOutputParser {
 
     private final static String LINE_SEPARATOR = ";";
     private final static String ITEM_SEPARATOR = ",";
     private final static String SECTION_SEPARATOR = ";";
 
-    PvOutputParser() {
+    public PvOutputParser() {
     }
 
-    List<DailyPvDatum> parseDaily(String data) throws ParseException {
+    public List<DailyPvDatum> parseDaily(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV daily data is empty", 0);
         }
@@ -54,7 +55,7 @@ class PvOutputParser {
         }
     }
 
-    List<LivePvDatum> parseLive(String data) throws ParseException {
+    public List<LivePvDatum> parseLive(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV live data is empty", 0);
         }
@@ -92,7 +93,7 @@ class PvOutputParser {
         }
     }
 
-    List<MonthlyPvDatum> parseMonthly(String data) throws ParseException {
+    public List<MonthlyPvDatum> parseMonthly(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV monthly data is empty", 0);
         }
@@ -121,7 +122,7 @@ class PvOutputParser {
         }
     }
 
-    StatisticPvDatum parseStatistic(String data) throws ParseException {
+    public StatisticPvDatum parseStatistic(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV statistic data is empty", 0);
         }
@@ -167,7 +168,7 @@ class PvOutputParser {
         }
     }
 
-    SystemPvDatum parseSystem(String data) throws ParseException {
+    public SystemPvDatum parseSystem(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV system data is empty", 0);
         }
@@ -204,7 +205,7 @@ class PvOutputParser {
         }
     }
 
-    List<YearlyPvDatum> parseYearly(String data) throws ParseException {
+    public List<YearlyPvDatum> parseYearly(String data) throws ParseException {
         if (data == null || data.equals("")) {
             throw new ParseException("PV yearly data is empty", 0);
         }

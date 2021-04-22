@@ -2,6 +2,7 @@ package nl.jansipke.pvdisplay.utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 
 public class FormatUtils {

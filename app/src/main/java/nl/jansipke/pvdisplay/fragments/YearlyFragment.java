@@ -1,9 +1,6 @@
 package nl.jansipke.pvdisplay.fragments;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,13 +13,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -30,12 +27,12 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
 import nl.jansipke.pvdisplay.data.YearlyPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.database.PvDatabase;
+import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
@@ -47,26 +44,16 @@ public class YearlyFragment extends Fragment {
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
-    private PvDataOperations pvDataOperations;
 
-    private void callPvDataService() {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-                if (intent.getBooleanExtra("success", true)) {
-                    updateScreen();
-                } else {
-                    Toast.makeText(context, intent.getStringExtra("message"),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
-                .registerReceiver(broadcastReceiver, intentFilter);
+    private PvDatabase pvDatabase;
+    private PvDownloader pvDownloader;
 
-        PvDataService.callYear(getContext());
+    private List<YearlyPvDatum> databaseOrDownload() {
+        List<YearlyPvDatum> data = pvDatabase.loadYearly();
+        if (data.size() == 0) {
+            pvDownloader.downloadYearly();
+        }
+        return data;
     }
 
     @Override
@@ -75,7 +62,11 @@ public class YearlyFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        pvDataOperations = new PvDataOperations(getContext());
+        pvDatabase = new PvDatabase(getContext());
+
+        pvDownloader = new PvDownloader(getContext());
+        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+        pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
     @Override
@@ -102,7 +93,7 @@ public class YearlyFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
             Log.d(TAG, "Clicked refresh");
-            callPvDataService();
+            pvDownloader.downloadYearly();
         }
 
         return super.onOptionsItemSelected(item);
@@ -119,18 +110,19 @@ public class YearlyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
+            float maxEnergyGenerated = 5;
             for (int i = 0; i < yearlyPvData.size(); i++) {
                 YearlyPvDatum yearlyPvDatum = yearlyPvData.get(i);
+                float y = ((float) yearlyPvDatum.getEnergyGenerated()) / 1000;
+                maxEnergyGenerated = Math.max(maxEnergyGenerated, y);
                 subcolumnValues = new ArrayList<>();
-                subcolumnValues.add(new SubcolumnValue(
-                        ((float) yearlyPvDatum.getEnergyGenerated()) / 1000,
-                        ChartUtils.COLORS[0]));
+                subcolumnValues.add(new SubcolumnValue(y, ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
             ColumnChartData columnChartData = new ColumnChartData(columns);
 
-            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            double yAxisMax = Math.max(recordPvDatum.getYearlyEnergyGenerated() / 1000, 1.0);
+            RecordPvDatum recordPvDatum = pvDatabase.loadRecord();
+            double yAxisMax = Math.max(recordPvDatum.getYearlyEnergyGenerated() / 1000, maxEnergyGenerated);
             AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
@@ -173,11 +165,7 @@ public class YearlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with yearly PV data");
 
-        List<YearlyPvDatum> yearlyPvData = pvDataOperations.loadYearly();
-        if (yearlyPvData.size() == 0) {
-            Log.d(TAG, "No yearly PV data");
-            callPvDataService();
-        }
+        List<YearlyPvDatum> yearlyPvData = databaseOrDownload();
 
         if (isAdded() && getActivity() != null) {
             updateTitle();

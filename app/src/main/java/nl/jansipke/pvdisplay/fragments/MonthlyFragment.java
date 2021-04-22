@@ -1,9 +1,7 @@
 package nl.jansipke.pvdisplay.fragments;
 
-import android.content.BroadcastReceiver;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,13 +17,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -37,12 +35,12 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
-import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.MonthlyPvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.database.PvDatabase;
+import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
@@ -58,27 +56,9 @@ public class MonthlyFragment extends Fragment {
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
-    private PvDataOperations pvDataOperations;
 
-    private void callPvDataService(DateTimeUtils.Year y) {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-                if (intent.getBooleanExtra("success", true)) {
-                    updateScreen();
-                } else {
-                    Toast.makeText(context, intent.getStringExtra("message"),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
-                .registerReceiver(broadcastReceiver, intentFilter);
-
-        PvDataService.callMonth(getContext(), y);
-    }
+    private PvDatabase pvDatabase;
+    private PvDownloader pvDownloader;
 
     private List<Double> createDifferences(List<MonthlyPvDatum> monthlyPvDataPicked,
                                            List<MonthlyPvDatum> monthlyPvDataComparison) {
@@ -104,13 +84,19 @@ public class MonthlyFragment extends Fragment {
         return fullYear;
     }
 
+    private List<MonthlyPvDatum> databaseOrDownload(DateTimeUtils.Year y) {
+        List<MonthlyPvDatum> data = pvDatabase.loadMonthly(y);
+        if (data.size() == 0) {
+            pvDownloader.downloadMonthly(y);
+        }
+        return data;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-
-        pvDataOperations = new PvDataOperations(getContext());
 
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
@@ -118,6 +104,12 @@ public class MonthlyFragment extends Fragment {
         } else {
             picked = DateTimeUtils.Year.getToday();
         }
+
+        pvDatabase = new PvDatabase(getContext());
+
+        pvDownloader = new PvDownloader(getContext());
+        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+        pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
     @Override
@@ -144,27 +136,26 @@ public class MonthlyFragment extends Fragment {
 
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
         comparisonButton.setText(monthlyComparison);
-        comparisonButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                final SharedPreferences sharedPreferences = PreferenceManager.
-                        getDefaultSharedPreferences(getContext());
-                String monthlyComparison = sharedPreferences.getString(getResources().
-                        getString(R.string.preferences_key_monthly_comparison), "year");
-                switch (monthlyComparison) {
-                    case "off": monthlyComparison = "year"; break;
-                    case "year": monthlyComparison = "off"; break;
-                }
-                sharedPreferences.edit().putString(getResources().
-                        getString(R.string.preferences_key_monthly_comparison), monthlyComparison).apply();
-                ((Button) view).setText(monthlyComparison);
-                updateScreen();
+        comparisonButton.setOnClickListener(view -> {
+            final SharedPreferences sharedPreferences1 = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            String monthlyComparison1 = sharedPreferences1.getString(getResources().
+                    getString(R.string.preferences_key_monthly_comparison), "year");
+            switch (monthlyComparison1) {
+                case "off": monthlyComparison1 = "year"; break;
+                case "year": monthlyComparison1 = "off"; break;
             }
+            sharedPreferences1.edit().putString(getResources().
+                    getString(R.string.preferences_key_monthly_comparison), monthlyComparison1).apply();
+            ((Button) view).setText(monthlyComparison1);
+            updateScreen();
         });
 
         updateScreen();
         return fragmentView;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -185,7 +176,7 @@ public class MonthlyFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService(picked);
+                pvDownloader.downloadMonthly(picked);
                 break;
         }
 
@@ -214,12 +205,13 @@ public class MonthlyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
+            float maxEnergyGenerated = 5;
             for (int i = 0; i < monthlyPvDataPicked.size(); i++) {
                 MonthlyPvDatum monthlyPvDatum = monthlyPvDataPicked.get(i);
+                float y = ((float) monthlyPvDatum.getEnergyGenerated()) / 1000;
                 subcolumnValues = new ArrayList<>();
-                subcolumnValues.add(new SubcolumnValue(
-                        ((float) monthlyPvDatum.getEnergyGenerated()) / 1000,
-                        ChartUtils.COLORS[0]));
+                maxEnergyGenerated = Math.max(maxEnergyGenerated, y);
+                subcolumnValues.add(new SubcolumnValue(y, ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
             List<Line> lines = new ArrayList<>();
@@ -227,8 +219,9 @@ public class MonthlyFragment extends Fragment {
             if (showComparison) {
                 for (int i = 0; i < monthlyPvDataComparison.size(); i++) {
                     MonthlyPvDatum previousYearMonthlyPvDatum = monthlyPvDataComparison.get(i);
-                    lineValues.add(new PointValue(i,
-                            ((float) previousYearMonthlyPvDatum.getEnergyGenerated()) / 1000));
+                    float y = ((float) previousYearMonthlyPvDatum.getEnergyGenerated()) / 1000;
+                    maxEnergyGenerated = Math.max(maxEnergyGenerated, y);
+                    lineValues.add(new PointValue(i, y));
                 }
             }
             Line line = new Line(lineValues);
@@ -238,8 +231,8 @@ public class MonthlyFragment extends Fragment {
             ComboLineColumnChartData comboLineColumnChartData = new ComboLineColumnChartData(
                     new ColumnChartData(columns), new LineChartData(lines));
 
-            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            double yAxisMax = Math.max(recordPvDatum.getMonthlyEnergyGenerated() / 1000, 1.0);
+            RecordPvDatum recordPvDatum = pvDatabase.loadRecord();
+            double yAxisMax = Math.max(recordPvDatum.getMonthlyEnergyGenerated() / 1000, maxEnergyGenerated);
             AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
@@ -301,11 +294,7 @@ public class MonthlyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with monthly PV data");
 
-        List<MonthlyPvDatum> monthlyPvDataPicked = pvDataOperations.loadMonthly(picked);
-        if (monthlyPvDataPicked.size() == 0) {
-            Log.d(TAG, "No monthly PV data for " + picked.year);
-            callPvDataService(picked);
-        }
+        List<MonthlyPvDatum> monthlyPvDataPicked = databaseOrDownload(picked);
 
         if (isAdded() && getActivity() != null) {
             final SharedPreferences sharedPreferences = PreferenceManager.
@@ -319,11 +308,7 @@ public class MonthlyFragment extends Fragment {
             if ("year".equals(monthlyComparison)) {
                 showComparison = true;
                 comparison = picked.createCopy(-1, false);
-                monthlyPvDataComparison = pvDataOperations.loadMonthly(comparison);
-                if (monthlyPvDataComparison.size() == 0) {
-                    Log.d(TAG, "No daily PV data for " + comparison);
-                    callPvDataService(comparison);
-                }
+                monthlyPvDataComparison = databaseOrDownload(comparison);
                 monthlyPvDataComparisonFullYear = createFullYear(comparison, monthlyPvDataComparison);
             }
 

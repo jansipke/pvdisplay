@@ -1,9 +1,7 @@
 package nl.jansipke.pvdisplay.fragments;
 
-import android.content.BroadcastReceiver;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -21,15 +19,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -41,12 +39,12 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
-import nl.jansipke.pvdisplay.PvDataService;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
-import nl.jansipke.pvdisplay.database.PvDataOperations;
+import nl.jansipke.pvdisplay.database.PvDatabase;
+import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
 
@@ -63,27 +61,9 @@ public class DailyFragment extends Fragment {
 
     private View fragmentView;
     private LayoutInflater layoutInflater;
-    private PvDataOperations pvDataOperations;
 
-    private void callPvDataService(DateTimeUtils.YearMonth ym) {
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-                if (intent.getBooleanExtra("success", true)) {
-                    updateScreen();
-                } else {
-                    Toast.makeText(context, intent.getStringExtra("message"),
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-        };
-        IntentFilter intentFilter = new IntentFilter(PvDataService.class.getName());
-        LocalBroadcastManager.getInstance(Objects.requireNonNull(getContext()))
-                .registerReceiver(broadcastReceiver, intentFilter);
-
-        PvDataService.callDay(getContext(), ym);
-    }
+    private PvDatabase pvDatabase;
+    private PvDownloader pvDownloader;
 
     private List<Double> createDifferences(List<DailyPvDatum> dailyPvDataPicked,
                                            List<DailyPvDatum> dailyPvDataComparison) {
@@ -109,6 +89,21 @@ public class DailyFragment extends Fragment {
             fullMonth.set(fullMonthIndex, dailyPvDatum);
         }
         return fullMonth;
+    }
+
+    private List<DailyPvDatum> databaseOrDownload(DateTimeUtils.YearMonth ym) {
+        List<DailyPvDatum> data = pvDatabase.loadDaily(ym);
+        if (data.size() == 0) {
+            pvDownloader.downloadDaily(ym);
+        }
+        return data;
+    }
+
+    private String getDailyComparison() {
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        return sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_daily_comparison), "year");
     }
 
     private Drawable getDrawable(String condition) {
@@ -141,8 +136,6 @@ public class DailyFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        pvDataOperations = new PvDataOperations(getContext());
-
         if (savedInstanceState != null) {
             Log.d(TAG, "Loading fragment state");
             picked = new DateTimeUtils.YearMonth(
@@ -151,6 +144,12 @@ public class DailyFragment extends Fragment {
         } else {
             picked = DateTimeUtils.YearMonth.getToday();
         }
+
+        pvDatabase = new PvDatabase(getContext());
+
+        pvDownloader = new PvDownloader(getContext());
+        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+        pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
     @Override
@@ -177,27 +176,26 @@ public class DailyFragment extends Fragment {
 
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
         comparisonButton.setText(dailyComparison);
-        comparisonButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                final SharedPreferences sharedPreferences = PreferenceManager.
-                        getDefaultSharedPreferences(getContext());
-                String dailyComparison = sharedPreferences.getString(getResources().
-                        getString(R.string.preferences_key_daily_comparison), "year");
-                switch (dailyComparison) {
-                    case "off": dailyComparison = "year"; break;
-                    case "year": dailyComparison = "off"; break;
-                }
-                sharedPreferences.edit().putString(getResources().
-                        getString(R.string.preferences_key_daily_comparison), dailyComparison).apply();
-                ((Button) view).setText(dailyComparison);
-                updateScreen();
+        comparisonButton.setOnClickListener(view -> {
+            final SharedPreferences sharedPreferences1 = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            String dailyComparison1 = sharedPreferences1.getString(getResources().
+                    getString(R.string.preferences_key_daily_comparison), "year");
+            switch (dailyComparison1) {
+                case "off": dailyComparison1 = "year"; break;
+                case "year": dailyComparison1 = "off"; break;
             }
+            sharedPreferences1.edit().putString(getResources().
+                    getString(R.string.preferences_key_daily_comparison), dailyComparison1).apply();
+            ((Button) view).setText(dailyComparison1);
+            updateScreen();
         });
 
         updateScreen();
         return fragmentView;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -218,8 +216,10 @@ public class DailyFragment extends Fragment {
                 break;
             case R.id.action_refresh:
                 Log.d(TAG, "Clicked refresh");
-                callPvDataService(picked);
-                break;
+                pvDownloader.downloadDaily(picked);
+                if ("year".equals(getDailyComparison())) {
+                    pvDownloader.downloadDaily(picked.createCopy(-1, 0, false));
+                }
         }
 
         return super.onOptionsItemSelected(item);
@@ -248,12 +248,13 @@ public class DailyFragment extends Fragment {
 
             List<Column> columns = new ArrayList<>();
             List<SubcolumnValue> subcolumnValues;
+            double maxEnergyGenerated = 5;
             for (int i = 0; i < dailyPvDataPicked.size(); i++) {
                 DailyPvDatum dailyPvDatum = dailyPvDataPicked.get(i);
+                float y = ((float) dailyPvDatum.getEnergyGenerated()) / 1000;
                 subcolumnValues = new ArrayList<>();
-                subcolumnValues.add(new SubcolumnValue(
-                        ((float) dailyPvDatum.getEnergyGenerated()) / 1000,
-                        ChartUtils.COLORS[0]));
+                maxEnergyGenerated = Math.max(maxEnergyGenerated, y);
+                subcolumnValues.add(new SubcolumnValue(y, ChartUtils.COLORS[0]));
                 columns.add(new Column(subcolumnValues));
             }
 
@@ -262,8 +263,9 @@ public class DailyFragment extends Fragment {
             if (showComparison) {
                 for (int i = 0; i < dailyPvDataComparison.size(); i++) {
                     DailyPvDatum dailyPvDatum = dailyPvDataComparison.get(i);
-                    lineValues.add(new PointValue(i,
-                            ((float) dailyPvDatum.getEnergyGenerated()) / 1000));
+                    float y = ((float) dailyPvDatum.getEnergyGenerated()) / 1000;
+                    maxEnergyGenerated = Math.max(maxEnergyGenerated, y);
+                    lineValues.add(new PointValue(i, y));
                 }
             }
             Line line = new Line(lineValues);
@@ -273,8 +275,8 @@ public class DailyFragment extends Fragment {
             ComboLineColumnChartData comboLineColumnChartData = new ComboLineColumnChartData(
                     new ColumnChartData(columns), new LineChartData(lines));
 
-            RecordPvDatum recordPvDatum = pvDataOperations.loadRecord();
-            double yAxisMax = Math.max(recordPvDatum.getDailyEnergyGenerated() / 1000, 1.0);
+            RecordPvDatum recordPvDatum = pvDatabase.loadRecord();
+            double yAxisMax = Math.max(recordPvDatum.getDailyEnergyGenerated() / 1000, maxEnergyGenerated);
             AxisLabelValues axisLabelValues = FormatUtils.getAxisLabelValues(yAxisMax);
             Axis yAxis = Axis
                     .generateAxisFromRange(0, axisLabelValues.getMax(), axisLabelValues.getStep())
@@ -347,29 +349,17 @@ public class DailyFragment extends Fragment {
     public void updateScreen() {
         Log.d(TAG, "Updating screen with daily PV data");
 
-        List<DailyPvDatum> dailyPvDataPicked = pvDataOperations.loadDaily(picked);
-        if (dailyPvDataPicked.size() == 0) {
-            Log.d(TAG, "No daily PV data for " + picked);
-            callPvDataService(picked);
-        }
+        List<DailyPvDatum> dailyPvDataPicked = databaseOrDownload(picked);
 
         if (isAdded() && getActivity() != null) {
-            final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
-            String dailyComparison = sharedPreferences.getString(getResources().
-                    getString(R.string.preferences_key_daily_comparison), "year");
             DateTimeUtils.YearMonth comparison;
             boolean showComparison = false;
             List<DailyPvDatum> dailyPvDataComparison = new ArrayList<>();
             List<DailyPvDatum> dailyPvDataComparisonFullMonth = new ArrayList<>();
-            if ("year".equals(dailyComparison)) {
+            if ("year".equals(getDailyComparison())) {
                 showComparison = true;
                 comparison = picked.createCopy(-1, 0, false);
-                dailyPvDataComparison = pvDataOperations.loadDaily(comparison);
-                if (dailyPvDataComparison.size() == 0) {
-                    Log.d(TAG, "No daily PV data for " + comparison);
-                    callPvDataService(comparison);
-                }
+                dailyPvDataComparison = databaseOrDownload(comparison);
                 dailyPvDataComparisonFullMonth = createFullMonth(comparison, dailyPvDataComparison);
             }
 
