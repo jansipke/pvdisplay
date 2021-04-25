@@ -53,9 +53,9 @@ public class LivePvDatum {
 
     @NonNull
     public String toString() {
-        return "LivePvDatum[" + DateTimeUtils.formatDateTime(year, month, day, hour, minute) +
+        return "LivePvDatum{" + DateTimeUtils.formatDateTime(year, month, day, hour, minute) +
                 " powerGeneration=" + powerGeneration +
                 ", energyGeneration=" + energyGeneration +
-                "]";
+                "}";
     }
 }

@@ -22,8 +22,8 @@ public class YearlyPvDatum {
 
     @NonNull
     public String toString() {
-        return "YearlyPvDatum[" + year +
+        return "YearlyPvDatum{" + year +
                 ", energyGenerated=" + energyGenerated +
-                "]";
+                "}";
     }
 }

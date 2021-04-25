@@ -6,24 +6,36 @@ public class SystemPvDatum {
 
     private final String systemName;
     private final int systemSize;
+    private final String postcode;
     private final int numberOfPanels;
     private final int panelPower;
     private final String panelBrand;
+    private final int inverters;
     private final int inverterPower;
     private final String inverterBrand;
+    private final String orientation;
+    private final double arrayTilt;
+    private final String shade;
+    private final String installDate;
     private final double latitude;
     private final double longitude;
 
-    public SystemPvDatum(String systemName, int systemSize, int numberOfPanels, int panelPower,
-                         String panelBrand, int inverterPower, String inverterBrand,
-                         double latitude, double longitude) {
+    public SystemPvDatum(String systemName, int systemSize, String postcode, int numberOfPanels, int panelPower,
+                         String panelBrand, int inverters, int inverterPower, String inverterBrand, String orientation,
+                         double arrayTilt, String shade, String installDate, double latitude, double longitude) {
         this.systemName = systemName;
         this.systemSize = systemSize;
+        this.postcode = postcode;
         this.numberOfPanels = numberOfPanels;
         this.panelPower = panelPower;
         this.panelBrand = panelBrand;
+        this.inverters = inverters;
         this.inverterPower = inverterPower;
         this.inverterBrand = inverterBrand;
+        this.orientation = orientation;
+        this.arrayTilt = arrayTilt;
+        this.shade = shade;
+        this.installDate = installDate;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -34,6 +46,10 @@ public class SystemPvDatum {
 
     public int getSystemSize() {
         return systemSize;
+    }
+
+    public String getPostcode() {
+        return postcode;
     }
 
     public int getNumberOfPanels() {
@@ -48,12 +64,32 @@ public class SystemPvDatum {
         return panelBrand;
     }
 
+    public int getInverters() {
+        return inverters;
+    }
+
     public int getInverterPower() {
         return inverterPower;
     }
 
     public String getInverterBrand() {
         return inverterBrand;
+    }
+
+    public String getOrientation() {
+        return orientation;
+    }
+
+    public double getArrayTilt() {
+        return arrayTilt;
+    }
+
+    public String getShade() {
+        return shade;
+    }
+
+    public String getInstallDate() {
+        return installDate;
     }
 
     public double getLatitude() {
@@ -66,16 +102,22 @@ public class SystemPvDatum {
 
     @NonNull
     public String toString() {
-        return "SystemPvDatum[" +
+        return "SystemPvDatum{" +
                 "systemName='" + systemName + '\'' +
                 ", systemSize=" + systemSize +
+                ", postcode='" + postcode + '\'' +
                 ", numberOfPanels=" + numberOfPanels +
                 ", panelPower=" + panelPower +
                 ", panelBrand='" + panelBrand + '\'' +
+                ", inverters=" + inverters +
                 ", inverterPower=" + inverterPower +
                 ", inverterBrand='" + inverterBrand + '\'' +
+                ", orientation='" + orientation + '\'' +
+                ", arrayTilt=" + arrayTilt +
+                ", shade='" + shade + '\'' +
+                ", installDate='" + installDate + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                "]";
+                "}";
     }
 }

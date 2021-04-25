@@ -48,10 +48,10 @@ public class DailyPvDatum {
 
     @NonNull
     public String toString() {
-        return "DailyPvDatum[" + new DateTimeUtils.YearMonthDay(year, month, day) +
+        return "DailyPvDatum{" + new DateTimeUtils.YearMonthDay(year, month, day) +
                 ", energyGenerated=" + energyGenerated +
                 ", peakPower=" + peakPower +
                 ", condition=" + condition +
-                "]";
+                "}";
     }
 }

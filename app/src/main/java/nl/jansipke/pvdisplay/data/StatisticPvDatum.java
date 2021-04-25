@@ -1,8 +1,8 @@
 package nl.jansipke.pvdisplay.data;
 
 import androidx.annotation.NonNull;
+import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
-@SuppressWarnings("unused")
 public class StatisticPvDatum {
 
     private final double energyGenerated;
@@ -117,7 +117,7 @@ public class StatisticPvDatum {
 
     @NonNull
     public String toString() {
-        return "StatisticPvDatum[" +
+        return "StatisticPvDatum{" +
                 "energyGenerated=" + energyGenerated +
                 ", energyExported=" + energyExported +
                 ", averageGeneration=" + averageGeneration +
@@ -125,16 +125,10 @@ public class StatisticPvDatum {
                 ", maximumGeneration=" + maximumGeneration +
                 ", averageEfficiency=" + averageEfficiency +
                 ", outputs=" + outputs +
-                ", actualDateFromYear=" + actualDateFromYear +
-                ", actualDateFromMonth=" + actualDateFromMonth +
-                ", actualDateFromDay=" + actualDateFromDay +
-                ", actualDateToYear=" + actualDateToYear +
-                ", actualDateToMonth=" + actualDateToMonth +
-                ", actualDateToDay=" + actualDateToDay +
+                ", actualDateFrom=" + new DateTimeUtils.YearMonthDay(actualDateFromYear, actualDateFromMonth, actualDateFromDay) +
+                ", actualDateTo=" + new DateTimeUtils.YearMonthDay(actualDateToYear, actualDateToMonth, actualDateToDay) +
                 ", recordEfficiency=" + recordEfficiency +
-                ", recordDateYear=" + recordDateYear +
-                ", recordDateMonth=" + recordDateMonth +
-                ", recordDateDay=" + recordDateDay +
-                "]";
+                ", recordDate=" + new DateTimeUtils.YearMonthDay(recordDateYear, recordDateMonth, recordDateDay) +
+                "}";
     }
 }

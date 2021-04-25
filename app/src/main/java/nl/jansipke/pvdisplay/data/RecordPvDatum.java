@@ -51,11 +51,11 @@ public class RecordPvDatum {
 
     @NonNull
     public String toString() {
-        return "RecordPvDatum[" +
+        return "RecordPvDatum{" +
                 "livePowerGeneration=" + livePowerGeneration +
                 ", dailyEnergyGenerated=" + dailyEnergyGenerated +
                 ", monthlyEnergyGenerated=" + monthlyEnergyGenerated +
                 ", yearlyEnergyGenerated=" + yearlyEnergyGenerated +
-                ']';
+                '}';
     }
 }

@@ -189,21 +189,33 @@ public class PvOutputParser {
             }
             String systemName = items[0];
             int systemSize = Integer.parseInt(items[1]);
+            String postcode = items[2];
             int numberOfPanels = Integer.parseInt(items[3]);
             int panelPower = Integer.parseInt(items[4]);
             String panelBrand = items[5];
+            int inverters = Integer.parseInt(items[6]);
             int inverterPower = Integer.parseInt(items[7]);
             String inverterBrand = items[8];
+            String orientation = items[9];
+            double arrayTilt = Double.parseDouble(items[10]);
+            String shade = items[11];
+            String installDate = items[12];
             double latitude = Double.parseDouble(items[13]);
             double longitude = Double.parseDouble(items[14]);
             return new SystemPvDatum(
                     systemName,
                     systemSize,
+                    postcode,
                     numberOfPanels,
                     panelPower,
                     panelBrand,
+                    inverters,
                     inverterPower,
                     inverterBrand,
+                    orientation,
+                    arrayTilt,
+                    shade,
+                    installDate,
                     latitude,
                     longitude);
         } catch (Exception e) {
