@@ -197,7 +197,7 @@ public class PvOutputParser {
             int inverterPower = Integer.parseInt(items[7]);
             String inverterBrand = items[8];
             String orientation = items[9];
-            double arrayTilt = Double.parseDouble(items[10]);
+            String arrayTilt = items[10];
             String shade = items[11];
             String installDate = items[12];
             double latitude = Double.parseDouble(items[13]);

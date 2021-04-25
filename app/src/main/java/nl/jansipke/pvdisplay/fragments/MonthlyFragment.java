@@ -92,6 +92,13 @@ public class MonthlyFragment extends Fragment {
         return data;
     }
 
+    private String getMonthlyComparison() {
+        final SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getContext());
+        return sharedPreferences.getString(getResources().
+                getString(R.string.preferences_key_monthly_comparison), "year");
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,25 +136,19 @@ public class MonthlyFragment extends Fragment {
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_month, container, false);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String monthlyComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_monthly_comparison), "year");
-
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
-        comparisonButton.setText(monthlyComparison);
+        comparisonButton.setText(getMonthlyComparison());
         comparisonButton.setOnClickListener(view -> {
-            final SharedPreferences sharedPreferences1 = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
-            String monthlyComparison1 = sharedPreferences1.getString(getResources().
-                    getString(R.string.preferences_key_monthly_comparison), "year");
-            switch (monthlyComparison1) {
-                case "off": monthlyComparison1 = "year"; break;
-                case "year": monthlyComparison1 = "off"; break;
+            String monthlyComparison = getMonthlyComparison();
+            switch (monthlyComparison) {
+                case "off": monthlyComparison = "year"; break;
+                case "year": monthlyComparison = "off"; break;
             }
-            sharedPreferences1.edit().putString(getResources().
-                    getString(R.string.preferences_key_monthly_comparison), monthlyComparison1).apply();
-            ((Button) view).setText(monthlyComparison1);
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            sharedPreferences.edit().putString(getResources().
+                    getString(R.string.preferences_key_monthly_comparison), monthlyComparison).apply();
+            ((Button) view).setText(monthlyComparison);
             updateScreen();
         });
 

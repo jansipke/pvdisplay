@@ -16,7 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
-    private final static String WEBSITE_URL = "https://jansipke.nl/pv-display";
+    private final static String WEBSITE_ABOUT = "https://jansipke.nl/pv-display/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_about:
                 Log.d(TAG, "Clicked about");
-                Uri webpage = Uri.parse(WEBSITE_URL);
-                intent = new Intent(Intent.ACTION_VIEW, webpage);
+                Uri webpageAbout = Uri.parse(WEBSITE_ABOUT);
+                intent = new Intent(Intent.ACTION_VIEW, webpageAbout);
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
                 }

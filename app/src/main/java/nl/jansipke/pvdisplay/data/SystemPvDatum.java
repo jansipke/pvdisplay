@@ -14,7 +14,7 @@ public class SystemPvDatum {
     private final int inverterPower;
     private final String inverterBrand;
     private final String orientation;
-    private final double arrayTilt;
+    private final String arrayTilt;
     private final String shade;
     private final String installDate;
     private final double latitude;
@@ -22,7 +22,7 @@ public class SystemPvDatum {
 
     public SystemPvDatum(String systemName, int systemSize, String postcode, int numberOfPanels, int panelPower,
                          String panelBrand, int inverters, int inverterPower, String inverterBrand, String orientation,
-                         double arrayTilt, String shade, String installDate, double latitude, double longitude) {
+                         String arrayTilt, String shade, String installDate, double latitude, double longitude) {
         this.systemName = systemName;
         this.systemSize = systemSize;
         this.postcode = postcode;
@@ -80,7 +80,7 @@ public class SystemPvDatum {
         return orientation;
     }
 
-    public double getArrayTilt() {
+    public String getArrayTilt() {
         return arrayTilt;
     }
 

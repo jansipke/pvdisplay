@@ -82,7 +82,11 @@ public class DateTimeUtils {
 
         public String asString(boolean dashes) {
             StringBuilder sb = new StringBuilder();
-            sb.append(year);
+            if (year > 0) {
+                sb.append(year);
+            } else {
+                sb.append("0000");
+            }
             if (dashes) {
                 sb.append("-");
             }
@@ -142,7 +146,11 @@ public class DateTimeUtils {
 
         public String asString(boolean dashes) {
             StringBuilder sb = new StringBuilder();
-            sb.append(year);
+            if (year > 0) {
+                sb.append(year);
+            } else {
+                sb.append("0000");
+            }
             if (dashes) {
                 sb.append("-");
             }

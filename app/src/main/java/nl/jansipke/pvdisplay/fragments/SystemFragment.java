@@ -52,7 +52,7 @@ public class SystemFragment extends Fragment {
         SystemPvDatum datum = pvDatabase.loadSystem();
         if (datum == null) {
             pvDownloader.downloadSystem();
-            datum = new SystemPvDatum("Unknown system name", 0, "Unknown postcode",0, 0, "Unknown panel brand", 0, 0, "Unknown inverter brand", "Unknown orientation", 0, "Unknown shade", "Unknown install date", 0, 0);
+            datum = new SystemPvDatum("Unknown system name", 0, "Unknown postcode",0, 0, "Unknown panel brand", 0, 0, "Unknown inverter brand", "Unknown orientation", "Unknown array tilt", "Unknown shade", "Unknown install date", 0, 0);
         }
         return datum;
     }

@@ -188,21 +188,20 @@ public class LiveFragment extends Fragment {
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_live, container, false);
 
-        String liveComparison = getLiveComparison();
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
-        comparisonButton.setText(liveComparison);
+        comparisonButton.setText(getLiveComparison());
         comparisonButton.setOnClickListener(view -> {
-            String liveComparison1 = getLiveComparison();
-            switch (liveComparison1) {
-                case "off": liveComparison1 = "day"; break;
-                case "day": liveComparison1 = "year"; break;
-                case "year": liveComparison1 = "off"; break;
+            String liveComparison = getLiveComparison();
+            switch (liveComparison) {
+                case "off": liveComparison = "day"; break;
+                case "day": liveComparison = "year"; break;
+                case "year": liveComparison = "off"; break;
             }
             final SharedPreferences sharedPreferences = PreferenceManager.
                     getDefaultSharedPreferences(getContext());
             sharedPreferences.edit().putString(getResources().
-                    getString(R.string.preferences_key_live_comparison), liveComparison1).apply();
-            ((Button) view).setText(liveComparison1);
+                    getString(R.string.preferences_key_live_comparison), liveComparison).apply();
+            ((Button) view).setText(liveComparison);
             updateScreen();
         });
 

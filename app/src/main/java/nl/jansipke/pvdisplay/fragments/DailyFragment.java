@@ -169,25 +169,19 @@ public class DailyFragment extends Fragment {
         layoutInflater = inflater;
         fragmentView = inflater.inflate(R.layout.fragment_day, container, false);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
-        String dailyComparison = sharedPreferences.getString(getResources().
-                getString(R.string.preferences_key_daily_comparison), "year");
-
         Button comparisonButton = fragmentView.findViewById(R.id.comparison_button);
-        comparisonButton.setText(dailyComparison);
+        comparisonButton.setText(getDailyComparison());
         comparisonButton.setOnClickListener(view -> {
-            final SharedPreferences sharedPreferences1 = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
-            String dailyComparison1 = sharedPreferences1.getString(getResources().
-                    getString(R.string.preferences_key_daily_comparison), "year");
-            switch (dailyComparison1) {
-                case "off": dailyComparison1 = "year"; break;
-                case "year": dailyComparison1 = "off"; break;
+            String dailyComparison = getDailyComparison();
+            switch (dailyComparison) {
+                case "off": dailyComparison = "year"; break;
+                case "year": dailyComparison = "off"; break;
             }
-            sharedPreferences1.edit().putString(getResources().
-                    getString(R.string.preferences_key_daily_comparison), dailyComparison1).apply();
-            ((Button) view).setText(dailyComparison1);
+            final SharedPreferences sharedPreferences = PreferenceManager.
+                    getDefaultSharedPreferences(getContext());
+            sharedPreferences.edit().putString(getResources().
+                    getString(R.string.preferences_key_daily_comparison), dailyComparison).apply();
+            ((Button) view).setText(dailyComparison);
             updateScreen();
         });
 

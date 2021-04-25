@@ -8,24 +8,20 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 
 public class FetchActivity extends AppCompatActivity {
 
-    private final static int NR_DOWNLOADS = 6;
     private final static String TAG = FetchActivity.class.getSimpleName();
+
+    private static int nrDownloads = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fetch);
-
-        ProgressBar progressBar = findViewById(R.id.progress_bar);
-        progressBar.setMax(NR_DOWNLOADS);
 
         Button button = findViewById(R.id.cancel_button);
         button.setOnClickListener(view -> {
@@ -40,21 +36,58 @@ public class FetchActivity extends AppCompatActivity {
                 getString(R.string.preferences_key_auto_refresh), false);
         if (autoRefresh) {
             PvDownloader pvDownloader = new PvDownloader(getApplicationContext());
+
+            pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday());
+            nrDownloads++;
+            switch(sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_live_comparison), "day")) {
+                case "day":
+                    pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(0, 0, -1, false));
+                    nrDownloads++;
+                    break;
+                case "year":
+                    pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(-1, 0, 0, false));
+                    nrDownloads++;
+                    break;
+            };
+
+            pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday());
+            nrDownloads++;
+            if ("year".equals(sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_daily_comparison), "year"))) {
+                pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday().createCopy(-1, 0, false));
+                nrDownloads++;
+            }
+
+            pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday());
+            nrDownloads++;
+            if ("year".equals(sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_monthly_comparison), "year"))) {
+                pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday().createCopy(-1, false));
+                nrDownloads++;
+            }
+
+            pvDownloader.downloadYearly();
+            nrDownloads++;
+
+            pvDownloader.downloadSystem();
+            nrDownloads++;
+
+            pvDownloader.downloadStatistic();
+            nrDownloads++;
+
+            ProgressBar progressBar = findViewById(R.id.progress_bar);
+            progressBar.setMax(nrDownloads);
+
             pvDownloader.getDownloadTotalCount().observe(this, data -> {
-                Log.d(TAG, "Downloaded " + data + " of " + NR_DOWNLOADS + " pieces of data");
+                Log.d(TAG, "Downloaded " + data + " of " + nrDownloads + " pieces of data");
                 progressBar.setProgress(data);
-                if (data == NR_DOWNLOADS) {
+                if (data == nrDownloads) {
                     Intent mainIntent = new Intent(FetchActivity.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();
                 }
             });
-            pvDownloader.downloadSystem();
-            pvDownloader.downloadStatistic();
-            pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday());
-            pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday());
-            pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday());
-            pvDownloader.downloadYearly();
         } else {
             Intent intent = new Intent(FetchActivity.this, MainActivity.class);
             startActivity(intent);

@@ -8,8 +8,8 @@ android {
         applicationId "nl.jansipke.pvdisplay"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 19
-        versionName "3.3"
+        versionCode 21
+        versionName "3.5"
     }
     buildTypes {
         release {
