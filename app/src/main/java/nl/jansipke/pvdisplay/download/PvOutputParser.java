@@ -132,9 +132,11 @@ public class PvOutputParser {
                 throw new ParseException("PV statistic data is not valid", 1);
             }
             double energyGenerated = Double.parseDouble(items[0]);
+            double energyExported = Double.parseDouble(items[1]);
             double averageGeneration = Double.parseDouble(items[2]);
             double minimumGeneration = Double.parseDouble(items[3]);
             double maximumGeneration = Double.parseDouble(items[4]);
+            double averageEfficiency = Double.parseDouble(items[5]);
             int outputs = Integer.parseInt(items[6]);
             String actualDateFrom = items[7];
             int actualDateFromYear = Integer.parseInt(actualDateFrom.substring(0, 4));
@@ -144,15 +146,18 @@ public class PvOutputParser {
             int actualDateToYear = Integer.parseInt(actualDateTo.substring(0, 4));
             int actualDateToMonth = Integer.parseInt(actualDateTo.substring(4, 6));
             int actualDateToDay = Integer.parseInt(actualDateTo.substring(6, 8));
+            double recordEfficiency = Double.parseDouble(items[9]);
             String recordDate = items[10];
             int recordDateYear = Integer.parseInt(recordDate.substring(0, 4));
             int recordDateMonth = Integer.parseInt(recordDate.substring(4, 6));
             int recordDateDay = Integer.parseInt(recordDate.substring(6, 8));
             return new StatisticPvDatum(
                     energyGenerated,
+                    energyExported,
                     averageGeneration,
                     minimumGeneration,
                     maximumGeneration,
+                    averageEfficiency,
                     outputs,
                     actualDateFromYear,
                     actualDateFromMonth,
@@ -160,6 +165,7 @@ public class PvOutputParser {
                     actualDateToYear,
                     actualDateToMonth,
                     actualDateToDay,
+                    recordEfficiency,
                     recordDateYear,
                     recordDateMonth,
                     recordDateDay);

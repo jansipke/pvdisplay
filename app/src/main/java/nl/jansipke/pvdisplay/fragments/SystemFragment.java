@@ -43,7 +43,7 @@ public class SystemFragment extends Fragment {
         StatisticPvDatum datum = pvDatabase.loadStatistic();
         if (datum == null) {
             pvDownloader.downloadStatistic();
-            datum = new StatisticPvDatum(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            datum = new StatisticPvDatum(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
         return datum;
     }
@@ -191,27 +191,49 @@ public class SystemFragment extends Fragment {
             });
             linearLayout.addView(savingsCard);
 
-            // Statistics
-            View statisticsCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
-            ((ImageView) statisticsCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.statistics);
-            ((ImageView) statisticsCard.findViewById(R.id.card_right_image)).setImageDrawable(null);
-            ((TextView) statisticsCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_statistics));
-            final String statistics = getResources().getString(R.string.value_statistics_total,
+            // Statistics - total
+            View statisticsTotalCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) statisticsTotalCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.total);
+            ((ImageView) statisticsTotalCard.findViewById(R.id.card_right_image)).setImageDrawable(null);
+            ((TextView) statisticsTotalCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_total));
+            final String statisticsTotal = getResources().getString(R.string.value_statistics_total,
                     FormatUtils.ENERGY_FORMAT.format(
                             statisticPvDatum.getEnergyGenerated() / 1000),
-                    statisticPvDatum.getOutputs()) + "\n" +
-                    getResources().getString(R.string.value_statistics_average,
-                            FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getAverageGeneration() / 1000)) + "\n" +
-                    getResources().getString(R.string.value_statistics_record,
-                            FormatUtils.ENERGY_FORMAT.format(
-                                    statisticPvDatum.getMaximumGeneration() / 1000),
-                            new DateTimeUtils.YearMonthDay(
-                                    statisticPvDatum.getRecordDateYear(),
-                                    statisticPvDatum.getRecordDateMonth(),
-                                    statisticPvDatum.getRecordDateDay()).asString(true));
-            ((TextView) statisticsCard.findViewById(R.id.card_text)).setText(statistics);
-            linearLayout.addView(statisticsCard);
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getEnergyExported() / 1000),
+                    statisticPvDatum.getOutputs());
+            ((TextView) statisticsTotalCard.findViewById(R.id.card_text)).setText(statisticsTotal);
+            linearLayout.addView(statisticsTotalCard);
+
+            // Statistics - average
+            View statisticsAverageCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) statisticsAverageCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.average);
+            ((ImageView) statisticsAverageCard.findViewById(R.id.card_right_image)).setImageDrawable(null);
+            ((TextView) statisticsAverageCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_average));
+            final String statisticsAverage = getResources().getString(R.string.value_statistics_average,
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getAverageGeneration() / 1000),
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getAverageEfficiency()));
+            ((TextView) statisticsAverageCard.findViewById(R.id.card_text)).setText(statisticsAverage);
+            linearLayout.addView(statisticsAverageCard);
+
+            // Statistics - record
+            View statisticsRecordCard = layoutInflater.inflate(R.layout.card_system, linearLayout, false);
+            ((ImageView) statisticsRecordCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.record);
+            ((ImageView) statisticsRecordCard.findViewById(R.id.card_right_image)).setImageDrawable(null);
+            ((TextView) statisticsRecordCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_record));
+            final String statisticsRecord = getResources().getString(R.string.value_statistics_record,
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getMaximumGeneration() / 1000),
+                    new DateTimeUtils.YearMonthDay(
+                            statisticPvDatum.getRecordDateYear(),
+                            statisticPvDatum.getRecordDateMonth(),
+                            statisticPvDatum.getRecordDateDay()).asString(true),
+                    FormatUtils.ENERGY_FORMAT.format(
+                            statisticPvDatum.getRecordEfficiency()));
+            ((TextView) statisticsRecordCard.findViewById(R.id.card_text)).setText(statisticsRecord);
+            linearLayout.addView(statisticsRecordCard);
         }
     }
 }

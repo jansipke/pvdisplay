@@ -89,9 +89,9 @@
     <string name="value_location">%1$s N, %2$s W</string>
     <string name="value_panels">%1$d x %2$d W = %3$d W</string>
     <string name="value_inverter">%d W</string>
-    <string name="value_statistics_total">Total %1$s kWh in %2$d days</string>
-    <string name="value_statistics_average">Average %s kWh per day</string>
-    <string name="value_statistics_record">Record %1$s kWh on %2$s</string>
+    <string name="value_statistics_total">Generated %1$s kWh in %3$d days\nExported %2$s kWh</string>
+    <string name="value_statistics_average">Generated %1$s kWh per day on average\nEfficiency of %2$s kWh per kW</string>
+    <string name="value_statistics_record">Generated %1$s kWh on %2$s\nEfficiency of %3$s kWh per kW</string>
 
     <string name="image_condition">Condition</string>
     <string name="image_comparison">Comparison</string>
@@ -99,7 +99,9 @@
     <string name="fragment_system_name">Name</string>
     <string name="fragment_system_panels">Panels</string>
     <string name="fragment_system_inverter">Inverter</string>
-    <string name="fragment_system_statistics">Statistics</string>
+    <string name="fragment_system_total">Total</string>
+    <string name="fragment_system_average">Average</string>
+    <string name="fragment_system_record">Record</string>
     <string name="fragment_system_savings">Savings</string>
     <string name="fragment_system_location">Location</string>
     <string name="fragment_system_search">Search</string>
