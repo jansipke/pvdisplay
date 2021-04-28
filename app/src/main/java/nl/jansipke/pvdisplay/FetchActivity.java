@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -16,7 +18,7 @@ public class FetchActivity extends AppCompatActivity {
 
     private final static String TAG = FetchActivity.class.getSimpleName();
 
-    private static int nrDownloads = 0;
+    private final static AtomicInteger nrDownloads = new AtomicInteger(0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,51 +40,51 @@ public class FetchActivity extends AppCompatActivity {
             PvDownloader pvDownloader = new PvDownloader(getApplicationContext());
 
             pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday());
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
             switch(sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_live_comparison), "day")) {
                 case "day":
                     pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(0, 0, -1, false));
-                    nrDownloads++;
+                    nrDownloads.addAndGet(1);
                     break;
                 case "year":
                     pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(-1, 0, 0, false));
-                    nrDownloads++;
+                    nrDownloads.addAndGet(1);
                     break;
             };
 
             pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday());
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
             if ("year".equals(sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_daily_comparison), "year"))) {
                 pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday().createCopy(-1, 0, false));
-                nrDownloads++;
+                nrDownloads.addAndGet(1);
             }
 
             pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday());
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
             if ("year".equals(sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_monthly_comparison), "year"))) {
                 pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday().createCopy(-1, false));
-                nrDownloads++;
+                nrDownloads.addAndGet(1);
             }
 
             pvDownloader.downloadYearly();
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
 
             pvDownloader.downloadSystem();
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
 
             pvDownloader.downloadStatistic();
-            nrDownloads++;
+            nrDownloads.addAndGet(1);
 
             ProgressBar progressBar = findViewById(R.id.progress_bar);
-            progressBar.setMax(nrDownloads);
+            progressBar.setMax(nrDownloads.get());
 
             pvDownloader.getDownloadTotalCount().observe(this, data -> {
                 Log.d(TAG, "Downloaded " + data + " of " + nrDownloads + " pieces of data");
                 progressBar.setProgress(data);
-                if (data == nrDownloads) {
+                if (data >= nrDownloads.get()) {
                     Intent mainIntent = new Intent(FetchActivity.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();

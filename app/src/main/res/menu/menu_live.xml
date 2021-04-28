@@ -35,8 +35,8 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_about"
-        android:title="@string/action_about"
+    <item android:id="@+id/action_about_donate"
+        android:title="@string/action_about_donate"
         app:showAsAction="never"/>
 
 </menu>

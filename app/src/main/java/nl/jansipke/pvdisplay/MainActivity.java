@@ -1,6 +1,7 @@
 package nl.jansipke.pvdisplay;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +17,8 @@ import androidx.viewpager.widget.ViewPager;
 public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
-    private final static String WEBSITE_ABOUT = "https://jansipke.nl/pv-display/";
+
+    private final static String WEBSITE = "https://jansipke.nl/pv-display/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +46,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 Log.d(TAG, "Clicked settings");
                 Intent intent = new Intent(this, SettingsActivity.class);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
+                startActivity(intent);
                 break;
-            case R.id.action_about:
-                Log.d(TAG, "Clicked about");
-                Uri webpageAbout = Uri.parse(WEBSITE_ABOUT);
-                intent = new Intent(Intent.ACTION_VIEW, webpageAbout);
-                if (intent.resolveActivity(getPackageManager()) != null) {
+            case R.id.action_about_donate:
+                Log.d(TAG, "Clicked about/donate");
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSITE));
+                try {
                     startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Log.w(TAG, "No activity found for viewing the about/donate website");
                 }
                 break;
         }
