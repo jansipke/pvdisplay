@@ -19,7 +19,7 @@ public class FetchActivity extends AppCompatActivity {
 
     private final static String TAG = FetchActivity.class.getSimpleName();
 
-    private static int nrDownloads = 0;
+    private static int nrDownloads;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,7 @@ public class FetchActivity extends AppCompatActivity {
                 getString(R.string.preferences_key_auto_refresh), false);
         if (autoRefresh) {
             PvDownloader pvDownloader = new PvDownloader(getApplicationContext());
+            nrDownloads = 0;
 
             pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday());
             nrDownloads++;
