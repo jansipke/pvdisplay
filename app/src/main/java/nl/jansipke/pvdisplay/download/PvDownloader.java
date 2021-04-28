@@ -86,13 +86,11 @@ public class PvDownloader {
         Log.d(TAG, "Downloading daily PV data for " + ym);
         new Thread(() -> {
             try {
-                // Download data
                 String fromDate = new DateTimeUtils.YearMonthDay(ym.year, ym.month, 1).asString(false);
                 String toDate = new DateTimeUtils.YearMonthDay(ym.year, ym.month, 31).asString(false);
                 String urlPath = "getoutput.jsp?df=" + fromDate + "&dt=" + toDate;
                 String result = download(urlPath);
 
-                // Parse and save data
                 List<DailyPvDatum> dailyPvData = new PvOutputParser().parseDaily(result);
                 new PvDatabase(context).saveDaily(dailyPvData);
 
@@ -109,12 +107,10 @@ public class PvDownloader {
         Log.d(TAG, "Downloading live PV data for " + ymd);
         new Thread(() -> {
             try {
-                // Download data
                 String date = ymd.asString(false);
                 String urlPath = "getstatus.jsp?d=" + date + "&h=1&limit=288&asc=1";
                 String result = download(urlPath);
 
-                // Parse and save data
                 List<LivePvDatum> livePvData = new PvOutputParser().parseLive(result);
                 new PvDatabase(context).saveLive(livePvData);
 
@@ -131,13 +127,11 @@ public class PvDownloader {
         Log.d(TAG, "Downloading monthly PV data for " + y);
         new Thread(() -> {
             try {
-                // Download data
                 String fromDate = new DateTimeUtils.YearMonthDay(y.year, 1, 1).asString(false);
                 String toDate = new DateTimeUtils.YearMonthDay(y.year, 12, 31).asString(false);
                 String urlPath = "getoutput.jsp?a=m&df=" + fromDate + "&dt=" + toDate;
                 String result = download(urlPath);
 
-                // Parse and save data
                 List<MonthlyPvDatum> monthlyPvData = new PvOutputParser().parseMonthly(result);
                 new PvDatabase(context).saveMonthly(monthlyPvData);
 
@@ -154,11 +148,9 @@ public class PvDownloader {
         Log.d(TAG, "Downloading statistic PV data");
         new Thread(() -> {
             try {
-                // Download data
                 String urlPath = "getstatistic.jsp";
                 String result = download(urlPath);
 
-                // Parse and save data
                 StatisticPvDatum statisticPvDatum = new PvOutputParser().parseStatistic(result);
                 new PvDatabase(context).saveStatistic(statisticPvDatum);
 
@@ -175,11 +167,9 @@ public class PvDownloader {
         Log.d(TAG, "Downloading system PV data");
         new Thread(() -> {
             try {
-                // Download data
                 String urlPath = "getsystem.jsp";
                 String result = download(urlPath);
 
-                // Parse and save data
                 SystemPvDatum systemPvDatum = new PvOutputParser().parseSystem(result);
                 new PvDatabase(context).saveSystem(systemPvDatum);
 
@@ -196,11 +186,9 @@ public class PvDownloader {
         Log.d(TAG, "Downloading yearly PV data");
         new Thread(() -> {
             try {
-                // Download data
                 String urlPath = "getoutput.jsp?a=y";
                 String result = download(urlPath);
 
-                // Parse and save data
                 List<YearlyPvDatum> yearlyPvData = new PvOutputParser().parseYearly(result);
                 new PvDatabase(context).saveYearly(yearlyPvData);
 

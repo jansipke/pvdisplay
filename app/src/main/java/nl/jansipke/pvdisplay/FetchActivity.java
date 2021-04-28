@@ -51,7 +51,7 @@ public class FetchActivity extends AppCompatActivity {
                     pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(-1, 0, 0, false));
                     nrDownloads.addAndGet(1);
                     break;
-            };
+            }
 
             pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday());
             nrDownloads.addAndGet(1);
