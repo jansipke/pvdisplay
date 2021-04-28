@@ -31,7 +31,6 @@ public class PvDownloader {
     private final Context context;
     private final AtomicInteger atomicDownloadTotalCount;
     private final AtomicInteger atomicDownloadSuccessCount;
-    private final MutableLiveData<Integer> downloadTotalCount;
     private final MutableLiveData<Integer> downloadSuccessCount;
     private final MutableLiveData<String> errorMessage;
 
@@ -39,7 +38,6 @@ public class PvDownloader {
         this.context = context;
         atomicDownloadTotalCount = new AtomicInteger(0);
         atomicDownloadSuccessCount = new AtomicInteger(0);
-        downloadTotalCount = new MutableLiveData<>();
         downloadSuccessCount = new MutableLiveData<>();
         errorMessage = new MutableLiveData<>();
     }
@@ -201,8 +199,8 @@ public class PvDownloader {
         }).start();
     }
 
-    public LiveData<Integer> getDownloadTotalCount() {
-        return downloadTotalCount;
+    public int getDownloadTotalCount() {
+        return atomicDownloadTotalCount.get();
     }
 
     public LiveData<Integer> getDownloadSuccessCount() {
@@ -215,7 +213,6 @@ public class PvDownloader {
 
     private void reportStatus(boolean success, String message) {
         atomicDownloadTotalCount.addAndGet(1);
-        downloadTotalCount.postValue(atomicDownloadTotalCount.intValue());
         if (success) {
             Log.d(TAG, message);
             atomicDownloadSuccessCount.addAndGet(1);

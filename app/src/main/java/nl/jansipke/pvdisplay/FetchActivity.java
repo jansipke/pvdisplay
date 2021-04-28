@@ -3,12 +3,13 @@ package nl.jansipke.pvdisplay;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Objects;
 
 import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.download.PvDownloader;
@@ -18,7 +19,7 @@ public class FetchActivity extends AppCompatActivity {
 
     private final static String TAG = FetchActivity.class.getSimpleName();
 
-    private final static AtomicInteger nrDownloads = new AtomicInteger(0);
+    private static int nrDownloads = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,56 +41,70 @@ public class FetchActivity extends AppCompatActivity {
             PvDownloader pvDownloader = new PvDownloader(getApplicationContext());
 
             pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday());
-            nrDownloads.addAndGet(1);
-            switch(sharedPreferences.getString(getResources().
-                    getString(R.string.preferences_key_live_comparison), "day")) {
+            nrDownloads++;
+            switch(Objects.requireNonNull(sharedPreferences.getString(getResources().
+                    getString(R.string.preferences_key_live_comparison), "day"))) {
                 case "day":
                     pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(0, 0, -1, false));
-                    nrDownloads.addAndGet(1);
+                    nrDownloads++;
                     break;
                 case "year":
                     pvDownloader.downloadLive(DateTimeUtils.YearMonthDay.getToday().createCopy(-1, 0, 0, false));
-                    nrDownloads.addAndGet(1);
+                    nrDownloads++;
                     break;
             }
 
             pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday());
-            nrDownloads.addAndGet(1);
+            nrDownloads++;
             if ("year".equals(sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_daily_comparison), "year"))) {
                 pvDownloader.downloadDaily(DateTimeUtils.YearMonth.getToday().createCopy(-1, 0, false));
-                nrDownloads.addAndGet(1);
+                nrDownloads++;
             }
 
             pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday());
-            nrDownloads.addAndGet(1);
+            nrDownloads++;
             if ("year".equals(sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_monthly_comparison), "year"))) {
                 pvDownloader.downloadMonthly(DateTimeUtils.Year.getToday().createCopy(-1, false));
-                nrDownloads.addAndGet(1);
+                nrDownloads++;
             }
 
             pvDownloader.downloadYearly();
-            nrDownloads.addAndGet(1);
+            nrDownloads++;
 
             pvDownloader.downloadSystem();
-            nrDownloads.addAndGet(1);
+            nrDownloads++;
 
             pvDownloader.downloadStatistic();
-            nrDownloads.addAndGet(1);
+            nrDownloads++;
 
             ProgressBar progressBar = findViewById(R.id.progress_bar);
-            progressBar.setMax(nrDownloads.get());
+            progressBar.setMax(nrDownloads);
 
-            pvDownloader.getDownloadTotalCount().observe(this, data -> {
-                Log.d(TAG, "Downloaded " + data + " of " + nrDownloads + " pieces of data");
-                progressBar.setProgress(data);
-                if (data >= nrDownloads.get()) {
+            new CountDownTimer(10000, 10) {
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    int progress = pvDownloader.getDownloadTotalCount();
+                    Log.d(TAG, "Fetched " + progress + " of " + nrDownloads + " pieces of data");
+                    progressBar.setProgress(progress);
+                    if (progress == nrDownloads) {
+                        cancel();
+                        Intent mainIntent = new Intent(FetchActivity.this, MainActivity.class);
+                        startActivity(mainIntent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onFinish() {
+                    Log.w(TAG, "Did not fetch data within timeout");
                     Intent mainIntent = new Intent(FetchActivity.this, MainActivity.class);
                     startActivity(mainIntent);
                     finish();
                 }
-            });
+            }.start();
         } else {
             Intent intent = new Intent(FetchActivity.this, MainActivity.class);
             startActivity(intent);
