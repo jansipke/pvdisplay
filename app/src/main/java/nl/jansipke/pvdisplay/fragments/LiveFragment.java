@@ -40,6 +40,7 @@ import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.AxisLabelValues;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
 import nl.jansipke.pvdisplay.data.RecordPvDatum;
+import nl.jansipke.pvdisplay.data.StatisticPvDatum;
 import nl.jansipke.pvdisplay.database.PvDatabase;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
@@ -99,6 +100,19 @@ public class LiveFragment extends Fragment {
         return differences;
     }
 
+    private List<Double> createDifferences(List<LivePvDatum> livePvDataPicked, double energyGenerationComparison) {
+        List<Double> differences = new ArrayList<>();
+        for (LivePvDatum livePvDatum : livePvDataPicked) {
+            if (energyGenerationComparison > 0) {
+                final double energyGenerationPicked = livePvDatum.getEnergyGeneration();
+                differences.add(energyGenerationPicked / energyGenerationComparison);
+            } else {
+                differences.add(0.0);
+            }
+        }
+        return differences;
+    }
+
     private List<LivePvDatum> createFullDay(DateTimeUtils.YearMonthDay date,
                                             int startHour, int endHour,
                                             List<LivePvDatum> livePvData) {
@@ -135,6 +149,11 @@ public class LiveFragment extends Fragment {
         List<LivePvDatum> data = pvDatabase.loadLive(ymd);
         if (data.size() == 0) {
             pvDownloader.downloadLive(ymd);
+        }
+        if ("avg".equals(getLiveComparison())) {
+            if (pvDatabase.loadStatistic() == null) {
+                pvDownloader.downloadStatistic();
+            }
         }
         return data;
     }
@@ -195,7 +214,8 @@ public class LiveFragment extends Fragment {
             switch (liveComparison) {
                 case "off": liveComparison = "day"; break;
                 case "day": liveComparison = "year"; break;
-                case "year": liveComparison = "off"; break;
+                case "year": liveComparison = "avg"; break;
+                case "avg": liveComparison = "off"; break;
             }
             final SharedPreferences sharedPreferences = PreferenceManager.
                     getDefaultSharedPreferences(getContext());
@@ -333,7 +353,8 @@ public class LiveFragment extends Fragment {
 
     private void updateTable(List<LivePvDatum> livePvData,
                              List<Double> differences,
-                             boolean showComparison) {
+                             boolean showComparison,
+                             boolean showPercentage) {
         LinearLayout linearLayout = fragmentView.findViewById(R.id.table);
         linearLayout.removeAllViews();
 
@@ -350,19 +371,33 @@ public class LiveFragment extends Fragment {
                     FormatUtils.ENERGY_FORMAT.format(livePvDatum.getEnergyGeneration() / 1000.0));
 
             if (showComparison) {
-                double difference = differences.get(i) / 1000.0;
-                String differenceText = "0.000";
-                int differenceColor = Color.rgb(61, 61, 61);
-                if (difference < 0) {
-                    differenceText = FormatUtils.ENERGY_FORMAT.format(difference);
-                    differenceColor = Color.rgb(153, 61, 61);
+                if (showPercentage) {
+                    double difference = differences.get(i);
+                    String differenceText = FormatUtils.PERCENTAGE_FORMAT.format(difference);
+                    int differenceColor = Color.rgb(61, 61, 61);
+                    if (difference < 1) {
+                        differenceColor = Color.rgb(153, 61, 61);
+                    }
+                    if (difference > 1) {
+                        differenceColor = Color.rgb(61, 153, 61);
+                    }
+                    ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
+                    ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
+                } else {
+                    double difference = differences.get(i) / 1000.0;
+                    String differenceText = "0.000";
+                    int differenceColor = Color.rgb(61, 61, 61);
+                    if (difference < 0) {
+                        differenceText = FormatUtils.ENERGY_FORMAT.format(difference);
+                        differenceColor = Color.rgb(153, 61, 61);
+                    }
+                    if (difference > 0) {
+                        differenceText = "+" + FormatUtils.ENERGY_FORMAT.format(difference);
+                        differenceColor = Color.rgb(61, 153, 61);
+                    }
+                    ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
+                    ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
                 }
-                if (difference > 0) {
-                    differenceText = "+" + FormatUtils.ENERGY_FORMAT.format(difference);
-                    differenceColor = Color.rgb(61, 153, 61);
-                }
-                ((TextView) row.findViewById(R.id.comparison)).setText(differenceText);
-                ((TextView) row.findViewById(R.id.comparison)).setTextColor(differenceColor);
             }
 
             linearLayout.addView(row);
@@ -400,20 +435,33 @@ public class LiveFragment extends Fragment {
 
             DateTimeUtils.YearMonthDay comparison;
             boolean showComparison = false;
-            List<LivePvDatum> livePvDataComparison = new ArrayList<>();
+            boolean showPercentage = false;
+            List<LivePvDatum> livePvDataComparison;
             List<LivePvDatum> livePvDataComparisonFullDay = new ArrayList<>();
+            List<Double> differences = new ArrayList<>();
             switch (getLiveComparison()) {
                 case "day":
                     showComparison = true;
                     comparison = picked.createCopy(0, 0, -1, false);
                     livePvDataComparison = databaseOrDownload(comparison);
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
+                    differences = createDifferences(livePvDataPicked, livePvDataComparison);
                     break;
                 case "year":
                     showComparison = true;
                     comparison = picked.createCopy(-1,0,0, false);
                     livePvDataComparison = databaseOrDownload(comparison);
                     livePvDataComparisonFullDay = createFullDay(comparison, startHour, endHour, livePvDataComparison);
+                    differences = createDifferences(livePvDataPicked, livePvDataComparison);
+                    break;
+                case "avg":
+                    final StatisticPvDatum statisticPvDatum = pvDatabase.loadStatistic();
+                    if (statisticPvDatum != null) {
+                        showComparison = true;
+                        showPercentage = true;
+                        double averageGeneration = statisticPvDatum.getAverageGeneration();
+                        differences = createDifferences(livePvDataPicked, averageGeneration);
+                    }
                     break;
             }
 
@@ -424,8 +472,9 @@ public class LiveFragment extends Fragment {
                     showComparison);
             updateTable(
                     livePvDataPicked,
-                    createDifferences(livePvDataPicked, livePvDataComparison),
-                    showComparison);
+                    differences,
+                    showComparison,
+                    showPercentage);
         }
     }
 }

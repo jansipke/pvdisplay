@@ -10,6 +10,7 @@ public class FormatUtils {
     public final static NumberFormat ENERGY_FORMAT = new DecimalFormat("#0.000");
     public final static NumberFormat POWER_FORMAT = new DecimalFormat("#0");
     public final static NumberFormat SAVINGS_FORMAT = new DecimalFormat("#0.00");
+    public final static NumberFormat PERCENTAGE_FORMAT = new DecimalFormat("#0.00 %");
 
     public static AxisLabelValues getAxisLabelValues(double maxValue) {
         final int nrSteps = 5;
