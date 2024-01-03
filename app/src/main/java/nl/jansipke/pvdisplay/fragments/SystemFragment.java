@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,11 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.SettingsActivity;
 import nl.jansipke.pvdisplay.data.StatisticPvDatum;
@@ -165,7 +165,7 @@ public class SystemFragment extends Fragment {
             ((ImageView) savingsCard.findViewById(R.id.card_left_image)).setImageResource(R.drawable.savings);
             ((TextView) savingsCard.findViewById(R.id.card_title)).setText(getResources().getString(R.string.fragment_system_savings));
             final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
+                    getDefaultSharedPreferences(requireContext());
             final String currency = sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_savings_currency), "EUR");
             double per_kwh;

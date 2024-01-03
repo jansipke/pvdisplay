@@ -3,14 +3,15 @@ package nl.jansipke.pvdisplay;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.data.SystemPvDatum;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.download.PvOutputParser;

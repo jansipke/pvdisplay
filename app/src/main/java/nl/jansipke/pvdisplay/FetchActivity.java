@@ -4,14 +4,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
 import java.util.Objects;
 
-import androidx.appcompat.app.AppCompatActivity;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 

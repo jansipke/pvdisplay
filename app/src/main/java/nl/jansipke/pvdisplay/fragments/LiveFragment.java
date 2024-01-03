@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.fragments;
 
+import static nl.jansipke.pvdisplay.R.id.graph;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -7,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,16 +20,16 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -45,8 +46,6 @@ import nl.jansipke.pvdisplay.database.PvDatabase;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
-
-import static nl.jansipke.pvdisplay.R.id.graph;
 
 public class LiveFragment extends Fragment {
 
@@ -70,7 +69,7 @@ public class LiveFragment extends Fragment {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return new DatePickerDialog(Objects.requireNonNull(getContext()), datePickerListener,
+            return new DatePickerDialog(requireContext(), datePickerListener,
                     picked.year, picked.month - 1, picked.day);
         }
     }
@@ -160,7 +159,7 @@ public class LiveFragment extends Fragment {
 
     private String getLiveComparison() {
         final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
+                getDefaultSharedPreferences(requireContext());
         return sharedPreferences.getString(getResources().
                 getString(R.string.preferences_key_live_comparison), "day");
     }
@@ -218,7 +217,7 @@ public class LiveFragment extends Fragment {
                 case "avg": liveComparison = "off"; break;
             }
             final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
+                    getDefaultSharedPreferences(requireContext());
             sharedPreferences.edit().putString(getResources().
                     getString(R.string.preferences_key_live_comparison), liveComparison).apply();
             ((Button) view).setText(liveComparison);
@@ -417,7 +416,7 @@ public class LiveFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
+                    getDefaultSharedPreferences(requireContext());
             int startHour;
             try {
                 startHour = Integer.parseInt(sharedPreferences.getString(getResources().

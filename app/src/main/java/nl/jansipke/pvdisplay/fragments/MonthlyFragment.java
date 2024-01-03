@@ -1,11 +1,12 @@
 package nl.jansipke.pvdisplay.fragments;
 
+import static nl.jansipke.pvdisplay.R.id.graph;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,14 +17,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -43,8 +45,6 @@ import nl.jansipke.pvdisplay.database.PvDatabase;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
-
-import static nl.jansipke.pvdisplay.R.id.graph;
 
 public class MonthlyFragment extends Fragment {
 
@@ -94,7 +94,7 @@ public class MonthlyFragment extends Fragment {
 
     private String getMonthlyComparison() {
         final SharedPreferences sharedPreferences = PreferenceManager.
-                getDefaultSharedPreferences(getContext());
+                getDefaultSharedPreferences(requireContext());
         return sharedPreferences.getString(getResources().
                 getString(R.string.preferences_key_monthly_comparison), "year");
     }
@@ -145,7 +145,7 @@ public class MonthlyFragment extends Fragment {
                 case "year": monthlyComparison = "off"; break;
             }
             final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
+                    getDefaultSharedPreferences(requireContext());
             sharedPreferences.edit().putString(getResources().
                     getString(R.string.preferences_key_monthly_comparison), monthlyComparison).apply();
             ((Button) view).setText(monthlyComparison);
@@ -299,7 +299,7 @@ public class MonthlyFragment extends Fragment {
 
         if (isAdded() && getActivity() != null) {
             final SharedPreferences sharedPreferences = PreferenceManager.
-                    getDefaultSharedPreferences(getContext());
+                    getDefaultSharedPreferences(requireContext());
             String monthlyComparison = sharedPreferences.getString(getResources().
                     getString(R.string.preferences_key_monthly_comparison), "year");
             DateTimeUtils.Year comparison;

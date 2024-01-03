@@ -2,8 +2,11 @@ package nl.jansipke.pvdisplay.download;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,8 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import nl.jansipke.pvdisplay.R;
 import nl.jansipke.pvdisplay.data.DailyPvDatum;
 import nl.jansipke.pvdisplay.data.LivePvDatum;
@@ -205,10 +206,6 @@ public class PvDownloader {
 
     public LiveData<Integer> getDownloadSuccessCount() {
         return downloadSuccessCount;
-    }
-
-    public LiveData<String> getErrorMessage() {
-        return errorMessage;
     }
 
     private void reportStatus(boolean success, String message) {

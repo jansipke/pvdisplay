@@ -48,10 +48,6 @@ public class SystemPvDatum {
         return systemSize;
     }
 
-    public String getPostcode() {
-        return postcode;
-    }
-
     public int getNumberOfPanels() {
         return numberOfPanels;
     }
@@ -64,32 +60,12 @@ public class SystemPvDatum {
         return panelBrand;
     }
 
-    public int getInverters() {
-        return inverters;
-    }
-
     public int getInverterPower() {
         return inverterPower;
     }
 
     public String getInverterBrand() {
         return inverterBrand;
-    }
-
-    public String getOrientation() {
-        return orientation;
-    }
-
-    public String getArrayTilt() {
-        return arrayTilt;
-    }
-
-    public String getShade() {
-        return shade;
-    }
-
-    public String getInstallDate() {
-        return installDate;
     }
 
     public double getLatitude() {

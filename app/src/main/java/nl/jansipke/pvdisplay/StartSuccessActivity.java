@@ -3,11 +3,11 @@ package nl.jansipke.pvdisplay;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 public class StartSuccessActivity extends AppCompatActivity {
 

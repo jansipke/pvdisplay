@@ -59,10 +59,6 @@ public class StatisticPvDatum {
         return averageGeneration;
     }
 
-    public double getMinimumGeneration() {
-        return minimumGeneration;
-    }
-
     public double getMaximumGeneration() {
         return maximumGeneration;
     }
@@ -73,30 +69,6 @@ public class StatisticPvDatum {
 
     public int getOutputs() {
         return outputs;
-    }
-
-    public int getActualDateFromYear() {
-        return actualDateFromYear;
-    }
-
-    public int getActualDateFromMonth() {
-        return actualDateFromMonth;
-    }
-
-    public int getActualDateFromDay() {
-        return actualDateFromDay;
-    }
-
-    public int getActualDateToYear() {
-        return actualDateToYear;
-    }
-
-    public int getActualDateToMonth() {
-        return actualDateToMonth;
-    }
-
-    public int getActualDateToDay() {
-        return actualDateToDay;
     }
 
     public double getRecordEfficiency() {

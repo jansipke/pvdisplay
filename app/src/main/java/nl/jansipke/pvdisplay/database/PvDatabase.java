@@ -1,5 +1,6 @@
 package nl.jansipke.pvdisplay.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,6 +35,7 @@ public class PvDatabase {
         this.pvDataHelper = new PvDataHelper(context);
     }
 
+    @SuppressLint("Range")
     public List<DailyPvDatum> loadDaily(DateTimeUtils.YearMonth ym) {
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -49,8 +51,8 @@ public class PvDatabase {
                 PvDataContract.DailyPvData.COLUMN_NAME_YEAR + "=? AND " +
                 PvDataContract.DailyPvData.COLUMN_NAME_MONTH + "=?";
         String[] selectionArgs = {
-                "" + ym.year,
-                "" + ym.month
+                String.valueOf(ym.year),
+                String.valueOf(ym.month)
         };
 
         List<DailyPvDatum> dailyPvData = new ArrayList<>();
@@ -77,6 +79,7 @@ public class PvDatabase {
         return dailyPvData;
     }
 
+    @SuppressLint("Range")
     public List<LivePvDatum> loadLive(DateTimeUtils.YearMonthDay ymd) {
         List<LivePvDatum> livePvData = new ArrayList<>();
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
@@ -95,9 +98,9 @@ public class PvDatabase {
                 PvDataContract.LivePvData.COLUMN_NAME_MONTH + "=? AND " +
                 PvDataContract.LivePvData.COLUMN_NAME_DAY + "=?";
         String[] selectionArgs = {
-                "" + ymd.year,
-                "" + ymd.month,
-                "" + ymd.day
+                String.valueOf(ymd.year),
+                String.valueOf(ymd.month),
+                String.valueOf(ymd.day)
         };
 
         Cursor cursor = db.query(
@@ -124,6 +127,7 @@ public class PvDatabase {
         return livePvData;
     }
 
+    @SuppressLint("Range")
     public List<MonthlyPvDatum> loadMonthly(DateTimeUtils.Year y) {
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 
@@ -136,7 +140,7 @@ public class PvDatabase {
         String selection =
                 PvDataContract.MonthlyPvData.COLUMN_NAME_YEAR + "=?";
         String[] selectionArgs = {
-                "" + y.year
+                String.valueOf(y.year)
         };
 
         List<MonthlyPvDatum> monthlyPvData = new ArrayList<>();
@@ -202,6 +206,7 @@ public class PvDatabase {
         }
     }
 
+    @SuppressLint("Range")
     public List<YearlyPvDatum> loadYearly() {
         SQLiteDatabase db = pvDataHelper.getReadableDatabase();
 

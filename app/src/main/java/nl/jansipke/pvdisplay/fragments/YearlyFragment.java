@@ -1,5 +1,7 @@
 package nl.jansipke.pvdisplay.fragments;
 
+import static nl.jansipke.pvdisplay.R.id.graph;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,14 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -35,8 +37,6 @@ import nl.jansipke.pvdisplay.database.PvDatabase;
 import nl.jansipke.pvdisplay.download.PvDownloader;
 import nl.jansipke.pvdisplay.utils.DateTimeUtils;
 import nl.jansipke.pvdisplay.utils.FormatUtils;
-
-import static nl.jansipke.pvdisplay.R.id.graph;
 
 public class YearlyFragment extends Fragment {
 

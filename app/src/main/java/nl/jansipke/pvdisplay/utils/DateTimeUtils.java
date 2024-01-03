@@ -67,7 +67,7 @@ public class DateTimeUtils {
 
         @NonNull
         public String toString() {
-            return "" + year;
+            return String.valueOf(year);
         }
     }
 
@@ -217,7 +217,7 @@ public class DateTimeUtils {
     public static String formatDateTime(int year, int month, int day, int hour, int minute) {
         YearMonthDay ymd = new YearMonthDay(year, month, day);
         HourMinute hm = new HourMinute(hour, minute);
-        return ymd.toString() + " " + hm.toString();
+        return ymd + " " + hm;
     }
 
     public static String getMonthName(int month) {
