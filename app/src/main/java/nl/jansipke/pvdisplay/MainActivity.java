@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String TAG = MainActivity.class.getSimpleName();
 
-    private final static String WEBSITE = "https://jansipke.nl/pv-display/";
+    private final static String WEBSITE = "https://github.com/jansipke/pvdisplay";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
