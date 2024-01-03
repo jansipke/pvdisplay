@@ -66,7 +66,7 @@ public class SystemFragment extends Fragment {
         pvDatabase = new PvDatabase(getContext());
 
         pvDownloader = new PvDownloader(getContext());
-        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
+//        pvDownloader.getErrorMessage().observe(this, data -> Toast.makeText(getContext(),data, Toast.LENGTH_LONG).show());
         pvDownloader.getDownloadSuccessCount().observe(this, data -> updateScreen());
     }
 
