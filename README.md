@@ -2,6 +2,8 @@
 
 PV Output Display is an Android app to view data on the PV Output website.
 
+If you like this program, please consider donating using [PayPal](https://www.paypal.com/donate?business=UESP84FTE3UTG&currency_code=EUR).
+
 You can view live solar panel data and browse through historical data.
 The data is presented in five different tabs in both graphical and tabular form.
 

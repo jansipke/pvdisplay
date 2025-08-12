@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "nl.jansipke.pvdisplay"
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 32
-        versionName "3.16"
+        minSdkVersion 29
+        targetSdkVersion 35
+        versionCode 34
+        versionName "3.18"
     }
     buildTypes {
         release {
