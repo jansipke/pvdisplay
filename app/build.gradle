@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "nl.jansipke.pvdisplay"
-        minSdkVersion 29
+        minSdkVersion 21
         targetSdkVersion 35
         versionCode 34
         versionName "3.18"
