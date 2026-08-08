@@ -1,19 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 35
+    compileSdk 37
 
     defaultConfig {
         applicationId "nl.jansipke.pvdisplay"
         minSdkVersion 21
-        targetSdkVersion 35
+        targetSdkVersion 37
         versionCode 35
         versionName "3.19"
     }
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {

@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:src="@drawable/bg_sun"
-        android:scaleType = "centerCrop"
+        android:scaleType="centerCrop"
         android:alpha="0.9"/>
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_margin="20dp"
         android:padding="10dp"
         android:background="@color/colorWhiteBackground"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textAlignment="center"
         android:text="@string/start_success_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,26 +30,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
+        app:layout_constraintGuide_percent="0.56" />
 
     <TextView
         android:id="@+id/system_name_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
         android:padding="10dp"
         android:background="@color/colorWhiteBackground"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline"/>
+        app:layout_constraintTop_toBottomOf="@id/guideline"
+        app:layout_constraintBottom_toTopOf="@id/start_button"/>
 
     <Button
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="100dp"
         android:text="@string/start_success_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

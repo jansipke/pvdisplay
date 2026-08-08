@@ -2,7 +2,6 @@ package nl.jansipke.pvdisplay.fragments;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -189,31 +188,27 @@ public class DailyFragment extends Fragment {
         return fragmentView;
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_previous:
-                Log.d(TAG, "Clicked previous");
-                picked = picked.createCopy(0, -1, true);
-                updateScreen();
-                break;
-            case R.id.action_next:
-                Log.d(TAG, "Clicked next");
-                picked = picked.createCopy(0, 1, false);
-                updateScreen();
-                break;
-            case R.id.action_this_month:
-                Log.d(TAG, "Clicked this month");
-                picked = DateTimeUtils.YearMonth.getToday();
-                updateScreen();
-                break;
-            case R.id.action_refresh:
-                Log.d(TAG, "Clicked refresh");
-                pvDownloader.downloadDaily(picked);
-                if ("year".equals(getDailyComparison())) {
-                    pvDownloader.downloadDaily(picked.createCopy(-1, 0, false));
-                }
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_previous) {
+            Log.d(TAG, "Clicked previous");
+            picked = picked.createCopy(0, -1, true);
+            updateScreen();
+        } else if (itemId == R.id.action_next) {
+            Log.d(TAG, "Clicked next");
+            picked = picked.createCopy(0, 1, false);
+            updateScreen();
+        } else if (itemId == R.id.action_this_month) {
+            Log.d(TAG, "Clicked this month");
+            picked = DateTimeUtils.YearMonth.getToday();
+            updateScreen();
+        } else if (itemId == R.id.action_refresh) {
+            Log.d(TAG, "Clicked refresh");
+            pvDownloader.downloadDaily(picked);
+            if ("year".equals(getDailyComparison())) {
+                pvDownloader.downloadDaily(picked.createCopy(-1, 0, false));
+            }
         }
 
         return super.onOptionsItemSelected(item);

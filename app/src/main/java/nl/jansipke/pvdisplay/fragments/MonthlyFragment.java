@@ -2,7 +2,6 @@ package nl.jansipke.pvdisplay.fragments;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -156,29 +155,24 @@ public class MonthlyFragment extends Fragment {
         return fragmentView;
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_previous:
-                Log.d(TAG, "Clicked previous");
-                picked = picked.createCopy(-1, true);
-                updateScreen();
-                break;
-            case R.id.action_next:
-                Log.d(TAG, "Clicked next");
-                picked = picked.createCopy(1, false);
-                updateScreen();
-                break;
-            case R.id.action_this_year:
-                Log.d(TAG, "Clicked this year");
-                picked = DateTimeUtils.Year.getToday();
-                updateScreen();
-                break;
-            case R.id.action_refresh:
-                Log.d(TAG, "Clicked refresh");
-                pvDownloader.downloadMonthly(picked);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_previous) {
+            Log.d(TAG, "Clicked previous");
+            picked = picked.createCopy(-1, true);
+            updateScreen();
+        } else if (itemId == R.id.action_next) {
+            Log.d(TAG, "Clicked next");
+            picked = picked.createCopy(1, false);
+            updateScreen();
+        } else if (itemId == R.id.action_this_year) {
+            Log.d(TAG, "Clicked this year");
+            picked = DateTimeUtils.Year.getToday();
+            updateScreen();
+        } else if (itemId == R.id.action_refresh) {
+            Log.d(TAG, "Clicked refresh");
+            pvDownloader.downloadMonthly(picked);
         }
 
         return super.onOptionsItemSelected(item);

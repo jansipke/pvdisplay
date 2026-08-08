@@ -1,9 +1,9 @@
 package nl.jansipke.pvdisplay;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -54,28 +54,27 @@ public class MainActivity extends AppCompatActivity {
             v.setLayoutParams(mlp);
             return WindowInsetsCompat.CONSUMED;
         });
-        getWindow().setStatusBarContrastEnforced(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getWindow().setStatusBarContrastEnforced(true);
+        }
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Log.d(TAG, "Clicked settings");
-                intent = new Intent(this, SettingsActivity.class);
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_settings) {
+            Log.d(TAG, "Clicked settings");
+            intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else if (itemId == R.id.action_about_donate) {
+            Log.d(TAG, "Clicked about/donate");
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSITE));
+            try {
                 startActivity(intent);
-                break;
-            case R.id.action_about_donate:
-                Log.d(TAG, "Clicked about/donate");
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSITE));
-                try {
-                    startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Log.w(TAG, "No activity found for viewing the about/donate website");
-                }
-                break;
+            } catch (ActivityNotFoundException e) {
+                Log.w(TAG, "No activity found for viewing the about/donate website");
+            }
         }
 
         return super.onOptionsItemSelected(item);

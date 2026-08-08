@@ -2,7 +2,6 @@ package nl.jansipke.pvdisplay.fragments;
 
 import static nl.jansipke.pvdisplay.R.id.graph;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -228,42 +227,36 @@ public class LiveFragment extends Fragment {
         return fragmentView;
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_previous:
-                Log.d(TAG, "Clicked previous");
-                picked = picked.createCopy(0, 0, -1, true);
-                updateScreen();
-                break;
-            case R.id.action_next:
-                Log.d(TAG, "Clicked next");
-                picked = picked.createCopy(0, 0, 1, false);
-                updateScreen();
-                break;
-            case R.id.action_refresh:
-                Log.d(TAG, "Clicked refresh");
-                pvDownloader.downloadLive(picked);
-                switch (getLiveComparison()) {
-                    case "day":
-                        pvDownloader.downloadLive(picked.createCopy(0, 0, -1, false));
-                        break;
-                    case "year":
-                        pvDownloader.downloadLive(picked.createCopy(-1, 0, 0, false));
-                        break;
-                }
-                break;
-            case R.id.action_date:
-                Log.d(TAG, "Clicked date");
-                DialogFragment dialogFragment = new DatePickerFragment();
-                dialogFragment.show(getParentFragmentManager(), "datePicker");
-                break;
-            case R.id.action_today:
-                Log.d(TAG, "Clicked today");
-                picked = DateTimeUtils.YearMonthDay.getToday();
-                updateScreen();
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_previous) {
+            Log.d(TAG, "Clicked previous");
+            picked = picked.createCopy(0, 0, -1, true);
+            updateScreen();
+        } else if (itemId == R.id.action_next) {
+            Log.d(TAG, "Clicked next");
+            picked = picked.createCopy(0, 0, 1, false);
+            updateScreen();
+        } else if (itemId == R.id.action_refresh) {
+            Log.d(TAG, "Clicked refresh");
+            pvDownloader.downloadLive(picked);
+            switch (getLiveComparison()) {
+                case "day":
+                    pvDownloader.downloadLive(picked.createCopy(0, 0, -1, false));
+                    break;
+                case "year":
+                    pvDownloader.downloadLive(picked.createCopy(-1, 0, 0, false));
+                    break;
+            }
+        } else if (itemId == R.id.action_date) {
+            Log.d(TAG, "Clicked date");
+            DialogFragment dialogFragment = new DatePickerFragment();
+            dialogFragment.show(getParentFragmentManager(), "datePicker");
+        } else if (itemId == R.id.action_today) {
+            Log.d(TAG, "Clicked today");
+            picked = DateTimeUtils.YearMonthDay.getToday();
+            updateScreen();
         }
 
         return super.onOptionsItemSelected(item);
