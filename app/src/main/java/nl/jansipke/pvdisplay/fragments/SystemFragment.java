@@ -33,6 +33,8 @@ public class SystemFragment extends Fragment {
 
     private final static String TAG = SystemFragment.class.getSimpleName();
 
+    private final static String SEARCH = "https://www.google.com/search?q=";
+
     private View fragmentView;
     private LayoutInflater layoutInflater;
 
@@ -138,7 +140,7 @@ public class SystemFragment extends Fragment {
             ((TextView) panelsCard.findViewById(R.id.card_text)).setText(panels);
             panelsCard.findViewById(R.id.card).setOnClickListener(view -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                String uri = "http://www.google.com/#q=" + systemPvDatum.getPanelBrand();
+                String uri = SEARCH + systemPvDatum.getPanelBrand();
                 intent.setData(Uri.parse(uri));
                 startActivity(intent);
             });
@@ -154,7 +156,7 @@ public class SystemFragment extends Fragment {
             ((TextView) inverterCard.findViewById(R.id.card_text)).setText(inverter);
             inverterCard.findViewById(R.id.card).setOnClickListener(view -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                String uri = "http://www.google.com/#q=" + systemPvDatum.getInverterBrand();
+                String uri = SEARCH + systemPvDatum.getInverterBrand();
                 intent.setData(Uri.parse(uri));
                 startActivity(intent);
             });
